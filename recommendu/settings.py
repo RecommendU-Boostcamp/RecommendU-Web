@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import environ
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,14 +21,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
+env=environ.Env(DEBUG=(bool,False))
+ALLOWED_HOSTS = []
+environ.Env.read_env(
+    env_file=os.path.join(BASE_DIR,'.env')
+)
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-a*)c*%8cgjja2=cm70_!7r+t%q(7f_0#x4+s*rhc!&1@63-oxu'
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+DEBUG = env('DEBUG')
 
 # Application definition
 
@@ -79,11 +83,11 @@ WSGI_APPLICATION = 'recommendu.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'recommendu',
-        'USER' : 'root',
-        'PASSWORD' : 'recsys6', 
-        'HOST' : '34.64.237.2',
-        'PORT' : '3306',
+        'NAME': env('MYSQL_NAME'),
+        'USER' : env('MYSQL_USER'),
+        'PASSWORD' : env('MYSQL_PASSWORD'),
+        'HOST' : env('MYSQL_HOST'),
+        'PORT' : env('MYSQL_PORT'),
     }
 }
 
