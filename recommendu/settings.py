@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-env=environ.Env(DEBUG=(bool,False))
+env=environ.Env(DEBUG=(bool,True))
 ALLOWED_HOSTS = []
 environ.Env.read_env(
     env_file=os.path.join(BASE_DIR,'.env')
@@ -35,6 +35,10 @@ DEBUG = env('DEBUG')
 # Application definition
 
 INSTALLED_APPS = [
+
+    # Rest Framework
+    'rest_framework',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -114,9 +118,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-kr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
