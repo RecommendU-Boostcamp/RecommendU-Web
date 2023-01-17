@@ -11,7 +11,7 @@ import ast
 
 def render_test(request):
     context = {'hi': 'hi'}
-    return render(request, 'recommendu/index.html', context)
+    return render(request, 'index.html', context)
 
 
 def db_first(request):

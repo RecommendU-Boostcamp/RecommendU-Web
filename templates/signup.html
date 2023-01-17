@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./index.js"></script>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div class="inner">
+            <!--signUp 페이지-->
+            <section id="signUp">
+                <div class="formBox">
+                    <h1 class="title">가입하기</h1>
+                    <form action="">
+                        <span>이름</span>
+                        <input type="text" placeholder="영문 및 한글 조합으로 10자 이내">
+                        <span>아이디</span>
+                        <input type="text" placeholder="영문, 숫자 포함하여 10자 이내">
+                        <span>비밀번호</span>
+                        <input type="password" placeholder="영문, 숫자, 특수문자 포함하여 15자 이내">
+                        <!--form 완성 안 됐을 때는 disabled. 완성 되면 disabled클래스 없애면 됨-->
+                        <button type="submit" class="btn btn_join disabled">회원가입</button>
+                    </form>
+                    <p>
+                        이미 계정이 있으신가요?
+                        <a href="#">로그인</a>
+                    </p>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+
+</html>
