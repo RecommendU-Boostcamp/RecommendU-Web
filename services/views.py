@@ -9,6 +9,11 @@ import ast
 
 # Create your views here.
 
+def render_test(request):
+    context = {'hi': 'hi'}
+    return render(request, 'recommendu/index.html', context)
+
+
 def db_first(request):
     data_path = '/opt/ml/RecommendU/RecommendU-back/services/jkdata/'
     question_types, companies, major_larges, major_smalls, job_larges, job_smalls, recommend_types, major_dict, job_dict = dbinit(data_path)
