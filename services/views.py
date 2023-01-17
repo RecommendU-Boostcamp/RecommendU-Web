@@ -90,45 +90,46 @@ def docu_answer_init(request):
     n_answer = len(answer_data)
     n_sample = len(sample_data)
 
-    for i in range(n_doc):
-        doc = doc_data.iloc[i]
-        instance = Document()
-        instance.document_id ='d'+str(doc.doc_id).zfill(6)
-        instance.company = get_object_or_404(Company, company=doc.company)
-        instance.job_small = get_object_or_404(JobSmall, job_small=doc.job_small)
-        instance.major_small = get_object_or_404(MajorSmall, major_small=doc.major_small)
-        instance.document_url = doc.doc_url
-        instance.pro_rating = doc.pro_rating
-        instance.save()
+    # for i in range(n_doc):
+    #     doc = doc_data.iloc[i]
+    #     instance = Document()
+    #     instance.document_id ='d'+str(doc.doc_id).zfill(6)
+    #     instance.company = get_object_or_404(Company, company=doc.company)
+    #     instance.job_small = get_object_or_404(JobSmall, job_small=doc.job_small)
+    #     instance.major_small = get_object_or_404(MajorSmall, major_small=doc.major_small)
+    #     instance.document_url = doc.doc_url
+    #     instance.pro_rating = doc.pro_rating
+    #     instance.save()
 
     for i in range(n_answer):
         answer = answer_data.loc[i]
-        instance = Answer()
-        instance.answer_id = 'a'+str(answer.answer_id).zfill(6)
-        instance.content = answer.answer
+        instance = get_object_or_404(Answer, answer_id= 'a'+str(answer.answer_id).zfill(6))
+        # instance = Answer()
+        # instance.answer_id = 'a'+str(answer.answer_id).zfill(6)
+        # instance.content = answer.answer
         instance.question = answer.question
-        instance.document = get_object_or_404(Document, document_id='d'+str(answer.doc_id).zfill(6))
-        instance.pro_good_cnt = answer.pro_good_cnt
-        instance.pro_bad_cnt = answer.pro_bad_cnt
-        instance.summary = answer.summary
-        instance.view = answer.doc_view
+        # instance.document = get_object_or_404(Document, document_id='d'+str(answer.doc_id).zfill(6))
+        # instance.pro_good_cnt = answer.pro_good_cnt
+        # instance.pro_bad_cnt = answer.pro_bad_cnt
+        # instance.summary = answer.summary
+        # instance.view = answer.doc_view
         
-        qtypes = json.loads(answer.question_category)
-        for qtype in qtypes:
-            temp_qtype = get_object_or_404(QuestionType, question_type_id=1000000+qtype)
-            instance.question_types.add(temp_qtype)
+        # qtypes = json.loads(answer.question_category)
+        # for qtype in qtypes:
+        #     temp_qtype = get_object_or_404(QuestionType, question_type_id=1000000+qtype)
+        #     instance.question_types.add(temp_qtype)
         instance.save()
     
-    for i in range(n_sample):
-        sample = sample_data.loc[i]
-        instance = Sample()
-        instance.sample_id = 's'+str(i).zfill(6)
-        instance.question = sample.question
-        instance.content = sample.answer
-        instance.summary = sample.summary
+    # for i in range(n_sample):
+    #     sample = sample_data.loc[i]
+    #     instance = Sample()
+    #     instance.sample_id = 's'+str(i).zfill(6)
+    #     instance.question = sample.question
+    #     instance.content = sample.answer
+    #     instance.summary = sample.summary
 
-        qtype = json.loads(sample.sample_category)[0]
-        instance.question_type = get_object_or_404(QuestionType, question_type_id=1000000+qtype)
-        instance.save()
+    #     qtype = json.loads(sample.sample_category)[0]
+    #     instance.question_type = get_object_or_404(QuestionType, question_type_id=1000000+qtype)
+    #     instance.save()
 
     return HttpResponse(f"cover letter saving Done")    

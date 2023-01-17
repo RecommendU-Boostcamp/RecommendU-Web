@@ -45,7 +45,7 @@ class Answer(models.Model):
     document = models.ForeignKey(Document,related_name="answers",on_delete=models.SET_NULL,null=True)
     content = models.CharField(max_length=10000,null=False)
     question_types = models.ManyToManyField(QuestionType,related_name="answers")
-    qeustion = models.CharField(max_length=1000, null=False)
+    question = models.CharField(max_length=1000, null=False)
     user_good_cnt = models.IntegerField(default=0)
     user_bad_cnt = models.IntegerField(default=0)
     pro_good_cnt = models.IntegerField(default=0)
