@@ -43,12 +43,23 @@ class Document(models.Model):
 class Answer(models.Model):
     answer_id = models.CharField(primary_key=True,max_length=10,null=False,unique=True)
     document = models.ForeignKey(Document,related_name="answers",on_delete=models.SET_NULL,null=True)
+    content = models.CharField(max_length=10000,null=False)
+    question_types = models.ManyToManyField(QuestionType,related_name="answers")
+    qeustion = models.CharField(max_length=1000, null=False)
     user_good_cnt = models.IntegerField(default=0)
     user_bad_cnt = models.IntegerField(default=0)
     pro_good_cnt = models.IntegerField(default=0)
     pro_bad_cnt = models.IntegerField(default=0)
-    question_types = models.ManyToManyField(QuestionType,related_name="answers")
     summary = models.CharField(max_length=1000,null=False)
     view = models.IntegerField(default=0)
     user_view = models.IntegerField(default=0)
+
+
+class Sample(models.Model):
+    sample_id = models.CharField(primary_key=True, max_length=10, null=False, unique=True)
+    content = models.CharField(max_length=10000,null=False)
+    question_type = models.ForeignKey(QuestionType, related_name='samples', on_delete=models.SET_NULL, null=True)
+    qeustion = models.CharField(max_length=1000, null=False)
+    summary = models.CharField(max_length=1000, null=False)
+
 

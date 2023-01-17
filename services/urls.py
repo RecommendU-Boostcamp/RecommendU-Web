@@ -5,5 +5,5 @@ app_name = 'services'
 
 urlpatterns = [
     path('init/', views.db_first),
-    path('init2/', views.jkinit),
+    path('init2/', views.docu_answer_init),
 ]
