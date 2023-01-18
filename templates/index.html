@@ -49,32 +49,31 @@
                             </div>
                             <div class="cbList">
                                 <h4 class="filter-category">직무별</h4>
-                                {% for major in major_list %}
+                                {% for job in job_list %}
                                     <div class="cb">
-                                        <input type="checkbox" id={{ major.id }} value={{ major.major_large }}>
-                                        <label for={{ major.id }}>
-                                            <span class="cbText">{{ major.major_large }}</span>
-                                            <div id='result'></div>
+                                        <input type="checkbox" name="job_main" id={{ job.id }} value={{ job.job_small }} onClick="checkOnlyOne(this); job_check(this,{{ job.job_small }},{{ job.job_small_id }});">
+                                        <label for={{ job.id }}>
+                                            <span class="cbText">{{ job.job_large }}</span>
                                         </label>
                                     </div>
                                 {% endfor %}
                             </div>
                             <div class="cbList">
                                 <h4 class="filter-category">직무 상세</h4>
-                                {% for major_temp in major.major_small %}
-                                    <div class="cb">
-                                        <input type="checkbox" id="option">
-                                        <label for="option">
-                                            <span class="cbText">{{ major_temp }}</span>
-                                        </label>
-                                    </div>
-                                {% endfor %}
+                                <div id = 'job_result'></div>
                             </div>
                         </div>
                         <h3>내 자소서 입력하기</h3>
                         <div class="question">
-                            <textarea name="" id="" placeholder="자소서 문항을 입력하세요.(지원동기, 포부 등)" rows="1" cols="30"
-                                maxlength="30"></textarea>
+                            <select id = "question_list" onChange = "questionDefaultCheck(this.value)">
+                                <option value="none">자소서 문항을 선택하세요.</option>
+                                {% for question in question_type %}
+                                    <option value = {{ question.question_type_id }}>{{ question.question_type }}</option>
+                                {% endfor %}
+                                <option value="other">직접입력</option>
+                            </select>
+                            {% comment %} <textarea list="question_list" name="" id="" placeholder="자소서 문항을 입력하세요.(지원동기, 포부 등)" rows="1" cols="30"
+                                maxlength="30"></textarea> {% endcomment %}
                         </div>
                         <div class="question-contents">
                             <textarea name="" id="" placeholder="자소서 내용을 입력하세요." rows="30" cols="30"
@@ -98,11 +97,10 @@
                                                 <span id="info-company">{{ answer.company }}</span>
                                                 <span id="info-work">{{ answer.job_small }}</span>
                                                 <div class="info-spec">
-                                                    <span id="info-spec--school">수도권4년</span>
+                                                    <span id="info-spec--school">{{ answer.schooltype }}</span>
                                                     <span id="info-spec--major">{{ answer.major_small }}</span>
                                                     <span id="info-spec--extra_spec">
-                                                        <p class="detail">{{ answer.question_types }}</p>
-                                                        <p class="detail">조회수: {{ answer.view }}</p>
+                                                        <p class="detail">{{ answer.spec }}</p>
                                                     </span>
                                                 </div>
                                             </div>
@@ -134,11 +132,10 @@
                                                 <span id="info-company">{{ answer2.company }}</span>
                                                 <span id="info-work">{{ answer2.job_small }}</span>
                                                 <div class="info-spec">
-                                                    <span id="info-spec--school">수도권4년</span>
+                                                    <span id="info-spec--school">{{ answer2.schooltype }}</span>
                                                     <span id="info-spec--major">{{ answer2.major_small }}</span>
                                                     <span id="info-spec--extra_spec">
-                                                        <p class="detail">{{ answer2.question_types }}</p>
-                                                        <p class="detail">조회수: {{ answer2.view }}</p>
+                                                        <p class="detail">{{ answer2.spec }}</p>
                                                     </span>
                                                 </div>
                                             </div>
@@ -169,11 +166,10 @@
                                                 <span id="info-company">{{ answer.company }}</span>
                                                 <span id="info-work">{{ answer.job_small }}</span>
                                                 <div class="info-spec">
-                                                    <span id="info-spec--school">수도권4년</span>
+                                                    <span id="info-spec--school">{{ answer.schooltype }}</span>
                                                     <span id="info-spec--major">{{ answer.major_small }}</span>
                                                     <span id="info-spec--extra_spec">
-                                                        <p class="detail">{{ answer.question_types }}</p>
-                                                        <p class="detail">조회수: {{ answer.view }}</p>
+                                                        <p class="detail">{{ answer.spec }}</p>
                                                     </span>
                                                 </div>
                                             </div>

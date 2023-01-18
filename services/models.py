@@ -73,6 +73,8 @@ class ContentList(models.Model):
     question = models.CharField(max_length=1000, null=False)
     content = models.CharField(max_length=10000,null=False)
     summary = models.CharField(max_length=1000,null=False)
+    spec = models.CharField(max_length=600,null=False)
+    schooltype =models.CharField(max_length=100,null=False)
     view = models.IntegerField(default=0)
     user_view = models.IntegerField(default=0)
     document_url = models.CharField(max_length=500)
@@ -90,3 +92,11 @@ class MajorList(models.Model):
     class Meta:
         managed = False               
         db_table = 'major_view'
+        
+class JobList(models.Model):
+    job_large = models.CharField(primary_key=True,max_length=100,null=False)
+    job_small = models.CharField(max_length=600,null=False)
+    job_small_id = models.CharField(max_length=1000,null=False)
+    class Meta:
+        managed = False               
+        db_table = 'job_view'

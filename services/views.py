@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_list_or_404, get_object_or_404
 from .jkdata.initiation import dbinit, jobkoreainit
-from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType
+from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType,JobList
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
 from .models import Answer
@@ -12,18 +12,21 @@ import ast
 # Create your views here.
 
 def render_test(request):
-    major_query = MajorList.objects.all().order_by(Length('major_large').desc())
-    for i in range(0,len(major_query)):
-        major_query[i].id = "major_"+str(i)
-        major_query[i].major_small = major_query[i].major_small.split(',')
+    job_query = JobList.objects.all().order_by(Length('job_large').desc())
+    question_query = QuestionType.objects.all()[0:21]
+    for i in range(0,len(job_query)):
+        job_query[i].id = "job_"+str(i)
+        job_query[i].job_small = job_query[i].job_small.split(',')
+        job_query[i].job_small_id = job_query[i].job_small_id.split(',')
     queryset = ContentList.objects.all()[103:107]
     queryset2 = ContentList.objects.all()[1000:1005]
     queryset3 = ContentList.objects.all()[4000:4003]
     context = {
-        "major_list":major_query,
+        "job_list":job_query,
         "answer_list": queryset,
         "answer_list2":queryset2,
-        "answer_list3":queryset3
+        "answer_list3":queryset3,
+        "question_type" : question_query,
     }
     return render(request, 'index.html', context)
 
