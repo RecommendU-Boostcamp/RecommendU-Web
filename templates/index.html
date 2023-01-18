@@ -2,7 +2,6 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -50,17 +49,26 @@
                             </div>
                             <div class="cbList">
                                 <h4 class="filter-category">직무별</h4>
-                                <input type="checkbox" id="option">
-                                <label for="option">
-                                    <span class="cbText">가나다라</span>
-                                </label>
+                                {% for major in major_list %}
+                                    <div class="cb">
+                                        <input type="checkbox" id={{ major.id }} value={{ major.major_large }}>
+                                        <label for={{ major.id }}>
+                                            <span class="cbText">{{ major.major_large }}</span>
+                                            <div id='result'></div>
+                                        </label>
+                                    </div>
+                                {% endfor %}
                             </div>
                             <div class="cbList">
                                 <h4 class="filter-category">직무 상세</h4>
-                                <input type="checkbox" id="option">
-                                <label for="option">
-                                    <span class="cbText">데이터 사이언스</span>
-                                </label>
+                                {% for major_temp in major.major_small %}
+                                    <div class="cb">
+                                        <input type="checkbox" id="option">
+                                        <label for="option">
+                                            <span class="cbText">{{ major_temp }}</span>
+                                        </label>
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
                         <h3>내 자소서 입력하기</h3>
@@ -78,104 +86,107 @@
                         <div class="list-column">
                             <h3 class="category">#직무는 다르지만 내용이 비슷한</h3>
                             <div class="list">
-                                <div class="item" onClick="popup_open()">
-                                    <h4 class="title">요약한 자소서 내용</h4>
-                                    <p class="contents">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa
-                                        ex ea eos beatae, doloribus, tenetur ad dolorem praesentium accusamus vel alias
-                                        pariatur nesciunt exercitationem dolorum accusantium blanditiis deleniti, unde
-                                        nostrum!</p>
-                                </div>
-                                <div class="item">
-                                    <h4 class="title">요약한 자소서 내용 제목이 너무 길면 알아서 말줄임표 처리 되니까 걱정마시게나! 하하하하하</h4>
-                                    <p class="contents">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa
-                                        ex ea eos beatae, doloribus, tenetur
-                                        ad dolorem praesentium accusamus vel alias pariatur nesciunt exercitationem
-                                        dolorum accusantium blanditiis deleniti,
-                                        unde nostrum!</p>
-                                </div>
-                                <div class="item">
-                                    <h4 class="title">요약한 자소서 내용</h4>
-                                    <p class="contents">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa
-                                        ex ea eos beatae, doloribus, tenetur
-                                        ad dolorem praesentium accusamus vel alias pariatur nesciunt exercitationem
-                                        dolorum accusantium blanditiis deleniti,
-                                        unde nostrum!</p>
-                                </div>
+                                {% for answer in answer_list %}
+                                    <div class="item" onClick="popup_open({{ answer.answer_id }})">
+                                        <h4 class="title">{{ answer.question }}</h4>
+                                        <p class="contents">{{ answer.summary }}</p>
+                                    </div>
+                                    <div class="popup" id = {{ answer.answer_id }}>
+                                        <div class="contents">
+                                            <h3 class="category">#직무는 다르지만 내용이 비슷한</h3>
+                                            <div class="info">
+                                                <span id="info-company">{{ answer.company }}</span>
+                                                <span id="info-work">{{ answer.job_small }}</span>
+                                                <div class="info-spec">
+                                                    <span id="info-spec--school">수도권4년</span>
+                                                    <span id="info-spec--major">{{ answer.major_small }}</span>
+                                                    <span id="info-spec--extra_spec">
+                                                        <p class="detail">{{ answer.question_types }}</p>
+                                                        <p class="detail">조회수: {{ answer.view }}</p>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="text">
+                                                <h4 class="title">{{ answer.question }}</h4>
+                                                <p class="letter">{{ answer.content }}</p>
+                                            </div>
+                                            <a href={{ answer.document_url }} target="_blank">🔗 원본
+                                                확인하기</a>
+                                            <button type="button" class="btn btn_close" onClick="popup_close({{ answer.answer_id }});">X</button>
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
+                            
                         </div>
                         <div class="list-column">
                             <h3 class="category">#나와 비슷한 직무</h3>
                             <div class="list">
-                                <div class="item">
-                                    <h4 class="title">요약한 자소서 내용</h4>
-                                    <p class="contents">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa
-                                        ex ea eos beatae, doloribus, tenetur ad dolorem praesentium accusamus vel alias
-                                        pariatur nesciunt exercitationem dolorum accusantium blanditiis deleniti, unde
-                                        nostrum!</p>
-                                </div>
-                                <div class="item">
-                                    <h4 class="title">요약한 자소서 내용 제목이 너무 길면 알아서 말줄임표 처리 되니까 걱정마시게나! 하하하하하</h4>
-                                    <p class="contents">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa
-                                        ex ea eos beatae, doloribus, tenetur
-                                        ad dolorem praesentium accusamus vel alias pariatur nesciunt exercitationem
-                                        dolorum accusantium blanditiis deleniti,
-                                        unde nostrum!</p>
-                                </div>
-                                <div class="item">
-                                    <h4 class="title">요약한 자소서 내용</h4>
-                                    <p class="contents">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa
-                                        ex ea eos beatae, doloribus, tenetur
-                                        ad dolorem praesentium accusamus vel alias pariatur nesciunt exercitationem
-                                        dolorum accusantium blanditiis deleniti,
-                                        unde nostrum!</p>
-                                </div>
+                                {% for answer2 in answer_list2 %}
+                                    <div class="item" onClick="popup_open({{ answer2.answer_id }})">
+                                        <h4 class="title">{{ answer2.question }}</h4>
+                                        <p class="contents">{{ answer2.summary }}</p>
+                                    </div>
+                                    <div class="popup" id = {{ answer2.answer_id }}>
+                                        <div class="contents">
+                                            <h3 class="category">#직무는 다르지만 내용이 비슷한</h3>
+                                            <div class="info">
+                                                <span id="info-company">{{ answer2.company }}</span>
+                                                <span id="info-work">{{ answer2.job_small }}</span>
+                                                <div class="info-spec">
+                                                    <span id="info-spec--school">수도권4년</span>
+                                                    <span id="info-spec--major">{{ answer2.major_small }}</span>
+                                                    <span id="info-spec--extra_spec">
+                                                        <p class="detail">{{ answer2.question_types }}</p>
+                                                        <p class="detail">조회수: {{ answer2.view }}</p>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="text">
+                                                <h4 class="title">{{ answer2.question }}</h4>
+                                                <p class="letter">{{ answer2.content }}</p>
+                                            </div>
+                                            <a href={{ answer2.document_url }} target="_blank">🔗 원본
+                                                확인하기</a>
+                                            <button type="button" class="btn btn_close" onClick="popup_close({{ answer2.answer_id }});">X</button>
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
                         <div class="list-column">
                             <h3 class="category">#아무튼카테고리</h3>
                             <div class="list">
-                                <div class="item">
-                                    <h4 class="title">요약한 자소서 내용</h4>
-                                    <p class="contents">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa
-                                        ex ea eos beatae, doloribus, tenetur ad dolorem praesentium accusamus vel alias
-                                        pariatur nesciunt exercitationem dolorum accusantium blanditiis deleniti, unde
-                                        nostrum!</p>
-                                </div>
-                                <div class="item">
-                                    <h4 class="title">요약한 자소서 내용 제목이 너무 길면 알아서 말줄임표 처리 되니까 걱정마시게나! 하하하하하</h4>
-                                    <p class="contents">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa
-                                        ex ea eos beatae, doloribus, tenetur
-                                        ad dolorem praesentium accusamus vel alias pariatur nesciunt exercitationem
-                                        dolorum accusantium blanditiis deleniti,
-                                        unde nostrum!</p>
-                                </div>
-                                <div class="item">
-                                    <h4 class="title">요약한 자소서 내용</h4>
-                                    <p class="contents">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa
-                                        ex ea eos beatae, doloribus, tenetur
-                                        ad dolorem praesentium accusamus vel alias pariatur nesciunt exercitationem
-                                        dolorum accusantium blanditiis deleniti,
-                                        unde nostrum!</p>
-
-                                </div>
-                                <div class="item">
-                                    <h4 class="title">요약한 자소서 내용</h4>
-                                    <p class="contents">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa
-                                        ex ea eos beatae, doloribus, tenetur
-                                        ad dolorem praesentium accusamus vel alias pariatur nesciunt exercitationem
-                                        dolorum accusantium blanditiis deleniti,
-                                        unde nostrum!</p>
-
-                                </div>
-                                <div class="item">
-                                    <h4 class="title">요약한 자소서 내용</h4>
-                                    <p class="contents">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa
-                                        ex ea eos beatae, doloribus, tenetur
-                                        ad dolorem praesentium accusamus vel alias pariatur nesciunt exercitationem
-                                        dolorum accusantium blanditiis deleniti,
-                                        unde nostrum!</p>
-
-                                </div>
+                                {% for answer in answer_list3 %}
+                                    <div class="item" onClick="popup_open({{ answer.answer_id }})">
+                                        <h4 class="title">{{ answer.question }}</h4>
+                                        <p class="contents">{{ answer.summary }}</p>
+                                    </div>
+                                    <div class="popup" id = {{ answer.answer_id }}>
+                                        <div class="contents">
+                                            <h3 class="category">#직무는 다르지만 내용이 비슷한</h3>
+                                            <div class="info">
+                                                <span id="info-company">{{ answer.company }}</span>
+                                                <span id="info-work">{{ answer.job_small }}</span>
+                                                <div class="info-spec">
+                                                    <span id="info-spec--school">수도권4년</span>
+                                                    <span id="info-spec--major">{{ answer.major_small }}</span>
+                                                    <span id="info-spec--extra_spec">
+                                                        <p class="detail">{{ answer.question_types }}</p>
+                                                        <p class="detail">조회수: {{ answer.view }}</p>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="text">
+                                                <h4 class="title">{{ answer.question }}</h4>
+                                                <p class="letter">{{ answer.content }}</p>
+                                            </div>
+                                            <a href={{ answer.document_url }} target="_blank">🔗 원본
+                                                확인하기</a>
+                                            <button type="button" class="btn btn_close" onClick="popup_close({{ answer.answer_id }});">X</button>
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -190,7 +201,7 @@
             </section>
         </div>
     </div>
-    <div class="popup">
+    {% comment %} <div class="popup">
         <div class="contents">
 
             <h3 class="category">#직무는 다르지만 내용이 비슷한</h3>
@@ -220,7 +231,6 @@
                     저의 가장 큰 장점은 어떤 환경에서도 쉽게 적응한다는 점입니다. 한국, 뉴질랜드, 미국, 그리고 영국으로 생활환경이 계속 변화되면서 자연스럽게 얻어진 것 같습니다. 또한 생활환경의
                     변화만큼 다양한 배경의 사람들을
                     많이 만나며 누구와도 소통이 가능하다는 것입니다.
-
                     기본적으로 사람의 심리를 잘 이해하는 편이어서 주변 사람들이 힘들 때 저를 찾곤 합니다. 또한 어렸을 때 나이차이가 많이 나던 친척들과 함께 지냈던 가정환경 때문인지, 어른들과
                     대화하는 것을 좋아하여 그분들의 삶의
                     지혜에 많은 것을 얻고 종종 도전도 받습니다.
@@ -283,7 +293,7 @@
                 확인하기</a>
             <button type="button" class="btn btn_close" onClick="popup_close();">X</button>
         </div>
-    </div>
+    </div> {% endcomment %}
 </body>
 
 </html>

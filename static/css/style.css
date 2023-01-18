@@ -540,9 +540,9 @@ button.btn.disabled {
     top: 25px;
     right: 20px;
 }
-
+/* 
 #main {
-    /* display: none; */
+    display: none;
 }
 
 #signUp {
@@ -551,4 +551,4 @@ button.btn.disabled {
 
 #signIn {
     display: none;
-}
+} */

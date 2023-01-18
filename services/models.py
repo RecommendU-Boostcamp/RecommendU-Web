@@ -63,3 +63,25 @@ class Sample(models.Model):
     summary = models.CharField(max_length=1000, null=False)
 
 
+class ContentList(models.Model):
+    answer_id = models.CharField(primary_key=True,max_length=10,null=False,unique=True)
+    question = models.CharField(max_length=1000, null=False)
+    content = models.CharField(max_length=10000,null=False)
+    summary = models.CharField(max_length=1000,null=False)
+    view = models.IntegerField(default=0)
+    user_view = models.IntegerField(default=0)
+    document_url = models.CharField(max_length=500)
+    company = models.CharField(max_length=100,null=False)
+    major_small = models.CharField(max_length=100,null=False)
+    job_small = models.CharField(max_length=100,null=False)
+    question_types = models.CharField(max_length=200,null=False)
+    class Meta:
+        managed = False               
+        db_table = 'content_view'
+
+class MajorList(models.Model):
+    major_large = models.CharField(primary_key=True,max_length=100,null=False)
+    major_small = models.CharField(max_length=600,null=False)
+    class Meta:
+        managed = False               
+        db_table = 'major_view'
