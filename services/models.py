@@ -31,6 +31,9 @@ class RecommendType(models.Model):
     rectype_id = models.IntegerField(primary_key=True,null=False,unique=True)
     rectype = models.CharField(max_length=100,null=False)
     
+class SchoolType(models.Model):
+    schooltype_id = models.IntegerField(primary_key=True, null=False, unique=True)
+    schooltype = models.CharField(max_length=10, null=False)
     
 class Document(models.Model):
     document_id = models.CharField(primary_key=True,max_length=10,null=False,unique=True)
@@ -38,6 +41,8 @@ class Document(models.Model):
     job_small = models.ForeignKey(JobSmall,related_name="documents",on_delete=models.SET_NULL,null=True)
     major_small = models.ForeignKey(MajorSmall,related_name="documents",on_delete=models.SET_NULL,null=True)
     document_url = models.CharField(max_length=500)
+    school = models.ForeignKey(SchoolType, related_name="documents", on_delete=models.SET_NULL, null=True)
+    spec = models.CharField(max_length=1000, default=None)
     pro_rating = models.FloatField(null=False)
     
 class Answer(models.Model):

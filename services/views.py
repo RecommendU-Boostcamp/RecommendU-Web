@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_list_or_404, get_object_or_404
 from .jkdata.initiation import dbinit, jobkoreainit
-from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList,MajorList
+from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
 from .models import Answer
@@ -29,7 +29,7 @@ def render_test(request):
 
 def db_first(request):
     data_path = '/opt/ml/RecommendU/RecommendU-back/services/jkdata/'
-    question_types, companies, major_larges, major_smalls, job_larges, job_smalls, recommend_types, major_dict, job_dict = dbinit(data_path)
+    question_types, companies, major_larges, major_smalls, job_larges, job_smalls, schools, recommend_types, major_dict, job_dict = dbinit(data_path)
     
     # question_type
     for i in range(len(question_types)):
@@ -77,6 +77,13 @@ def db_first(request):
         instance.rectype_id = 7000000+(i+1)
         instance.rectype = recommend_types[i]
         instance.save()
+        
+        
+    for i in range(len(schools)):
+        instance = SchoolType()
+        instance.schooltype_id = 8000000+(i+1)
+        instance.schooltype = schools[i]
+        instance.save() 
 
 
     # ForeignKey 등록해주는 과정
@@ -92,7 +99,6 @@ def db_first(request):
 
     return HttpResponse("Init Done!")
  
-    
 
 
 def docu_answer_init(request):
@@ -105,6 +111,7 @@ def docu_answer_init(request):
 
     for i in range(n_doc):
         doc = doc_data.iloc[i]
+        instance = get_object_or_404(Document, document_id='d'+str(doc.doc_id).zfill(6))
         instance = Document()
         instance.document_id ='d'+str(doc.doc_id).zfill(6)
         instance.company = get_object_or_404(Company, company=doc.company)
@@ -112,6 +119,8 @@ def docu_answer_init(request):
         instance.major_small = get_object_or_404(MajorSmall, major_small=doc.major_small)
         instance.document_url = doc.doc_url
         instance.pro_rating = doc.pro_rating
+        instance.school = get_object_or_404(SchoolType, schooltype=doc.school)
+        instance.spec = doc.extra_spec
         instance.save()
 
     for i in range(n_answer):
