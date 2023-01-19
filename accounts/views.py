@@ -29,8 +29,13 @@ def login(request):  # GET요청에 대해서는 로그인 페이지를, POST요
         if form.is_valid():
             auth_login(request, form.get_user())  # user를 로그인함수의 인자로 넣기 위해 불러오는 메소드를 사용해줘야 함
             next_url = request.GET.get('next')
+            print("success")
             return redirect(next_url or 'services:render')
+        else:
+            print("fail form")
+    
     else:
+        print("fail")
         form = AuthenticationForm()
     context = {
         'form': form,
@@ -45,7 +50,6 @@ def login(request):  # GET요청에 대해서는 로그인 페이지를, POST요
 
 def signup(request):
     if request.method == "POST":
-        form = CustomUserCreationForm(request.POST)
         major_name = request.POST.get("major_small")
         major_instance = MajorSmall.objects.get(major_small=major_name)
         job_large_name = request.POST.get("interesting_job_large")
@@ -53,16 +57,16 @@ def signup(request):
         request.POST = request.POST.copy()
         request.POST["major_small"] = str(major_instance.major_small_id)
         request.POST['interesting_job_large'] = str(job_large_instance.job_large_id)
-        form.data = request.POST
+        form = CustomUserCreationForm(request.POST)
+
+        
         if form.is_valid():
             form.save()
-            print(request.POST)
             return redirect('services:render')
+        
         else:
-            print(request.POST)
-            
             return HttpResponse(f'error occur')
-
+        
     else:
         form = CustomUserCreationForm()  # ModelForm 
         
@@ -136,29 +140,4 @@ def signup_test(request):
     }
     return render(request, 'signup.html',context)
 
-# (QueryDict: {'csrfmiddlewaretoken': ['gDiHuSNmPVybNTcFuf69ZyT3FH2GASfxma6c3nEQNZbAlrgT4DEuYBs76zJlF3aP'], 
-#              'username': ['vilfvijl'], 
-#              'career_type': ['3'], 
-#              'major_small': ['4000005'],
-#              'interesting_job_large': ['5000004'], 
-#              'password1': ['tlslsh93'], 
-#              'password2': ['tlslsh93']}>)
 
-
-# (<QueryDict: {'csrfmiddlewaretoken': ['dooafov7ga1pkqApHuoNtZqwfzHqLLSijVcFOTmBeeEOSYEDhSW8s2ZAGro5QWNA'],
-#               'username': ['isdfijoefjoeiw'], 
-#               'password1': ['tlslsh93'], 
-#               'password2': ['tlslsh93'], 
-#               'major_small': ['인문계열(기타)'],
-#               'interesting_job_large': ['연구개발·설계'], 
-#               'career_type': ['2']}>
-              
-# (<QueryDict: {'csrfmiddlewaretoken': ['50Juti9duG8H58aKCTH9FpUoOgpK5LkabxxZ2N0HsKL6DGeYchfuEstsf86paWfs'], 
-#               'username': ['jsdfijisdf'],
-#               'password1': ['tlslsh93'], 
-#               'password2': ['tlslsh93'],
-#               'major_small': ['4000015'],
-#               'interesting_job_large': ['5000003'], 
-#               'career_type': ['0']}>
-# )
-# [19/Jan/2023 09:42:43] "POST /accounts/signup/ HTTP/1.1" 200 11

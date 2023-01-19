@@ -42,8 +42,11 @@
                                 <option value = {{ job.job_large }}></option>
                                 {% endfor %}
                             </datalist>
-                        <span>졸업 / 경력 여부</span>
-                        <input type="text" placeholder="영문 및 한글 조합으로 10자 이내" name="career_type">
+                        <span> 신입/경력 여부</span>
+                        <input type="radio" name="career_type" value="신입"> 신입<br>
+                        <input type="radio" name="career_type" value="경력"> 경력
+                        {% comment %} <input type="checkbox" placeholder="영문 및 한글 조합으로 10자 이내" name="career_type" required id="id_career_type" value="신입"> {% endcomment %}
+                        {% comment %} <input type="text" placeholder="영문 및 한글 조합으로 10자 이내" name="career_type" required id="id_career_type"> {% endcomment %}
                         <!--form 완성 안 됐을 때는 disabled. 완성 되면 disabled클래스 없애면 됨-->
                         <button type="submit" class="btn btn_join">회원가입</button>
                     </form>
