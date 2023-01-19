@@ -21,34 +21,11 @@
                         <div class="filter">
                             <div class="cbList">
                                 <h4 class="filter-category">기업별</h4>
-                                <div class="cb">
-                                    <input type="checkbox" id="option">
-                                    <label for="option">
-                                        <span class="cbText">공공기관 공사협회</span>
-                                    </label>
-                                </div>
-                                <div class="cb">
-                                    <input type="checkbox" id="option">
-                                    <label for="option">
-                                        <span class="cbText">가나다라</span>
-                                    </label>
-                                </div>
-                                <div class="cb">
-                                    <input type="checkbox" id="option">
-                                    <label for="option">
-                                        <span class="cbText">가나다라</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="cbList">
-                                <h4 class="filter-category">기업 상세</h4>
-                                <input type="checkbox" id="option">
-                                <label for="option">
-                                    <span class="cbText">가나다라</span>
-                                </label>
+                                
                             </div>
                             <div class="cbList">
                                 <h4 class="filter-category">직무별</h4>
+                                <br/>
                                 {% for job in job_list %}
                                     <div class="cb">
                                         <input type="checkbox" name="job_main" id={{ job.id }} value={{ job.job_small }} onClick="checkOnlyOne(this); job_check(this,{{ job.job_small }},{{ job.job_small_id }});">
@@ -60,6 +37,7 @@
                             </div>
                             <div class="cbList">
                                 <h4 class="filter-category">직무 상세</h4>
+                                <br/>
                                 <div id = 'job_result'></div>
                             </div>
                         </div>
@@ -76,7 +54,7 @@
                                 maxlength="30"></textarea> {% endcomment %}
                         </div>
                         <div class="question-contents">
-                            <textarea name="" id="" placeholder="자소서 내용을 입력하세요." rows="30" cols="30"
+                            <textarea name="" id="" placeholder="자소서 내용을 입력하세요." cols="30"
                                 class="contents"></textarea>
                         </div>
                         <button type="submit" class="btn">추천받기</button>

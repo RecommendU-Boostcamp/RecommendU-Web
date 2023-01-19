@@ -72,9 +72,9 @@ input:checked+label::after {
 
 input[type="checkbox"]+label .cbText {
     display: block;
-    min-width: 120px;
+    width: 150px;
     height: fit-content;
-    position: absolute;
+    position: relative;
     top: -5px;
     left: 16px;
     font-size: 1em;
@@ -237,21 +237,23 @@ button.btn.disabled {
 .mainWrap .submitWrap {
     width: 100%;
     height: 100%;
-    /* border-right: 1px solid #f0f0f0; */
+    max-height: 1070px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-start;
 }
 
 .mainWrap .submitWrap .filter {
     width: 100%;
     height: fit-content;
+    max-height: 130px;
     display: flex;
     width: 92%;
     padding: 20px;
     border: 1px solid #f0f0f0;
     border-radius: 5px;
     margin-bottom: 40px;
+    justify-content: space-between;
 }
 
 .mainWrap .submitWrap h3 {
@@ -268,14 +270,27 @@ button.btn.disabled {
 }
 
 .mainWrap .submitWrap .cbList {
-    width: 100%;
-    height: fit-content;
+    width: 161px;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: auto;
+    padding: 0px 10px 0px 10px;
+}
+
+.mainWrap .submitWrap .cbList .cb:nth-child(2){
+    margin-top: 30px;
 }
 
 .mainWrap .submitWrap .cbList h4.filter-category {
+    display: block;
+    width: 161px;
+    height: fit-content;
     font-weight: 500;
     font-size: 1em;
     margin-bottom: 10px;
+    position: fixed;
+    background-color: #fff;
+    z-index: 1;
 }
 
 .mainWrap .submitWrap .question {
@@ -285,7 +300,7 @@ button.btn.disabled {
 
 .mainWrap .submitWrap .question-contents {
     width: 100%;
-    height: fit-content;
+    height: 100%;
     margin-top: 5px;
 }
 
@@ -301,16 +316,8 @@ button.btn.disabled {
     font-weight: 400;
 }
 
-.mainWrap .submitWrap select {
-    display: block;
-    width: 98%;
-    padding: 1em 1.2em;
-    height: auto;
-    border-radius: 5px;
-    border: 1px solid #f0f0f0;
-    font-size: 15px;
-    color: #2f2f2f;
-    font-weight: 400;
+.mainWrap .submitWrap textarea.contents{
+    height: 100%;
 }
 
 .mainWrap .submitWrap button {
@@ -318,7 +325,7 @@ button.btn.disabled {
     width: 100px;
     font-size: 1em;
     border-radius: 30px;
-    margin-top: 20px;
+    margin-top: 70px;
 }
 
 .mainWrap .list-column {
@@ -369,6 +376,18 @@ button.btn.disabled {
     margin-bottom: 0;
 }
 
+.mainWrap .submitWrap select {
+    display: block;
+    width: 98%;
+    padding: 1em 1.2em;
+    height: auto;
+    border-radius: 5px;
+    border: 1px solid #f0f0f0;
+    font-size: 15px;
+    color: #2f2f2f;
+    font-weight: 400;
+}
+
 .mainWrap .listWrap .list-column .list .item .contents {
     display: block;
     white-space: nowrap;
@@ -379,23 +398,23 @@ button.btn.disabled {
 
 .mainWrap .listWrap::-webkit-scrollbar,
 .mainWrap .submitWrap textarea::-webkit-scrollbar,
-.popup .letter::-webkit-scrollbar {
+.popup .letter::-webkit-scrollbar,
+.filter .cbList::-webkit-scrollbar {
     width: 5px;
+    height: 5px;
 }
 
 .mainWrap .listWrap::-webkit-scrollbar-thumb,
 .mainWrap .submitWrap textarea::-webkit-scrollbar-thumb,
-.popup .letter::-webkit-scrollbar-thumb {
+.popup .letter::-webkit-scrollbar-thumb,
+.filter .cbList::-webkit-scrollbar-thumb {
+    width :5px;
     background-color: #d2d2d2;
     border-radius: 10px;
     background-clip: padding-box;
     border: 1px solid transparent;
 }
 
-/* .mainWrap .listWrap::-webkit-scrollbar-track {
-    background-color: #f0f0f0;
-    border-radius: 10px;
-} */
 
 
 /*popup*/
@@ -552,8 +571,8 @@ button.btn.disabled {
     top: 25px;
     right: 20px;
 }
-/* 
-#main {
+
+/* #main {
     display: none;
 }
 
