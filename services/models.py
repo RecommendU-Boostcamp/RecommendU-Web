@@ -22,6 +22,9 @@ class JobLarge(models.Model):
     job_large_id = models.IntegerField(primary_key=True,null=False,unique=True)
     job_large = models.CharField(max_length=100,null=False)
     
+    def __repr__(self):
+        return f'domain name: {self.job_large}, domain id: {self.job_arge_id}'
+    
 class JobSmall(models.Model):
     job_small_id = models.IntegerField(primary_key=True,null=False,unique=True)
     job_large = models.ForeignKey(JobLarge,related_name="job_smalls",on_delete=models.SET_NULL,null=True)
@@ -85,6 +88,7 @@ class ContentList(models.Model):
     class Meta:
         managed = False               
         db_table = 'content_view'
+
 
 class MajorList(models.Model):
     major_large = models.CharField(primary_key=True,max_length=100,null=False)

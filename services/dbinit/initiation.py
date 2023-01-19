@@ -7,7 +7,6 @@ import json
 
 
 def dbinit(data_path):
-    answer_data = pd.read_csv(data_path+'jk_answers_without_samples_3_2.csv')
     doc_data = pd.read_csv(data_path+'jk_documents_3_2.csv')
 
     # question_types
@@ -127,7 +126,6 @@ def doc_init(doc_data):
     n_doc = len(doc_data)
     for i in range(n_doc):
         doc = doc_data.iloc[i]
-        instance = get_object_or_404(Document, document_id='d'+str(doc.doc_id).zfill(6))
         instance = Document()
         instance.document_id ='d'+str(doc.doc_id).zfill(6)
         instance.company = get_object_or_404(Company, company=doc.company)

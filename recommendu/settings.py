@@ -39,6 +39,17 @@ INSTALLED_APPS = [
     # Rest Framework
     'rest_framework',
     
+    # Rest Auth를 위해 필요
+    # 'rest_framework.authtoken',
+    # 'dj_rest_auth',
+    
+    # Rest auth registration을 위해 필요
+    # 'django.contrib.sites',
+    # 'allauth',
+    # 'allauth.account',
+    # 'dj_rest_auth.registration',
+    
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -142,3 +153,9 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL="accounts.User"
+
+SITE_ID = 1
+
+# REST_AUTH_REGISTER_SERIALIZERS = {
+#     'REGISTER_SERIALIZER': 'accounts.serializers.MyRegisterSerializer'
+# }

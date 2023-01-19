@@ -1,0 +1,9 @@
+
+<h1>회원가입</h1>
+<hr>
+<form action="{% url 'accounts:signup' %}" method="POST">  <!--action을 왜 비워주는가? 로그인 이후에 무조건 인덱스가 아닌 직전 요청으로 보낼 수 있게 하기 위해-->
+  {% csrf_token %}
+  {{ form }}
+  <input type="submit">
+</form>
+<a href="{% url 'services:render' %}">back</a>
