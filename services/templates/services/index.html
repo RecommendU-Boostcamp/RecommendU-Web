@@ -17,7 +17,7 @@
             <section id="main">
                 <div class="mainWrap">
                     <div class="submitWrap part">
-                        {% comment %} <form class="userlog" action=" % url 'logs:user_log' %" method="POST" {% endcomment %}
+                        {% csrf_token %}
                         <h3>기업 및 직무 분류 선택</h3>
                         <div class="filter">
                             <div class="cbList">
@@ -63,8 +63,8 @@
                             <textarea name="" id="answers" placeholder="자소서 내용을 입력하세요." cols="30"
                                 class="contents"></textarea>
                         </div>
-                        <button type="submit" id="sample-button" onClick="questionTypeCheck()">샘플 받기</button>
-                        <button type="submit" id="recommend-button" class="btn" onClick="listShow()">추천받기</button>  
+                        <button type="submit" id="sample-button" onClick="questionTypeCheck()">샘플받기</button>
+                        <button type="submit" id="recommend-button" class="btn" onClick="listShow(); getUserLogging(); getRecommentData();">추천받기</button>  
                     </div>
                     <div class="listWrap part" id="no-data">
                         <div class="listWrap part no-data">
@@ -196,5 +196,59 @@
         count = count+1
         document.getElementById("answers").value = ""
         document.getElementById("answers").value = samples[question_type][count % 10]['content']
-    }    
-</script>
+    }
+    
+    function getUserLogging(){
+        const company = document.getElementById('company_input').value;
+        //const question_type = document.getElementById('question_list').value;
+        const query = 'input[name="job_detail"]:checked';
+        const job_type =document.querySelectorAll(query)[0].id;
+        const log_data = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({
+                userId: "dbstjd0924",  
+                company: company,
+                job_type: job_type,
+            }),
+        }
+        fetch("../../logs/answerlog/", log_data)
+        .then((res) => res.json())
+        .catch((res)=> console.log(error));
+    }
+
+    function getRecommentData(){
+        const company = document.getElementById('company_input').value;
+        var question_type = 0;
+        var question_text = "";
+        if(document.getElementById("question_list")){
+            question_text = document.getElementById('question_list').value;
+        }else{
+            question_text = document.getElementById('question-text').value;
+            question_type = 1;
+        }
+        const query = 'input[name="job_detail"]:checked';
+        const job_type =document.querySelectorAll(query)[0].id;
+        const answer_text = document.getElementById("answers").value;
+        const recommend_data = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({  
+                company: company,
+                job_type: job_type,
+                question_type: question_type,
+                question_text:question_text,
+                answer:answer_text,
+            }),
+        }
+        fetch("../../logs/recbuttonlog/", recommend_data)
+        .then((res) => res.json())
+        .catch((res)=> console.log(error));
+    }
+</script> 
