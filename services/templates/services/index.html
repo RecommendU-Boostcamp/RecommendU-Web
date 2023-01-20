@@ -66,13 +66,15 @@
                         <button type="submit" id="sample-button" onClick="questionTypeCheck()">추천 받기</button>
                         <button type="submit" id="recommend-button" class="btn" onClick="listShow()">추천받기</button>
                     </div>
-                    <div class="listWrap part"  id ="intro-list">
-                        {% comment %} <div class="listWrap part no-data" id="no-list">
+                    <div class="listWrap part" id="no-data">
+                        <div class="listWrap part no-data">
                             <p>
                                 <b>추천 결과가 없습니다. 🥺</b><br>
                                 다른 조건으로 입력하시거나, 추천받기 버튼을 눌러주세요.
                             </p>
-                        </div> {% endcomment %}
+                        </div>
+                    </div>
+                    <div class="listWrap part" id="exist-data">
                         <div class="list-column">
                             <h3 class="category">#직무는 다르지만 내용이 비슷한</h3>
                             <div class="list">

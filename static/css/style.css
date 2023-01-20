@@ -225,10 +225,6 @@ button.btn.disabled {
     align-items: center;
 }
 
-.mainWrap .listWrap.no-data .hide {
-    display: none;
-}
-
 .mainWrap .listWrap.no-data p {
     text-align: center;
     color: #646464;
@@ -337,12 +333,11 @@ button.btn.disabled {
 }
 
 .mainWrap .submitWrap #sample-button {
-    position: relative;
-    top: 0px;
-    right: 0px;
+    margin-top: 7%;
+    margin-left: 82%;
     border-radius: 30px;
     width: 100px;
-    height:30px;
+    height:50px;
     background-color: #908aff;
     font-size: 15px;
     border: none;
@@ -358,15 +353,23 @@ button.btn.disabled {
     margin-top: 35px;
 }
 
-.mainWrap #intro-list{
-    display: None;
-}
-
-.mainWrap #intro-list.show{
+.mainWrap #no-data {
     display: block;
 }
 
-.mainWrap .list-column {
+.mainWrap #no-data.hide {
+    display: none;
+}
+
+.mainWrap #exist-data {
+    display: none;
+}
+
+.mainWrap #exist-data.show {
+    display: block;
+}
+
+.mainWrap .data-list .list-column {
     width: 100%;
     height: fit-content;
     margin-bottom: 30px;

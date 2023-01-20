@@ -47,10 +47,10 @@ function questionDefaultCheck(value) {
 	}
 }
 function listShow(){
-	const origin = document.querySelector("listWrap part no-data");
-	list.classList.add("hide");
-	const list = document.getElementById("intro-list");
-	list.classList.add("show");
+	const no_data = document.getElementById("no-data");
+	no_data.classList.add("hide");
+	const exist_data = document.getElementById("exist-data");
+	exist_data.classList.add("show");
 }
 
 
