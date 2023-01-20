@@ -46,3 +46,11 @@ function questionDefaultCheck(value) {
 		document.querySelector(".question").innerHTML = '<textarea list="question_list" name="" id="" placeholder="자소서 문항을 입력하세요.(지원동기, 포부 등)" rows="1" cols="30" maxlength="30"></textarea>'
 	}
 }
+function listShow(){
+	const origin = document.querySelector("listWrap part no-data");
+	list.classList.add("hide");
+	const list = document.getElementById("intro-list");
+	list.classList.add("show");
+}
+
+

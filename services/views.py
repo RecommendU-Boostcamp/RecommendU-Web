@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_list_or_404, get_object_or_404
 from .dbinit.initiation import dbinit, jobkoreainit, question_type_init, company_init, major_large_init, major_small_init, job_large_init, job_small_init, recommend_type_init, school_init, doc_init, answer_init, sample_init
-from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType, JobList
+from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType, JobList,Sample
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -14,6 +14,11 @@ from django.db.models.functions import Length
 def render_test(request):
     job_query = JobList.objects.all().order_by(Length('job_large').desc())
     question_query = QuestionType.objects.all()[0:21]
+    sample_query = {}
+    for i in range(1,22):
+        question_type = str(1000000+i)
+        samples = Sample.objects.filter(question_type_id = question_type)[3:13]
+        sample_query[question_type] = [sample.make_sample() for sample in samples] 
     for i in range(0,len(job_query)):
         job_query[i].id = "job_"+str(i)
         job_query[i].job_small = job_query[i].job_small.split(',')
@@ -27,6 +32,7 @@ def render_test(request):
         "answer_list2":queryset2,
         "answer_list3":queryset3,
         "question_type" : question_query,
+        "sample_list" : sample_query,
     }
     return render(request, 'index.html', context)
 

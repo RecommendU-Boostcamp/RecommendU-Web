@@ -66,6 +66,9 @@ class Sample(models.Model):
     question_type = models.ForeignKey(QuestionType, related_name='samples', on_delete=models.SET_NULL, null=True)
     qeustion = models.CharField(max_length=1000, null=False)
     summary = models.CharField(max_length=1000, null=False)
+    
+    def make_sample(self):
+        return {'sample_id' : self.sample_id,'content':self.content.replace("\'",'')}
 
 
 class ContentList(models.Model):
