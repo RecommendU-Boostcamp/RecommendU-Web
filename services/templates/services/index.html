@@ -23,10 +23,10 @@
                         <h3>기업 및 직무 분류 선택</h3>
                         <div class="filter">
                             <div class="cbList">
-                                <h4 class="filter-category">기업별</h4>
+                                <h4 class="filter-category">기업검색</h4>
                                 <div class="cb">
-                                    <input list="company_list" name="company_input" id="company_input">
-                                    <datalist id="company_list">
+                                    <input list="company-list" name="company-input" id="company-input">
+                                    <datalist id="company-list">
                                     {% for company in companies %}
                                         <option value={{ company.company }} label={{ company.company }}>
                                     {% endfor %}
@@ -34,7 +34,7 @@
                                 </div>
                             </div>
                             <div class="cbList">
-                                <h4 class="filter-category">직무별</h4>
+                                <h4 class="filter-category">직무검색</h4>
                                 <br/>
                                 {% for job in job_list %}
                                     <div class="cb">
@@ -46,7 +46,7 @@
                                 {% endfor %}
                             </div>
                             <div class="cbList">
-                                <h4 class="filter-category">직무 상세</h4>
+                                <h4 class="filter-category">직무 상세검색</h4>
                                 <br/>
                                 <div id = 'job_result'></div>
                             </div>
@@ -81,7 +81,7 @@
                             <h3 class="category">#직무는 다르지만 내용이 비슷한</h3>
                             <div class="list">
                                 {% for answer in answer_list %}
-                                    <div class="item" onClick="getAnswerLog({{ answer.answer_id }}); popup_open({{ answer.answer_id }});">
+                                    <div class="item" onClick="popup_open({{ answer.answer_id }}); getAnswerLog({{ answer.answer_id }});">
                                         <h4 class="title">{{ answer.question }}</h4>
                                         <p class="contents">{{ answer.summary }}</p>
                                     </div>
@@ -267,7 +267,7 @@
             body: JSON.stringify({  
                 userId: user_id,  
                 contentId: content_id,
-                recType: rectype,
+                recType: rec_type,
             }),
         }
         fetch("../../logs/answerlog/", answer_data)
