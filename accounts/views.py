@@ -40,7 +40,7 @@ def login(request):  # GET요청에 대해서는 로그인 페이지를, POST요
     context = {
         'form': form,
     }
-    return render(request, 'login.html', context)
+    return render(request, 'accounts/login.html', context)
 
 # def logout(request):
 #     if request.user.is_authenticated:
@@ -81,7 +81,7 @@ def signup(request):
         "joblist":jobquery,
         "majorlist" : majorquery,
     }
-    return render(request,'signup.html', context)
+    return render(request,'accounts/signup.html', context)
 
 # def delete(request):
 #     if request.user.is_authenticated:

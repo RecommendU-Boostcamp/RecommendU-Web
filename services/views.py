@@ -39,7 +39,7 @@ def render_test(request):
 
         "sample_list" : sample_query,
     }
-    return render(request, 'index.html', context)
+    return render(request, 'services/index.html', context)
 
 
 
