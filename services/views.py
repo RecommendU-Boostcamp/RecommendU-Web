@@ -42,6 +42,9 @@ def render_test(request):
     return render(request, 'services/index.html', context)
 
 
+def answer_recommend(request):
+    pass
+
 
 @api_view(['GET', ])
 def search_company(request):

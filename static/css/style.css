@@ -288,7 +288,7 @@ button.btn.disabled {
     font-weight: 500;
     font-size: 1em;
     margin-bottom: 10px;
-    position: fixed;
+    position: relative;
     background-color: #fff;
     z-index: 1;
 }

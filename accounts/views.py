@@ -25,7 +25,6 @@ def login(request):  # GET요청에 대해서는 로그인 페이지를, POST요
         return redirect('services:render')
     if request.method == 'POST':
         form = AuthenticationForm(request, request.POST)
-        # form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             auth_login(request, form.get_user())  # user를 로그인함수의 인자로 넣기 위해 불러오는 메소드를 사용해줘야 함
             next_url = request.GET.get('next')
