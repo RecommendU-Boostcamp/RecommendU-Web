@@ -59,7 +59,7 @@ input[type="checkbox"]+label {
     cursor: pointer;
 }
 
-input:checked+label::after{
+input:checked+label::after {
     content: "";
     width: 10px;
     height: 10px;
@@ -70,19 +70,7 @@ input:checked+label::after{
     top: 0.8px;
 }
 
-radio:checked+label::after{
-    content: "";
-    width: 10px;
-    height: 10px;
-    text-align: center;
-    position: absolute;
-    background-color: #8780ff;
-    left: 0.8px;
-    top: 0.8px;
-}
-
-
-input[type="checkbox"]+label.cbText {
+input[type="checkbox"]+label .cbText {
     display: block;
     width: 150px;
     height: fit-content;
@@ -608,3 +596,13 @@ button.btn.disabled {
     top: 25px;
     right: 20px;
 }
+
+/* #main {
+    display: none;
+}
+#signUp {
+    display: none;
+}
+#signIn {
+    display: none;
+} */
