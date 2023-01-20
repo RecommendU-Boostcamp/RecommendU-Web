@@ -26,12 +26,17 @@ def render_test(request):
     queryset = ContentList.objects.all()[103:107]
     queryset2 = ContentList.objects.all()[1000:1005]
     queryset3 = ContentList.objects.all()[4000:4003]
+    
+    companies = Company.objects.all()
+
     context = {
         "job_list":job_query,
         "answer_list": queryset,
         "answer_list2":queryset2,
         "answer_list3":queryset3,
         "question_type" : question_query,
+        'companies' : companies,
+
         "sample_list" : sample_query,
     }
     return render(request, 'index.html', context)
@@ -69,7 +74,7 @@ def db_first(request):
 def docu_answer_init(request):
     data_path = '/opt/ml/RecommendU/RecommendU-back/services/dbinit/'
     answer_data, doc_data, sample_data = jobkoreainit(data_path)
-    
+
     doc_init(doc_data)
     answer_init(answer_data)
     sample_init(sample_data)

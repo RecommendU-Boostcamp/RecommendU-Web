@@ -6,6 +6,6 @@ app_name = 'services'
 urlpatterns = [
     path('init/', views.db_first),
     path('init2/', views.docu_answer_init),
-    path('render/', views.render_test),
+    path('render/', views.render_test, name='render'),
     path('search/', views.search_company),
 ]
