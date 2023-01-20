@@ -81,7 +81,7 @@
                             <h3 class="category">#직무는 다르지만 내용이 비슷한</h3>
                             <div class="list">
                                 {% for answer in answer_list %}
-                                    <div class="item" onClick="popup_open({{ answer.answer_id }})">
+                                    <div class="item" onClick="getAnswerLog({{ answer.answer_id }}); popup_open({{ answer.answer_id }});">
                                         <h4 class="title">{{ answer.question }}</h4>
                                         <p class="contents">{{ answer.summary }}</p>
                                     </div>
@@ -216,8 +216,9 @@
                 job_type: job_type,
             }),
         }
-        fetch("../../logs/answerlog/", log_data)
+        fetch("../../logs/recbuttonlog/", log_data)
         .then((res) => res.json())
+        .then((data) => console.log(data))
         .catch((res)=> console.log(error));
     }
 
@@ -248,8 +249,30 @@
                 answer:answer_text,
             }),
         }
-        fetch("../../logs/recbuttonlog/", recommend_data)
+        fetch("../?", recommend_data)
         .then((res) => res.json())
+        .then((data) => console.log(data))
+        .catch((res)=> console.log(error));
+    }
+    function getAnswerLog(answer_id){
+        const user_id = "dbstjd0924";
+        const content_id = answer_id.id;
+        const rec_type =document.querySelector('#'+content_id+' .category').innerHTML;
+        const answer_data = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({  
+                userId: user_id,  
+                contentId: content_id,
+                recType: rectype,
+            }),
+        }
+        fetch("../../logs/answerlog/", answer_data)
+        .then((res) => res.json())
+        .then((data) => console.log(data))
         .catch((res)=> console.log(error));
     }
 </script> 
