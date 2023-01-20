@@ -21,8 +21,9 @@ from services.models import MajorSmall, JobLarge
 # Create your views here.
 
 def login(request):  # GET요청에 대해서는 로그인 페이지를, POST요청에 대해서는 로그인처리를 해주는 함수  
-    if request.user.is_authenticated:
+    if request.user.is_authenticated:  # is_authenticated는 식별된 유저라는 뜻
         return redirect('services:render')
+    
     if request.method == 'POST':
         form = AuthenticationForm(request, request.POST)
         if form.is_valid():
@@ -31,10 +32,9 @@ def login(request):  # GET요청에 대해서는 로그인 페이지를, POST요
             print("success")
             return redirect(next_url or 'services:render')
         else:
-            print("fail form")
+            print("validation fail")  # 에러 처리를 어떻게 할 수 있는가?
     
-    else:
-        print("fail")
+    else:  # 만약 GET이면
         form = AuthenticationForm()
     context = {
         'form': form,
@@ -58,12 +58,12 @@ def signup(request):
         request.POST['interesting_job_large'] = str(job_large_instance.job_large_id)
         form = CustomUserCreationForm(request.POST)
 
-        
+
         if form.is_valid():
             form.save()
             return redirect('services:render')
         
-        else:
+        else:  
             return HttpResponse(f'error occur')
         
     else:
@@ -82,11 +82,13 @@ def signup(request):
     }
     return render(request,'accounts/signup.html', context)
 
+
 # def delete(request):
 #     if request.user.is_authenticated:
 #         request.user.delete()
 #         auth_logout(request)
 #     return redirect('articles:index')
+
 
 # def update(request):
 #     if request.method == "POST":
