@@ -11,11 +11,7 @@ def answerlog(request):
     # request에 어떻게 보낼지에 따라서 달라짐
     pass
 
-@api_view(['POST'])
+
 def recbuttonlog(request):
-    user_id = request.POST.get('userid')
-    company = request.POST.get('company')
-    job_type =request.POST.get('job_type')
-    question_type = request.POST.get('question_type')
-    print(user_id,company,job_type,question_type)
-    return 0
+    # request에 어떻게 보낼지에 따라서 달라짐    
+    pass

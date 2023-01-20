@@ -204,12 +204,6 @@
         //const question_type = document.getElementById('question_list').value;
         const query = 'input[name="job_detail"]:checked';
         const job_type =document.querySelectorAll(query)[0].id;
-        var question_type = ""
-        if(document.getElementById("question_list")){
-            question_type = document.getElementById('question_list').value;
-        }else{
-            question_type = -1
-        }
         const log_data = {
             method: "POST",
             headers: {
@@ -220,10 +214,9 @@
                 userId: "dbstjd0924",  
                 company: company,
                 job_type: job_type,
-                question_type:question_type,
             }),
         }
-        fetch("../../logs/recbuttonlog/", log_data)
+        fetch("../../logs/answerlog/", log_data)
         .then((res) => res.json())
         .catch((res)=> console.log(error));
     }
@@ -255,7 +248,7 @@
                 answer:answer_text,
             }),
         }
-        fetch("../../logs/answerlog/", recommend_data)
+        fetch("../../logs/recbuttonlog/", recommend_data)
         .then((res) => res.json())
         .catch((res)=> console.log(error));
     }
