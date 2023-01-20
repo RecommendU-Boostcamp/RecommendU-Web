@@ -84,9 +84,9 @@ radio:checked+label::after{
 
 input[type="checkbox"]+label.cbText {
     display: block;
-    min-width: 120px;
+    width: 150px;
     height: fit-content;
-    position: absolute;
+    position: relative;
     top: -5px;
     left: 16px;
     font-size: 1em;
@@ -237,6 +237,10 @@ button.btn.disabled {
     align-items: center;
 }
 
+.mainWrap .listWrap.no-data .hide {
+    display: none;
+}
+
 .mainWrap .listWrap.no-data p {
     text-align: center;
     color: #646464;
@@ -249,21 +253,23 @@ button.btn.disabled {
 .mainWrap .submitWrap {
     width: 100%;
     height: 100%;
-    /* border-right: 1px solid #f0f0f0; */
+    max-height: 1070px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-start;
 }
 
 .mainWrap .submitWrap .filter {
     width: 100%;
     height: fit-content;
+    max-height: 130px;
     display: flex;
     width: 92%;
     padding: 20px;
     border: 1px solid #f0f0f0;
     border-radius: 5px;
     margin-bottom: 40px;
+    justify-content: space-between;
 }
 
 .mainWrap .submitWrap h3 {
@@ -280,14 +286,39 @@ button.btn.disabled {
 }
 
 .mainWrap .submitWrap .cbList {
-    width: 100%;
-    height: fit-content;
+    width: 161px;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: auto;
+    padding: 0px 10px 0px 10px;
+}
+
+.mainWrap .submitWrap .cbList .cb:nth-child(2){
+    margin-top: 30px;
 }
 
 .mainWrap .submitWrap .cbList h4.filter-category {
+    display: block;
+    width: 161px;
+    height: fit-content;
     font-weight: 500;
     font-size: 1em;
     margin-bottom: 10px;
+    position: fixed;
+    background-color: #fff;
+    z-index: 1;
+}
+
+.mainWrap .submitWrap select {
+    display: block;
+    width: 96%;
+    padding: 1em 1.2em;
+    height: auto;
+    border-radius: 5px;
+    border: 1px solid #f0f0f0;
+    font-size: 15px;
+    color: #2f2f2f;
+    font-weight: 400;
 }
 
 .mainWrap .submitWrap .question {
@@ -297,7 +328,7 @@ button.btn.disabled {
 
 .mainWrap .submitWrap .question-contents {
     width: 100%;
-    height: fit-content;
+    height: 100%;
     margin-top: 5px;
 }
 
@@ -313,24 +344,38 @@ button.btn.disabled {
     font-weight: 400;
 }
 
-.mainWrap .submitWrap select {
-    display: block;
-    width: 98%;
-    padding: 1em 1.2em;
-    height: auto;
-    border-radius: 5px;
-    border: 1px solid #f0f0f0;
-    font-size: 15px;
-    color: #2f2f2f;
-    font-weight: 400;
+.mainWrap .submitWrap textarea.contents{
+    height: 100%;
 }
 
-.mainWrap .submitWrap button {
+.mainWrap .submitWrap #sample-button {
+    position: relative;
+    top: 0px;
+    right: 0px;
+    border-radius: 30px;
+    width: 100px;
+    height:30px;
+    background-color: #908aff;
+    font-size: 15px;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+}
+
+.mainWrap .submitWrap #recommend-button {
     margin: 0 auto;
     width: 100px;
     font-size: 1em;
     border-radius: 30px;
-    margin-top: 20px;
+    margin-top: 35px;
+}
+
+.mainWrap #intro-list{
+    display: None;
+}
+
+.mainWrap #intro-list.show{
+    display: block;
 }
 
 .mainWrap .list-column {
@@ -338,7 +383,6 @@ button.btn.disabled {
     height: fit-content;
     margin-bottom: 30px;
 }
-
 .mainWrap .listWrap .list-column .category,
 .popup .category {
     width: fit-content;
@@ -391,23 +435,23 @@ button.btn.disabled {
 
 .mainWrap .listWrap::-webkit-scrollbar,
 .mainWrap .submitWrap textarea::-webkit-scrollbar,
-.popup .letter::-webkit-scrollbar {
+.popup .letter::-webkit-scrollbar,
+.filter .cbList::-webkit-scrollbar {
     width: 5px;
+    height: 5px;
 }
 
 .mainWrap .listWrap::-webkit-scrollbar-thumb,
 .mainWrap .submitWrap textarea::-webkit-scrollbar-thumb,
-.popup .letter::-webkit-scrollbar-thumb {
+.popup .letter::-webkit-scrollbar-thumb,
+.filter .cbList::-webkit-scrollbar-thumb {
+    width :5px;
     background-color: #d2d2d2;
     border-radius: 10px;
     background-clip: padding-box;
     border: 1px solid transparent;
 }
 
-/* .mainWrap .listWrap::-webkit-scrollbar-track {
-    background-color: #f0f0f0;
-    border-radius: 10px;
-} */
 
 
 /*popup*/
@@ -564,24 +608,3 @@ button.btn.disabled {
     top: 25px;
     right: 20px;
 }
-
-.custom-select {
-    background-color: #f5f5f5;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    padding: 0.5rem;
-    width: 100%;
-    appearance: none;
-}
-/* 
-#main {
-    display: none;
-}
-
-#signUp {
-    display: none;
-}
-
-#signIn {
-    display: none;
-} */
