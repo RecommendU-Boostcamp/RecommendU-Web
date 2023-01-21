@@ -11,9 +11,11 @@
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   <title>RecommendU</title>
 </head>
-<body>
+<header>
   {% include '_nav.html' %}
-  <div class="container">
+</header>
+<body>
+  <div class="wrapper">
     {% block content %}
     
     {% endblock %}

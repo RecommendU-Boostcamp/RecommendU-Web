@@ -12,31 +12,31 @@
                     <form action="{% url 'accounts:signup' %}" method="POST">
                         {% csrf_token %}
                         <span>아이디</span>
-                        <input type="text" placeholder="영문, 숫자 포함하여 10자 이내", maxlength="15" name="username" required id="id_username">
+                        <input type="text" placeholder="영문, 숫자 포함하여 10자 이내", maxlength="15" name="username">
                         <span>비밀번호</span>
-                        <input type="password" placeholder="영문, 숫자, 특수문자 포함하여 15자 이내", name="password1" required id="id_password1">
+                        <input type="password" placeholder="영문, 숫자, 특수문자 포함하여 15자 이내", name="password1" autocomplete="new_password">
                         <span>비밀번호 확인</span>
-                        <input type="password" placeholder="비밀번호를 한번 더 입력해주세요", name="password2" required id="id_password2">
+                        <input type="password" placeholder="비밀번호를 한번 더 입력해주세요", name="password2" autocomplete="new_password">
                         <span>전공</span>
-                        <input type="text" list="majors" placeholder="전공을 선택해주세요" name="major_small" required id="id_major_small">
-                            <datalist id="majors">
-                                {% for major in majorlist %}
-                                    {% for contents in major.major_small %}
-                                        <option value = {{ contents }}></option>
-                                    {% endfor %}
-                                {% endfor %}
-                            </datalist>
+                        <select id="major-large" name="major_large" required onChange="callSmall(this.value, {{ majorlist_json }})">
+                            <option value='' selected disabled hidden>대분류 선택</option>
+                            {% for large in majorlist %}
+                                <option value={{ large.major_large }}>{{ large.major_large }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="major-small" name="major_small" required>
+                            <option id='small_init' value=''>대분류를 먼저 선택하세요</option>
+                        </select>
                         <span>관심 분야</span>
-                        <input type="text" list="jobs" placeholder="관심 분야를 선택해주세요." name="interesting_job_large" required id="id_interesting_job_large">
+                        <input type="text" list="jobs" placeholder="관심 분야를 선택해주세요." name="interesting_job_large" required>
                             <datalist id="jobs">
                                 {% for job in joblist %}
                                 <option value = {{ job.job_large }}></option>
                                 {% endfor %}
                             </datalist>
                         <span> 신입/경력 여부</span>
-                        <select id="career-type">
+                        <select id="career-type" name="career_type" required>
                             <option value='신입'>신입</option>
-                            <option value='경력'>경력</option>
                         </select>
                         <!--form 완성 안 됐을 때는 disabled. 완성 되면 disabled클래스 없애면 됨-->
                         <button type="submit" class="btn btn_join">회원가입</button>
@@ -50,6 +50,9 @@
         </div>
     </div>
 </body>
+
+<script>
+    
+</script>
 {% endblock %}
 
-</html>

@@ -16,13 +16,14 @@ from django.contrib.auth.models import User
 from .forms import CustomUserChangeForm, CustomUserCreationForm
 from django.http import HttpResponse
 from services.models import MajorSmall, JobLarge
+import json
 
 
 # Create your views here.
 
 def login(request):  # GET요청에 대해서는 로그인 페이지를, POST요청에 대해서는 로그인처리를 해주는 함수  
     if request.user.is_authenticated:  # is_authenticated는 식별된 유저라는 뜻
-        return redirect('services:render')
+        return redirect('services:main')
     
     if request.method == 'POST':
         form = AuthenticationForm(request, request.POST)
@@ -30,25 +31,30 @@ def login(request):  # GET요청에 대해서는 로그인 페이지를, POST요
             auth_login(request, form.get_user())  # user를 로그인함수의 인자로 넣기 위해 불러오는 메소드를 사용해줘야 함
             next_url = request.GET.get('next')
             print("success")
-            return redirect(next_url or 'services:render')
+            return redirect(next_url or 'services:main')
         else:
-            print("validation fail")  # 에러 처리를 어떻게 할 수 있는가?
+            print(form.error_messages)
+            return HttpResponse(form.error_messages)
+              # 에러 처리를 어떻게 할 수 있는가?
     
-    else:  # 만약 GET이면
-        form = AuthenticationForm()
+    context = {
+    }
+    return render(request, 'accounts/login.html', context)
+
+
+def logout(request):
+    if request.user.is_authenticated:
+        auth_logout(request)
+    form = AuthenticationForm()
     context = {
         'form': form,
     }
     return render(request, 'accounts/login.html', context)
 
-# def logout(request):
-#     if request.user.is_authenticated:
-#         auth_logout(request)
-#     return redirect('articles:index')
-
 
 def signup(request):
     if request.method == "POST":
+        print(request.POST)
         major_name = request.POST.get("major_small")
         major_instance = MajorSmall.objects.get(major_small=major_name)
         job_large_name = request.POST.get("interesting_job_large")
@@ -61,10 +67,11 @@ def signup(request):
 
         if form.is_valid():
             form.save()
-            return redirect('services:render')
+            return redirect('services:main')
         
         else:  
-            return HttpResponse(f'error occur')
+            print(form.error_messages)
+            return HttpResponse(form.error_messages)
         
     else:
         form = CustomUserCreationForm()  # ModelForm 
@@ -73,12 +80,14 @@ def signup(request):
     majorquery = MajorList.objects.all()
     for i in range(0,len(majorquery)):
         majorquery[i].id = "job_"+str(i)
-        majorquery[i].major_small = majorquery[i].major_small.split(',')        
-
+        majorquery[i].major_small = majorquery[i].major_small.split(',')       
+         
+    print(majorquery[0])
     context = {
         'form': form,
         "joblist":jobquery,
         "majorlist" : majorquery,
+        "majorlist_json" : json.dumps([majors.json() for majors in majorquery])
     }
     return render(request,'accounts/signup.html', context)
 

@@ -82,6 +82,9 @@ input[type="checkbox"]+label .cbText {
     padding: 0px;
 }
 
+
+
+
 #wrapper {
     width: 100%;
     max-width: 2560px;
@@ -121,6 +124,33 @@ form,
     background-color: #fff;
 }
 
+
+.formBox #major-large{
+    width: 445px;
+    height: auto;
+    line-height: normal;
+    padding: 1em 1.2em;
+    border: 2.5px solid #f0f0f0;
+    border-radius: 15px;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: #2f2f2f;
+}
+
+.formBox #major-small{
+    width: 445px;
+    height: auto;
+    line-height: normal;
+    padding: 1em 1.2em;
+    border: 2.5px solid #f0f0f0;
+    border-radius: 15px;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: #2f2f2f;
+}
+
 .formBox #career-type{
     width: 445px;
     height: auto;
@@ -133,6 +163,8 @@ form,
     font-weight: 500;
     color: #2f2f2f;
 }
+
+
 
 h1.title {
     font-size: 2.5em;
@@ -622,6 +654,15 @@ button.btn.disabled {
     top: 25px;
     right: 20px;
 }
+
+.nav_button {
+    background-color: #ecd1fb; /* This is a light purple color */
+    color: white; /* This sets the text color to white */
+    padding: 3px 6px; /* This sets the padding for the button */
+    /* border: none; This removes the border */
+    /* cursor: pointer; This changes the cursor to a pointer when hovering over the button */
+  }
+
 
 /* #main {
     display: none;

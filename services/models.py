@@ -100,6 +100,13 @@ class MajorList(models.Model):
         managed = False               
         db_table = 'major_view'
         
+    def json(self):
+        return {
+            "major_large": self.major_large,
+            "major_small": self.major_small
+        }
+        
+        
 class JobList(models.Model):
     job_large = models.CharField(primary_key=True,max_length=100,null=False)
     job_small = models.CharField(max_length=600,null=False)

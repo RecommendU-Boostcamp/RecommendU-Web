@@ -66,7 +66,7 @@
                                 class="contents"></textarea>
                         </div>
                         <button type="submit" id="sample-button" onClick="questionTypeCheck()">샘플받기</button>
-                        <button type="submit" id="recommend-button" class="btn" onClick="listShow(); getUserLogging(); getRecommentData();">추천받기</button>  
+                        <button type="submit" id="recommend-button" class="btn" onClick="listShow(); getUserLogging('{% url 'logs:recbuttonlog' %}'); getRecommentData();">추천받기</button>  
                     </div>
                     <div class="listWrap part" id="no-data">
                         <div class="listWrap part no-data">
@@ -199,31 +199,34 @@
         document.getElementById("answers").value = samples[question_type][count % 10]['content']
     }
     
-    function getUserLogging(){
-        const company = document.getElementById('company_input').value;
-        //const question_type = document.getElementById('question_list').value;
+    function getUserLogging(url){
+        const company = document.getElementById('company-input').value;
+        const questionOptions = document.getElementById('question_list');
+        const questionType = questionOptions.options[questionOptions.selectedIndex].value;
         const query = 'input[name="job_detail"]:checked';
-        const job_type =document.querySelectorAll(query)[0].id;
-        const log_data = {
+        const jobType =document.querySelectorAll(query)[0].id;
+        const logData = {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               "X-CSRFToken": "{{csrf_token}}",
             },
             body: JSON.stringify({
-                userId: "dbstjd0924",  
-                company: company,
-                job_type: job_type,
+                userId: '{{ request.user }}',  // url 태그와 같은 기능태그는 script태그에서 해석되지 않지만 {{ variable }}과 같은 변수 태그는 해석됨
+                company,
+                jobType,
+                questionType
             }),
         }
-        fetch("../../logs/recbuttonlog/", log_data)
+        console.log(logData.body)
+        fetch(url, logData)
         .then((res) => res.json())
         .then((data) => console.log(data))
-        .catch((res)=> console.log(error));
+        .catch(()=> console.log('error 발생'));
     }
 
     function getRecommentData(){
-        const company = document.getElementById('company_input').value;
+        const company = document.getElementById('company-input').value;
         var question_type = 0;
         var question_text = "";
         if(document.getElementById("question_list")){
@@ -233,7 +236,7 @@
             question_type = 1;
         }
         const query = 'input[name="job_detail"]:checked';
-        const job_type =document.querySelectorAll(query)[0].id;
+        const jobType =document.querySelectorAll(query)[0].id;
         const answer_text = document.getElementById("answers").value;
         const recommend_data = {
             method: "POST",
@@ -243,7 +246,7 @@
             },
             body: JSON.stringify({  
                 company: company,
-                job_type: job_type,
+                job_type: jobType,
                 question_type: question_type,
                 question_text:question_text,
                 answer:answer_text,
@@ -270,10 +273,12 @@
                 recType: rec_type,
             }),
         }
+        /*
         fetch("../../logs/answerlog/", answer_data)
         .then((res) => res.json())
         .then((data) => console.log(data))
         .catch((res)=> console.log(error));
+        */
     }
 </script> 
 {% endblock %}

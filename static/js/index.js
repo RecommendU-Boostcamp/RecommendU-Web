@@ -56,26 +56,29 @@ function listShow(){
 }
 
 
-// RecommendLog
-// fetch(
-//   # 백엔드 서버로 유저 로그 전송
-// ).then(
-//   success면 그냥 오케이
-// ).catch(
-//   어쩌라고?? 에러 ㅇㅋㅇㅋ 서버가 응답하지 않습니다
-// )
+function callSmall(large, majorList){
+	//  large.value // 지금 선택된 major_large의 이름
+	//  majorList // majorLarge를 담은 리스트
+	//  majorList[0].major_large // '교육계열'
+	//  majorList[0].major_small // 교육계열에 속하는 소분류들
 
-// fetch(
-// 	# 백엔드 서버로 유저 정보 전송해서 리스폰스 확인
-// ).then(
-//   exist_data에 파싱해서 넣는 함수 호출
-// ).catch(
+	const majorLarge = majorList.find(function(element) {
+		if(element.major_large === large) {
+			return true;
+		}})
 
-// )
+  const majorSmalls = majorLarge.major_small
 
-// => 이걸 하려면 백엔드에서 어떤 형식으로 데이터를 받아올지 명확하게 정의해야 함.
-//  - [[], [], [], [], []] 리스트 원소가 다섯 개인 이차원 리스트로 받기!
- 
 
-// AnswerLog
-// 개별 자소서를 클릭할 떄마다 로그를 남긴다
+	const small_elem = document.getElementById('major-small')
+	small_elem.replaceChildren()
+	console.log(majorSmalls)
+
+	for (let i=0;i<majorSmalls.length;i++){
+		const temp_small = document.createElement('option')
+		temp_small.setAttribute('value', majorSmalls[i]);
+		temp_small.innerHTML = majorSmalls[i]
+		console.log(temp_small)
+		small_elem.appendChild(temp_small)
+	}
+}

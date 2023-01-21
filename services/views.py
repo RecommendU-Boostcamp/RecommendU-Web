@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_list_or_404, get_object_or_404
+from django.shortcuts import render, get_list_or_404, get_object_or_404, redirect
 from .dbinit.initiation import dbinit, jobkoreainit, question_type_init, company_init, major_large_init, major_small_init, job_large_init, job_small_init, recommend_type_init, school_init, doc_init, answer_init, sample_init
 from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType, JobList,Sample
 
@@ -11,7 +11,10 @@ from django.db.models.functions import Length
 
 # Create your views here.
 
-def render_test(request):
+def main(request):
+    if not request.user.is_authenticated:  # 만약 식별된 사용자가 아니면 
+        return redirect("accounts:login")
+        
     job_query = JobList.objects.all().order_by(Length('job_large').desc())
     question_query = QuestionType.objects.all()[0:21]
     sample_query = {}
@@ -39,7 +42,7 @@ def render_test(request):
 
         "sample_list" : sample_query,
     }
-    return render(request, 'services/index.html', context)
+    return render(request, 'services/main.html', context)
 
 
 def answer_recommend(request):
