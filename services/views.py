@@ -36,6 +36,7 @@ def answer_recommend(request):
         question_category, sim = ServicesConfig.embedder.match_question_top1(question_text, ServicesConfig.question_emb_matrix)
         if len(question_text)==0 or sim < 0.5:
             return HttpResponse("질문 잘 입력하셈")
+        question_category +=1000000
         question_type = get_object_or_404(QuestionType, question_type_id = question_category)
     
     
