@@ -17,3 +17,4 @@ class RecommendLog(models.Model):
     company = models.ForeignKey(Company,related_name="rec_logs",on_delete=models.SET_NULL,null=True)
     job_small = models.ForeignKey(JobSmall,related_name="rec_logs",on_delete=models.SET_NULL,null=True)
     question_type = models.ForeignKey(QuestionType,related_name="rec_logs",on_delete=models.SET_NULL,null=True)
+    question_from_user = models.CharField(max_length=1000, default=None)

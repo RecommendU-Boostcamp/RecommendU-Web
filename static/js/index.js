@@ -1,5 +1,7 @@
 
 function popup_open(id) {
+	console.log("하하ㅏㅎ하ㅏ하하하")
+	console.log(id)
 	id.classList.add("show");
 }
 function popup_close(id) {

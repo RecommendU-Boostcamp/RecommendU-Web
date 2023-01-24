@@ -66,7 +66,7 @@
                                 class="contents"></textarea>
                         </div>
                         <button type="submit" id="sample-button" onClick="questionTypeCheck()">샘플받기</button>
-                        <button type="submit" id="recommend-button" class="btn" onClick="listShow(); getUserLogging('{% url 'logs:recbuttonlog' %}'); getRecommentData();">추천받기</button>  
+                        <button type="submit" id="recommend-button" class="btn" onClick="listShow(); getUserLogging('{% url 'logs:recbuttonlog' %}'); getRecommentData('{% url 'services:answer_recommend' %}');">추천받기</button>  
                     </div>
                     <div class="listWrap part" id="no-data">
                         <div class="listWrap part no-data">
@@ -77,109 +77,6 @@
                         </div>
                     </div>
                     <div class="listWrap part" id="exist-data">
-                        <div class="list-column">
-                            <h3 class="category">#직무는 다르지만 내용이 비슷한</h3>
-                            <div class="list">
-                                {% for answer in answer_list %}
-                                    <div class="item" onClick="popup_open({{ answer.answer_id }}); getAnswerLog({{ answer.answer_id }});">
-                                        <h4 class="title">{{ answer.question }}</h4>
-                                        <p class="contents">{{ answer.summary }}</p>
-                                    </div>
-                                    <div class="popup" id = {{ answer.answer_id }}>
-                                        <div class="contents">
-                                            <h3 class="category">#직무는 다르지만 내용이 비슷한</h3>
-                                            <div class="info">
-                                                <span id="info-company">{{ answer.company }}</span>
-                                                <span id="info-work">{{ answer.job_small }}</span>
-                                                <div class="info-spec">
-                                                    <span id="info-spec--school">{{ answer.schooltype }}</span>
-                                                    <span id="info-spec--major">{{ answer.major_small }}</span>
-                                                    <span id="info-spec--extra_spec">
-                                                        <p class="detail">{{ answer.spec }}</p>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="text">
-                                                <h4 class="title">{{ answer.question }}</h4>
-                                                <p class="letter">{{ answer.content }}</p>
-                                            </div>
-                                            <a href={{ answer.document_url }} target="_blank">🔗 원본
-                                                확인하기</a>
-                                            <button type="button" class="btn btn_close" onClick="popup_close({{ answer.answer_id }});">X</button>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                            
-                        </div>
-                        <div class="list-column">
-                            <h3 class="category">#나와 비슷한 직무</h3>
-                            <div class="list">
-                                {% for answer2 in answer_list2 %}
-                                    <div class="item" onClick="popup_open({{ answer2.answer_id }})">
-                                        <h4 class="title">{{ answer2.question }}</h4>
-                                        <p class="contents">{{ answer2.summary }}</p>
-                                    </div>
-                                    <div class="popup" id = {{ answer2.answer_id }}>
-                                        <div class="contents">
-                                            <h3 class="category">#직무는 다르지만 내용이 비슷한</h3>
-                                            <div class="info">
-                                                <span id="info-company">{{ answer2.company }}</span>
-                                                <span id="info-work">{{ answer2.job_small }}</span>
-                                                <div class="info-spec">
-                                                    <span id="info-spec--school">{{ answer2.schooltype }}</span>
-                                                    <span id="info-spec--major">{{ answer2.major_small }}</span>
-                                                    <span id="info-spec--extra_spec">
-                                                        <p class="detail">{{ answer2.spec }}</p>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="text">
-                                                <h4 class="title">{{ answer2.question }}</h4>
-                                                <p class="letter">{{ answer2.content }}</p>
-                                            </div>
-                                            <a href={{ answer2.document_url }} target="_blank">🔗 원본
-                                                확인하기</a>
-                                            <button type="button" class="btn btn_close" onClick="popup_close({{ answer2.answer_id }});">X</button>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <div class="list-column">
-                            <h3 class="category">#아무튼카테고리</h3>
-                            <div class="list">
-                                {% for answer in answer_list3 %}
-                                    <div class="item" onClick="popup_open({{ answer.answer_id }})">
-                                        <h4 class="title">{{ answer.question }}</h4>
-                                        <p class="contents">{{ answer.summary }}</p>
-                                    </div>
-                                    <div class="popup" id = {{ answer.answer_id }}>
-                                        <div class="contents">
-                                            <h3 class="category">#직무는 다르지만 내용이 비슷한</h3>
-                                            <div class="info">
-                                                <span id="info-company">{{ answer.company }}</span>
-                                                <span id="info-work">{{ answer.job_small }}</span>
-                                                <div class="info-spec">
-                                                    <span id="info-spec--school">{{ answer.schooltype }}</span>
-                                                    <span id="info-spec--major">{{ answer.major_small }}</span>
-                                                    <span id="info-spec--extra_spec">
-                                                        <p class="detail">{{ answer.spec }}</p>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="text">
-                                                <h4 class="title">{{ answer.question }}</h4>
-                                                <p class="letter">{{ answer.content }}</p>
-                                            </div>
-                                            <a href={{ answer.document_url }} target="_blank">🔗 원본
-                                                확인하기</a>
-                                            <button type="button" class="btn btn_close" onClick="popup_close({{ answer.answer_id }});">X</button>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -189,6 +86,9 @@
 </html>
 <script type="text/javascript">
     var count = 0
+    recommendData = ""
+
+
     function questionTypeCheck(){
         const question_type = document.getElementById('question_list').value;
         var sample_list = "{{sample_list}}".replace(/&#x27;/g,"\"");
@@ -199,12 +99,21 @@
         document.getElementById("answers").value = samples[question_type][count % 10]['content']
     }
     
-    function getUserLogging(url){
+    async function getUserLogging(url){
         const company = document.getElementById('company-input').value;
         const questionOptions = document.getElementById('question_list');
-        const questionType = questionOptions.options[questionOptions.selectedIndex].value;
+        var questionType = 0
         const query = 'input[name="job_detail"]:checked';
         const jobType =document.querySelectorAll(query)[0].id;
+        var questionContent = ""
+
+        if(document.getElementById("question_list")){
+            questionType = document.getElementById('question_list').value;
+        }else{
+            questionContent = document.getElementById('question-text').value;
+            questionType = 1000023;
+        }
+        
         const logData = {
             method: "POST",
             headers: {
@@ -215,25 +124,28 @@
                 userId: '{{ request.user }}',  // url 태그와 같은 기능태그는 script태그에서 해석되지 않지만 {{ variable }}과 같은 변수 태그는 해석됨
                 company,
                 jobType,
-                questionType
+                questionType,
+                questionContent
             }),
         }
-        console.log(logData.body)
-        fetch(url, logData)
-        .then((res) => res.json())
-        .then((data) => console.log(data))
-        .catch(()=> console.log('error 발생'));
+        response = await fetch(url, logData)
+        const data = await response.json()
     }
 
-    function getRecommentData(){
+    async function getRecommentData(url){
         const company = document.getElementById('company-input').value;
         var question_type = 0;
         var question_text = "";
+        const render_window = document.querySelector(".listWrap>p")
+        render_window.innerHTML = "<b>자기소개서를 가져오고 있어요!</b><br>잠시만 기다려주세요.</p>"
+        render_window.setAttribute('class', 'exist-data')
+
+        // 잠시만 기다려주세요 화면 render
         if(document.getElementById("question_list")){
-            question_text = document.getElementById('question_list').value;
+            question_type = document.getElementById('question_list').value;
         }else{
             question_text = document.getElementById('question-text').value;
-            question_type = 1;
+            question_type = 1000023;
         }
         const query = 'input[name="job_detail"]:checked';
         const jobType =document.querySelectorAll(query)[0].id;
@@ -246,21 +158,115 @@
             },
             body: JSON.stringify({  
                 company: company,
-                job_type: jobType,
-                question_type: question_type,
-                question_text:question_text,
-                answer:answer_text,
+                jobType: jobType,
+                questionType: question_type,
+                questionText:question_text,
+                content:answer_text,
             }),
         }
-        fetch("../?", recommend_data)
-        .then((res) => res.json())
-        .then((data) => console.log(data))
-        .catch((res)=> console.log(error));
+        const response = await fetch(url, recommend_data)
+        const data = await response.json()
+        render_window.setAttribute('class', 'no-data')
+
+        makingRecommendList(data)
     }
-    function getAnswerLog(answer_id){
-        const user_id = "dbstjd0924";
+
+    
+    function makingRecommendList(data) {
+        var keys = Object.keys(data)
+        tagLen = keys.length
+        const a = document.querySelector('#exist-data')
+        a.replaceChildren()
+        
+        // data의 key 순회
+        for (let i = 0; i <tagLen; i++){
+            var key = keys[i]
+            var tag = data[key]
+            var listLen = tag.length
+
+            var b = document.createElement('div')
+            b.setAttribute('class', 'list-column')
+            var c1 = document.createElement('h3')
+            c1.setAttribute('class', 'category')
+            c1.innerText = '#' + key
+            var c2 = document.createElement('div')
+            c2.setAttribute('class', 'list')
+            
+            for (let j = 0; j<listLen; j++) {
+                // 각 key의 answer들 순회
+                var answer = tag[j]
+                var d1 = document.createElement('div')
+                d1.setAttribute('class', 'item')
+                d1.setAttribute('onClick', `popup_open(${ answer.answer_id }); getAnswerLog(${ answer.answer_id }, '{% url "logs:answerlog" %}');`)
+                var d_title = document.createElement('h4')
+                d_title.setAttribute('class', 'title')
+                d_title.innerText = answer.question
+                var d_content = document.createElement('p')
+                d_content.setAttribute('class', 'contents')
+                d_content.innerText = answer.summary
+                var d2 = document.createElement('div')
+                d2.setAttribute('class', 'popup')
+                d2.setAttribute('id', `${answer.answer_id}`)
+                var e = document.createElement('div')
+                e.setAttribute('class', 'contents')
+                var f1 = document.createElement('h3')
+                f1.setAttribute('class', 'category')
+                f1.setAttribute('name', '700001')
+                f1.innerText = '#' + keys[i]
+                var f2 = document.createElement('div')
+                f2.setAttribute('class', 'info')
+                var f3 = document.createElement('div')
+                f3.setAttribute('class', 'text')
+                var g1 = document.createElement('span')
+                var f4 = document.createElement('a')
+                f4.setAttribute('href', answer.document_url)
+                f4.setAttribute('target', '_blank')
+                var f5 = document.createElement('button')
+                f5.setAttribute('type', 'button')
+                f5.setAttribute('class', 'btn btn_close')
+                f5.setAttribute('onClick', `popup_close(${answer.answer_id})`)
+                f5.innerText = 'X'
+                g1.setAttribute('id', 'info-company')
+                g1.innerText = answer.company
+                var g2 = document.createElement('span')
+                g2.setAttribute('id', 'info-work')
+                g2.innerText = answer.job_small
+                var g3 = document.createElement('div')
+                var g4 = document.createElement('h4')
+                g4.setAttribute('class', 'title')
+                g4.innerText = answer.question
+                var g5 = document.createElement('p')
+                g5.setAttribute('class', 'letter')
+                g5.innerText = answer.content
+                var h1 = document.createElement('div')
+                h1.setAttribute('id', 'info-spec--school')
+                h1.innerText = answer.schooltype
+                var h2 = document.createElement('div')
+                h2.setAttribute('id', 'info-spec--major')
+                h2.innerText = answer.major_small
+                var h3 = document.createElement('div')
+                h3.setAttribute('id', 'info-spec--extra_spec')
+                var k = document.createElement('p')
+                k.setAttribute('class', 'detail')
+                k.innerText = answer.spec
+                h3.append(k)
+                g3.append(h1, h2, h3)
+                f3.append(g4, g5)
+                f2.append(g1, g2, g3)
+                e.append(f1, f2, f3, f4, f5)
+                d2.append(e)
+                d1.append(d_title, d_content)
+                c2.append(d1, d2)
+            }
+            b.append(c1, c2)
+            a.append(b)
+        }
+    }
+
+    function getAnswerLog(answer_id, url){
+        const user_id = '{{ request.user }}';
         const content_id = answer_id.id;
-        const rec_type =document.querySelector('#'+content_id+' .category').innerHTML;
+        const rec_type =document.querySelector('#'+content_id+' .category').getAttribute('name');
         const answer_data = {
             method: "POST",
             headers: {
@@ -273,12 +279,16 @@
                 recType: rec_type,
             }),
         }
-        /*
-        fetch("../../logs/answerlog/", answer_data)
+        fetch(url, answer_data)
         .then((res) => res.json())
-        .then((data) => console.log(data))
-        .catch((res)=> console.log(error));
-        */
+        .catch((error)=> console.log('error 발생'));
     }
 </script> 
 {% endblock %}
+{% comment %} 
+class AnswerLog(models.Model):
+    answer_log_id = models.BigAutoField(primary_key=True,null=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    answer = models.ForeignKey(Answer,on_delete=models.CASCADE,null=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=False)
+    rectype = models.ForeignKey(RecommendType,on_delete=models.SET_NULL,null=True) {% endcomment %}

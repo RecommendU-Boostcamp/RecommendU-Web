@@ -88,6 +88,7 @@ class ContentList(models.Model):
     major_small = models.CharField(max_length=100,null=False)
     job_small = models.CharField(max_length=100,null=False)
     question_types = models.CharField(max_length=200,null=False)
+    
     class Meta:
         managed = False               
         db_table = 'content_view'

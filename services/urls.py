@@ -4,7 +4,7 @@ from . import views
 app_name = 'services'
 
 urlpatterns = [
-    # path('init/', views.db_first),
+    path('init/', views.db_first),
     # path('init2/', views.docu_answer_init),
     path('main/', views.main, name='main'),
     # path('search/', views.search_company),

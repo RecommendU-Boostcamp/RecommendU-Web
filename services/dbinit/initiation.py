@@ -14,7 +14,7 @@ def dbinit(data_path):
          '지원동기', '입사 후 포부, 계획, 기여하고 싶은 부분', '프로젝트 경험', '사회활동',
          '어려움 극복, 목표 달성 경험', '의사소통', '문제 해결', '팀워크, 협업(동아리, 팀) 경험', 
          '창의성', '리더쉽 발휘', '도전', '자기소개', '가치관', '사회 현상 및 트렌드(최근 뉴스, 국내외 이슈 견해)', 
-         '인재상, 기업의 핵심 가치, 기업의 이미지', '경력', '기타']
+         '인재상, 기업의 핵심 가치, 기업의 이미지', '경력', '기타', '답변없음']
 
     # company
     companies = list(doc_data.company.unique())
@@ -35,7 +35,7 @@ def dbinit(data_path):
     schools = list(doc_data.school.unique())
 
     # recommendtype은 아직 안정해짐
-    recommend_types = []
+    recommend_types = ['질문/회사/직무/답변', '질문/직무/답변', '질문/회사/답변', '질문/조회수', '질문/전문가good', '질문/전문가bad']
     
     major_dict = dict(doc_data.groupby('major_small')['major_large'].apply(set).apply(list))
     job_dict = dict(doc_data.groupby('job_small')['job_large'].apply(set).apply(list))
