@@ -234,19 +234,20 @@
                 g2.setAttribute('id', 'info-work')
                 g2.innerText = answer.job_small
                 var g3 = document.createElement('div')
+                g3.setAttribute('class','info-spec')
                 var g4 = document.createElement('h4')
                 g4.setAttribute('class', 'title')
                 g4.innerText = answer.question
                 var g5 = document.createElement('p')
                 g5.setAttribute('class', 'letter')
                 g5.innerText = answer.content
-                var h1 = document.createElement('div')
+                var h1 = document.createElement('span')
                 h1.setAttribute('id', 'info-spec--school')
                 h1.innerText = answer.schooltype
-                var h2 = document.createElement('div')
+                var h2 = document.createElement('span')
                 h2.setAttribute('id', 'info-spec--major')
                 h2.innerText = answer.major_small
-                var h3 = document.createElement('div')
+                var h3 = document.createElement('span')
                 h3.setAttribute('id', 'info-spec--extra_spec')
                 var k = document.createElement('p')
                 k.setAttribute('class', 'detail')
