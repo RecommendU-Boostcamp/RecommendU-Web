@@ -48,14 +48,12 @@ function questionDefaultCheck(value) {
 	}
 }
 
-
 function listShow(){
 	const no_data = document.getElementById("no-data");
 	no_data.classList.add("hide");
 	const exist_data = document.getElementById("exist-data");
 	exist_data.classList.add("show");
 }
-
 
 function callSmall(large, majorList){
 	//  large.value // 지금 선택된 major_large의 이름
@@ -73,7 +71,6 @@ function callSmall(large, majorList){
 
 	const small_elem = document.getElementById('major-small')
 	small_elem.replaceChildren()
-	console.log(majorSmalls)
 
 	for (let i=0;i<majorSmalls.length;i++){
 		const temp_small = document.createElement('option')
