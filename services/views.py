@@ -5,6 +5,7 @@ from .serializers import ContentListSerializer
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework import status
 from django.http import HttpResponse
 from django.db.models import Q
 
@@ -35,7 +36,7 @@ def answer_recommend(request):
         question_text = WHITESPACE_HANDLER(question_text)
         question_category, sim = ServicesConfig.embedder.match_question_top1(question_text, ServicesConfig.question_emb_matrix)
         if len(question_text)==0 or sim < 0.5:
-            return HttpResponse("질문 잘 입력하셈")
+            return Response(status.HTTP_412_PRECONDITION_FAILED)
         question_category +=1000000
         question_type = get_object_or_404(QuestionType, question_type_id = question_category)
     
@@ -71,7 +72,7 @@ def answer_recommend(request):
             to_front[key].append(temp_answer.data)
 
     
-    print(f"인퍼런스에 {time.time() - s_time}초 걸렸습니다용")
+    # print(f"인퍼런스에 {time.time() - s_time}초 걸렸습니다용")
     # for key in result:
     #     print(f'===================={key}====================')
     #     ran_num=4
@@ -105,20 +106,13 @@ def main(request):
         job_query[i].id = "job_"+str(i)
         job_query[i].job_small = job_query[i].job_small.split(',')
         job_query[i].job_small_id = job_query[i].job_small_id.split(',')
-    queryset = ContentList.objects.all()[103:107]
-    queryset2 = ContentList.objects.all()[1000:1005]
-    queryset3 = ContentList.objects.all()[4000:4003]
     
     companies = Company.objects.all()
 
     context = {
         "job_list":job_query,
-        "answer_list": queryset,
-        "answer_list2":queryset2,
-        "answer_list3":queryset3,
         "question_type" : question_query,
         'companies' : companies,
-
         "sample_list" : sample_query,
     }
     return render(request, 'services/main.html', context)

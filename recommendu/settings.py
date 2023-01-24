@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 env=environ.Env(DEBUG=(bool,True))
-ALLOWED_HOSTS = ['49.50.175.19','127.0.0.1']
+ALLOWED_HOSTS = ['49.50.175.19','127.0.0.1','www.recommendu.kro.kr']
 environ.Env.read_env(
     env_file=os.path.join(BASE_DIR,'.env')
 )
