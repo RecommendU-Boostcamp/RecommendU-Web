@@ -62,10 +62,10 @@
                             </select>
                         </div>
                         <div class="question-contents">
-                            <textarea name="" id="answers" placeholder="자소서 내용을 입력하세요. 내용은 10자 이상 입력 시 자소서 내용으로 추천받으실 수 있습니다." cols="30"
+                            <textarea name="" id="answers" placeholder="자소서 내용을 입력하세요. 내용은 10자 이상 입력 시 자소서 내용으로 추천받으실 수 있습니다. 우측하단 '💫샘플 자소서 불러오기' 버튼을 클릭하면 샘플 자소서로 보여드립니다." cols="30"
                                 class="contents"></textarea>
                         </div>
-                        <button type="submit" id="sample-button" onClick="questionTypeCheck()">샘플받기</button>
+                        <button type="submit" id="sample-button" onClick="questionTypeCheck()">💫샘플 자소서 불러오기</button>
                         <button type="submit" id="recommend-button" class="btn" onClick="listShow(); getUserLogging('{% url 'logs:recbuttonlog' %}'); getRecommentData('{% url 'services:answer_recommend' %}');">추천받기</button>  
                     </div>
                     <div class="listWrap part" id="no-data">
@@ -280,10 +280,13 @@
                 h2.innerText = answer.major_small
                 var h3 = document.createElement('span')
                 h3.setAttribute('id', 'info-spec--extra_spec')
-                var k = document.createElement('p')
-                k.setAttribute('class', 'detail')
-                k.innerText = answer.spec
-                h3.append(k)
+                var spec_array = answer.spec.slice(1,-1).split(',')
+                for (let k = 0; k<spec_array.length; k++){
+                    var content = document.createElement('p')
+                    content.setAttribute('class', 'detail')
+                    content.innerText = spec_array[k]
+                    h3.append(content)
+                }
                 g3.append(h1, h2, h3)
                 f3.append(g4, g5)
                 f2.append(g1, g2, g3)
