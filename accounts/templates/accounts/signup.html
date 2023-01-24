@@ -9,38 +9,44 @@
             <section id="signUp">
                 <div class="formBox">
                     <h1 class="title">가입하기</h1>
-                    <form action="{% url 'accounts:signup' %}" method="POST">
+                    {% comment %} <form id="submitForm" action="{% url 'accounts:signup' %}" method="POST"> {% endcomment %}
+                    <form action="{% url 'services:main' %}">
                         {% csrf_token %}
+                        <div style="position:relative">
                         <span>아이디</span>
-                        <input type="text" placeholder="영문, 숫자 포함하여 10자 이내", maxlength="15" name="username">
-                        <span>비밀번호</span>
-                        <input type="password" placeholder="영문, 숫자, 특수문자 포함하여 15자 이내", name="password1" autocomplete="new_password">
-                        <span>비밀번호 확인</span>
-                        <input type="password" placeholder="비밀번호를 한번 더 입력해주세요", name="password2" autocomplete="new_password">
+                        <input type="text" placeholder="영문, 숫자 포함하여 10자 이내", maxlength="15" name="username" style="position:relative" require id='username'>
+                        <button class="signup-button" style="position:absolute; right:4px; top:41px;" onClick="usernameCheck('{% url 'accounts:namecheck' %}')">중복확인</button>
+                        </div>
+                        <div style="position:relative">
+                            <span>비밀번호</span>
+                            <input type="password" placeholder="영문, 숫자, 특수문자 포함하여 8자 이상 15자 이내", name="password1" autocomplete="new_password" required id='password1' oninput="passwordCheck()">
+                            <span>비밀번호 확인</span>
+                            <input type="password"  placeholder="비밀번호를 한번 더 입력해주세요", name="password2" autocomplete="new_password" required id='password2' oninput="passwordCheck()">
+                            <span id="passwordCheck" style="position:absolute; height:10px; width:200px; font-size:12px; left:350px; top:168px;"></span>
+                        </div>
                         <span>전공</span>
-                        <select id="major-large" name="major_large" required onChange="callSmall(this.value, {{ majorlist_json }})">
+                        <select id="major-large" name="major-large" required onChange="callSmall(this.value, {{ majorlist_json }})" required>
                             <option value='' selected disabled hidden>대분류 선택</option>
                             {% for large in majorlist %}
                                 <option value={{ large.major_large }}>{{ large.major_large }}</option>
                             {% endfor %}
                         </select>
-                        <select id="major-small" name="major_small" required>
+                        <select id="major-small" name="major-small" required>
                             <option id='small_init' value=''>대분류를 먼저 선택하세요</option>
                         </select>
                         <span>관심 분야</span>
-                        <input type="text" list="jobs" placeholder="관심 분야를 선택해주세요." name="interesting_job_large" required>
-                            <datalist id="jobs">
-                                {% for job in joblist %}
-                                <option value = {{ job.job_large }}></option>
-                                {% endfor %}
-                            </datalist>
+                        <select id='interesting-job-large' placeholder="관심 분야를 선택해주세요." name="interesting-job-large" required>
+                            {% for job in joblist %}
+                                <option value = {{ job.job_large }}>{{ job.job_large }}</option>
+                            {% endfor %}
+                        </select>
                         <span> 신입/경력 여부</span>
-                        <select id="career-type" name="career_type" required>
+                        <select id="career-type" name="career-type" required>
                             <option value='신입'>신입</option>
                             <option value='경력'>경력</option>
                         </select>
                         <!--form 완성 안 됐을 때는 disabled. 완성 되면 disabled클래스 없애면 됨-->
-                        <button type="submit" class="btn btn_join">회원가입</button>
+                        <button id="submit_fake" type="button" class="btn btn_join" onClick="signupCheck('{% url 'accounts:signup' %}')">회원가입</button>
                     </form>
                     <p>
                         이미 계정이 있으신가요?
@@ -53,7 +59,92 @@
 </body>
 
 <script>
+    let isAvailable = false  // 아이디 중복 검사 결과
+    let isSame = false  // 비밀번호 일치 여부
+    let isStart = false
     
+    async function signupCheck(url) {
+        const username = document.querySelector('#username').value
+        const password1 = document.querySelector('#password1').value
+        const password2 = document.querySelector('#password2').value
+        const majorLarge = document.querySelector('#major-large').value
+        const majorSmall = document.querySelector('#major-small').value
+        const interestingJobLarge = document.querySelector('#interesting-job-large').value
+        const careerType = document.querySelector('#career-type').value
+
+        const signupData = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({
+                username: username,
+                password1: password1,
+                password2: password2,
+                major_large: majorLarge,
+                major_small: majorSmall,
+                interesting_job_large: interestingJobLarge,
+                career_type: careerType   // url 태그와 같은 기능태그는 script태그에서 해석되지 않지만 {{ variable }}과 같은 변수 태그는 해석됨
+            }),
+        }
+        const response = await fetch(url, signupData)
+        const status = await response.status
+        
+        if (status === 200) {
+            document.querySelector('form').submit()
+        } else {
+            alert('아이디와 비밀번호를 다시 확인해주세요!')
+        }
+    }
+
+
+    async function usernameCheck(url) {
+        const username = document.querySelector('#username').value
+        const checkData = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({
+                username   // url 태그와 같은 기능태그는 script태그에서 해석되지 않지만 {{ variable }}과 같은 변수 태그는 해석됨
+            }),
+        }
+        const response = await fetch(url, checkData)
+        
+        if (username === '') {
+            alert('아이디를 입력해주세요.')
+        }  else if (response.status===205){
+            alert('이미 사용 중인 아이디입니다.')
+            isAvailable = false;
+        } else {
+            alert('사용할 수 있는 아이디입니다.')
+            isAvailable = true;
+        }
+        console.log(isAvailable)
+    }
+
+
+    async function passwordCheck() {
+        const password1 = document.querySelector('#password1').value
+        const password2 = document.querySelector('#password2').value
+        const passwordCheck = document.querySelector('#passwordCheck')
+        if (password2 != "") {
+            isStart = true;
+        }
+
+        if (isStart===true) {
+            if (password1 === password2) {
+                passwordCheck.innerText = '일치합니다'
+                passwordCheck.style.color = 'green'
+            } else {
+                passwordCheck.innerText = '불일치합니다'
+                passwordCheck.style.color = 'red'
+            }
+        }
+    }
+
 </script>
 {% endblock %}
 
