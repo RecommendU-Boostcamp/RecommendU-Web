@@ -176,6 +176,7 @@
         var keys = Object.keys(data)
         tagLen = keys.length
         const a = document.querySelector('#exist-data')
+        var tag_name = 7000000
         a.replaceChildren()
         
         // data의 key 순회
@@ -183,7 +184,7 @@
             var key = keys[i]
             var tag = data[key]
             var listLen = tag.length
-
+            tag_name += 1
             var b = document.createElement('div')
             b.setAttribute('class', 'list-column')
             var c1 = document.createElement('h3')
@@ -195,9 +196,10 @@
             for (let j = 0; j<listLen; j++) {
                 // 각 key의 answer들 순회
                 var answer = tag[j]
+                var content_id = answer.answer_id+tag_name.toString()
                 var d1 = document.createElement('div')
                 d1.setAttribute('class', 'item')
-                d1.setAttribute('onClick', `popup_open(${ answer.answer_id }); getAnswerLog(${ answer.answer_id }, '{% url "logs:answerlog" %}');`)
+                d1.setAttribute('onClick', `popup_open(${content_id}); getAnswerLog(${ content_id }, '{% url "logs:answerlog" %}');`)
                 var d_title = document.createElement('h4')
                 d_title.setAttribute('class', 'title')
                 d_title.innerText = answer.question
@@ -206,12 +208,12 @@
                 d_content.innerText = answer.summary
                 var d2 = document.createElement('div')
                 d2.setAttribute('class', 'popup')
-                d2.setAttribute('id', `${answer.answer_id}`)
+                d2.setAttribute('id', `${content_id}`)
                 var e = document.createElement('div')
                 e.setAttribute('class', 'contents')
                 var f1 = document.createElement('h3')
                 f1.setAttribute('class', 'category')
-                f1.setAttribute('name', '700001')
+                f1.setAttribute('name', tag_name)
                 f1.innerText = '#' + keys[i]
                 var f2 = document.createElement('div')
                 f2.setAttribute('class', 'info')
@@ -224,7 +226,7 @@
                 var f5 = document.createElement('button')
                 f5.setAttribute('type', 'button')
                 f5.setAttribute('class', 'btn btn_close')
-                f5.setAttribute('onClick', `popup_close(${answer.answer_id})`)
+                f5.setAttribute('onClick', `popup_close(${content_id})`)
                 f5.innerText = 'X'
                 g1.setAttribute('id', 'info-company')
                 g1.innerText = answer.company
@@ -275,7 +277,7 @@
             },
             body: JSON.stringify({  
                 userId: user_id,  
-                contentId: content_id,
+                contentId: content_id.slice(0,7),
                 recType: rec_type,
             }),
         }

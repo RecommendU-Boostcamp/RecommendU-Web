@@ -6,14 +6,15 @@ from rest_framework.decorators import api_view
 from django.http import HttpResponse
 from .models import RecommendLog, AnswerLog
 from services.models import Company, JobSmall, QuestionType
+from rest_framework import status
 from django.contrib.auth import get_user_model
 
 
 # Create your views here.
 @api_view(['POST'])
 def answerlog(request):
-    # request에 어떻게 보낼지에 따라서 달라짐
     data = request.data
+    print(data)
     user = get_object_or_404(get_user_model(), username=data['userId'])
     rec_type = get_object_or_404(RecommendType, rectype_id=int(data['recType']))
     answer = get_object_or_404(Answer, answer_id=data['contentId'])
@@ -27,7 +28,7 @@ def answerlog(request):
     instance.save()
 
     
-    return HttpResponse('Done')
+    return Response(status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
@@ -49,7 +50,7 @@ def recbuttonlog(request):
         question_from_user=question_content
     )
     instance.save()
-    return HttpResponse('Done')
+    return Response(status.HTTP_201_CREATED)
 
 
 
