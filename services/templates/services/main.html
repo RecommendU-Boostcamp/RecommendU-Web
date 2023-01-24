@@ -62,10 +62,10 @@
                             </select>
                         </div>
                         <div class="question-contents">
-                            <textarea name="" id="answers" placeholder="자소서 내용을 입력하세요." cols="30"
+                            <textarea name="" id="answers" placeholder="자소서 내용을 입력하세요. 내용은 10자 이상 입력 시 자소서 내용으로 추천받으실 수 있습니다. 우측하단 '💫샘플 자소서 불러오기' 버튼을 클릭하면 샘플 자소서로 보여드립니다." cols="30"
                                 class="contents"></textarea>
                         </div>
-                        <button type="submit" id="sample-button" onClick="questionTypeCheck()">샘플받기</button>
+                        <button type="submit" id="sample-button" onClick="questionTypeCheck()">💫샘플 자소서 불러오기</button>
                         <button type="submit" id="recommend-button" class="btn" onClick="listShow(); getUserLogging('{% url 'logs:recbuttonlog' %}'); getRecommentData('{% url 'services:answer_recommend' %}');">추천받기</button>  
                     </div>
                     <div class="listWrap part" id="no-data">
@@ -91,24 +91,44 @@
 
     function questionTypeCheck(){
         const question_type = document.getElementById('question_list').value;
-        var sample_list = "{{sample_list}}".replace(/&#x27;/g,"\"");
-        sample_list = sample_list.replace(/&quot;/g, "\"")
-        var samples = JSON.parse(sample_list);
-        count = count+1
-        document.getElementById("answers").value = ""
-        document.getElementById("answers").value = samples[question_type][count % 10]['content']
+        if (question_type == 'none'){
+            alert("질문 카테고리를 선택해야지 샘플을 추천받을 수 있습니다.")
+        }
+        else{
+            var sample_list = "{{sample_list}}".replace(/&#x27;/g,"\"");
+            sample_list = sample_list.replace(/&quot;/g, "\"")
+            var samples = JSON.parse(sample_list);
+            count = count+1
+            document.getElementById("answers").value = ""
+            document.getElementById("answers").value = samples[question_type][count % 10]['content']
+        }
     }
     
     async function getUserLogging(url){
-        const company = document.getElementById('company-input').value;
-        const questionOptions = document.getElementById('question_list');
+        const company = document.getElementById('company-input').value
+        if(company==""){
+            alert("관심기업을 선택해주세요.")
+            return -1
+        }
+        
         var questionType = 0
         const query = 'input[name="job_detail"]:checked';
-        const jobType =document.querySelectorAll(query)[0].id;
+        var jobType =document.querySelectorAll(query)[0];
+        if (jobType){
+            jobType = document.querySelectorAll(query)[0].id
+        }
+        else{
+            alert("직무 상세검색을 선택해주세요.")
+            return -1
+        }
         var questionContent = ""
 
-        if(document.getElementById("question_list")){
+        if(document.getElementById("question_list")){ 
             questionType = document.getElementById('question_list').value;
+            if (questionType == 'none'){
+                alert("질문을 선택해주세요")
+                return -1
+            }
         }else{
             questionContent = document.getElementById('question-text').value;
             questionType = 1000023;
@@ -134,6 +154,9 @@
 
     async function getRecommentData(url){
         const company = document.getElementById('company-input').value;
+        if(company==""){
+            return -1
+        }
         var question_type = 0;
         var question_text = "";
         const render_window = document.querySelector(".listWrap>p")
@@ -148,6 +171,9 @@
             question_type = 1000023;
         }
         const query = 'input[name="job_detail"]:checked';
+        if (!document.querySelectorAll(query)[0]){
+            return -1
+        }
         const jobType =document.querySelectorAll(query)[0].id;
         const answer_text = document.getElementById("answers").value;
         const recommend_data = {
@@ -167,8 +193,12 @@
         const response = await fetch(url, recommend_data)
         const data = await response.json()
         render_window.setAttribute('class', 'no-data')
-
-        makingRecommendList(data)
+        if (data==412){
+            alert("질문을 다시 입력해주세요.")
+        }
+        else{
+            makingRecommendList(data);
+        }
     }
 
     
@@ -223,6 +253,7 @@
                 var f4 = document.createElement('a')
                 f4.setAttribute('href', answer.document_url)
                 f4.setAttribute('target', '_blank')
+                f4.innerHTML="🔗 원본 확인하기"
                 var f5 = document.createElement('button')
                 f5.setAttribute('type', 'button')
                 f5.setAttribute('class', 'btn btn_close')
@@ -249,10 +280,13 @@
                 h2.innerText = answer.major_small
                 var h3 = document.createElement('span')
                 h3.setAttribute('id', 'info-spec--extra_spec')
-                var k = document.createElement('p')
-                k.setAttribute('class', 'detail')
-                k.innerText = answer.spec
-                h3.append(k)
+                var spec_array = answer.spec.slice(1,-1).split(',')
+                for (let k = 0; k<spec_array.length; k++){
+                    var content = document.createElement('p')
+                    content.setAttribute('class', 'detail')
+                    content.innerText = spec_array[k]
+                    h3.append(content)
+                }
                 g3.append(h1, h2, h3)
                 f3.append(g4, g5)
                 f2.append(g1, g2, g3)
@@ -288,10 +322,3 @@
     }
 </script> 
 {% endblock %}
-{% comment %} 
-class AnswerLog(models.Model):
-    answer_log_id = models.BigAutoField(primary_key=True,null=False)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    answer = models.ForeignKey(Answer,on_delete=models.CASCADE,null=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=False)
-    rectype = models.ForeignKey(RecommendType,on_delete=models.SET_NULL,null=True) {% endcomment %}

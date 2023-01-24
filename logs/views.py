@@ -14,7 +14,6 @@ from django.contrib.auth import get_user_model
 @api_view(['POST'])
 def answerlog(request):
     data = request.data
-    print(data)
     user = get_object_or_404(get_user_model(), username=data['userId'])
     rec_type = get_object_or_404(RecommendType, rectype_id=int(data['recType']))
     answer = get_object_or_404(Answer, answer_id=data['contentId'])
@@ -34,7 +33,6 @@ def answerlog(request):
 @api_view(['POST'])
 def recbuttonlog(request):
     data = request.data
-    print(data)
     user = get_object_or_404(get_user_model(), username=data['userId'])
     company = get_object_or_404(Company, company=data['company'])
     job_small = get_object_or_404(JobSmall, job_small_id=int(data['jobType']))
