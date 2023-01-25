@@ -43,7 +43,7 @@ function checkSmallOnlyOne(element) {
 function questionDefaultCheck(value) {
 	if (value == "other") {
 		document.getElementById("question_list").remove();
-		document.querySelector(".question").innerHTML = '<textarea list="question_list" name="" id="question-text" placeholder="자소서 문항을 입력하세요.(지원동기, 포부 등)" rows="1" cols="30" maxlength="30"></textarea>'
+		document.querySelector(".question").innerHTML = '<textarea list="question_list" name="" id="question-text" placeholder="자소서 문항을 입력하세요.(지원동기, 포부 등)" rows="1" cols="30" maxlength="150"></textarea>'
 		document.getElementById("sample-button").remove();
 	}
 }
