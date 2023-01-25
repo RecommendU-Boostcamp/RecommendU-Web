@@ -371,13 +371,13 @@
         .catch((error)=> console.log('error 발생'));
     }
     
-    function getUserGood(contents_id,cnt,url){
+    async function getUserGood(contents_id,cnt,url){
         const user_id = '{{ request.user }}';
         const content_id = contents_id.id.slice(0,7)
         var btn_good = document.getElementById("btn_good"+content_id)
+        var btn_bad = document.getElementById("btn_bad"+content_id)
         const good = Number(btn_good.getAttribute('value')) + 1
-        btn_good.innerHTML = '👍 '+good
-        btn_good.value = good
+        var bad = Number(btn_bad.getAttribute('value'))
         const user_good = {
             method: "POST",
             headers: {
@@ -387,22 +387,36 @@
             body: JSON.stringify({
                 userId: user_id, 
                 contentId: content_id,
-                cnt: good,
+                goodCnt: good,
+                badCnt:bad,
                 favor:1,
             }),
         }
-        fetch("../../logs/user_eval/", user_good)
-        .then((res) => res.json())
-        .catch((error)=> console.log('error 발생'));
+        const response = await fetch("../../logs/user_eval/", user_good)
+        const data = await response.json()
+        if (data==201){
+            btn_good.innerHTML = '👍 '+good
+            btn_good.value = good
+        }
+        else if(data==301){
+            bad = bad-1
+            btn_bad.innerHTML = '👎 '+bad
+            btn_bad.value = bad
+            btn_good.innerHTML = '👍 '+good
+            btn_good.value = good
+        }
+        else{
+            alert("이미 좋아요를 누른 자소서입니다.")
+        }
     }
 
-    function getUserBad(contents_id,cnt){
+    async function getUserBad(contents_id,cnt){
         const user_id = '{{ request.user }}';
         const content_id = contents_id.id.slice(0,7)
+        var btn_good = document.getElementById("btn_good"+content_id)
         var btn_bad = document.getElementById("btn_bad"+content_id)
+        var good = Number(btn_good.getAttribute('value'))
         const bad = Number(btn_bad.getAttribute('value')) + 1
-        btn_bad.innerHTML = '👎 '+bad
-        btn_bad.value = bad
         const user_bad = {
             method: "POST",
             headers: {
@@ -412,13 +426,27 @@
             body: JSON.stringify({ 
                 userId: user_id, 
                 contentId: content_id,
-                cnt: bad,
+                goodCnt: good,
+                badCnt:bad,
                 favor:0,
             }),
         }
-        fetch("../../logs/user_eval/", user_bad)
-        .then((res) => res.json())
-        .catch((error)=> console.log('error 발생'));
+        const response = await fetch("../../logs/user_eval/", user_bad)
+        const data = await response.json()
+        if (data==201){
+            btn_bad.innerHTML = '👎 '+bad
+            btn_bad.value = bad
+        }
+        else if(data==301){
+            good = good-1
+            btn_bad.innerHTML = '👎 '+bad
+            btn_bad.value = bad
+            btn_good.innerHTML = '👍 '+good
+            btn_good.value = good
+        }
+        else{
+            alert("이미 별로에요를 누른 자소서입니다.")
+        }
     }   
     function fillMark() {
         const markImg = document.querySelector('#markImg')
