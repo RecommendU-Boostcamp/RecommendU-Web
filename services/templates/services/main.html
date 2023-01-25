@@ -18,15 +18,15 @@
         <div class="inner">
             <section id="main" style="position:relative">
                 {% if request.user.is_authenticated %}
-                  <a id="logout-button"  style="position:absolute; top:20px; right:50px; width:65px; height 20px; font-size:20px" href="{% url 'accounts:logout' %}" method="POST">Logout</a>
+                    <div style="position:flex; display:block">
+                        <a href="{% url 'services:main' %}"><img src="{% static 'images/recommend_logo.png' %}" style="position:relative; top:0px; left:40px; z-index:1; margin-bottom:20px; margin-top:20px" width="350px" height="70px" ></a>
+                    </div>      
+                  <a id="logout-button"  style="position:absolute; top:40px; right:50px; width:65px; height 20px; font-size:20px" href="{% url 'accounts:logout' %}" method="POST">Logout</a>
                 {% endif %}
-                <div class="mainWrap">
+                <div class="mainWrap">              
                     <div class="submitWrap part">
                         {% csrf_token %}
-                        <div style="display:flex">
-                          <h3>기업 및 직무 분류 선택</h3>
-                          <a href="{% url 'services:main' %}"><img src="{% static 'images/recommend_logo.png' %}" style="position:absolute; top:0px; left:-50px; z-index:1; transform:rotate(350deg);" width="250px" height="50px" ></a>
-                        </div>
+                        <h3>기업 및 직무 분류 선택</h3>
                         <div class="filter">
                             <div class="cbList">
                                 <h4 class="filter-category">기업검색</h4>
@@ -244,14 +244,16 @@
                 // 각 key의 answer들 순회
                 var answer = tag[j]
                 var content_id = answer.answer_id+tag_name.toString()
+                
                 var d1 = document.createElement('div')
                 d1.setAttribute('class', 'item')
                 d1.setAttribute('onClick', `popup_open(${content_id}); getAnswerLog(${ content_id }, '{% url "logs:answerlog" %}');`)
-                var d_company = document.createElement('h4')
-                d_company.innerText = answer.company + ' · ' + answer.job_small
                 var d_title = document.createElement('h4')
                 d_title.setAttribute('class', 'title')
                 d_title.innerText = answer.question
+                var d_company = document.createElement('h4')
+                d_company.setAttribute('class', 'company')
+                d_company.innerText = answer.company + ' · ' + answer.job_small
                 var d_content = document.createElement('p')
                 d_content.setAttribute('class', 'contents')
                 d_content.innerText = answer.summary
@@ -311,7 +313,7 @@
                 f2.append(g1, g2, g3)
                 e.append(f1, f2, f3, f4, f5)
                 d2.append(e)
-                d1.append(d_company,d_title, d_content)
+                d1.append(d_company, d_title, d_content)
                 c2.append(d1, d2)
             }
             b.append(c1, c2)

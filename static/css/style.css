@@ -712,6 +712,10 @@ button.username-button {
 }
 
 
+.mainWrap .listWrap .list-column .list .item .company {
+    color: #535091;
+}
+
 /* #main {
     display: none;
 }
