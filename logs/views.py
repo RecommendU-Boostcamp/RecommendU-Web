@@ -3,11 +3,9 @@ from services.models import QuestionType, Company, MajorLarge, MajorSmall, JobLa
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from django.http import HttpResponse
 from .models import RecommendLog, AnswerLog,EvalLog
 from services.models import Company, JobSmall, QuestionType
 from rest_framework import status
-from django.db.models import Q
 from django.contrib.auth import get_user_model
 
 
@@ -56,7 +54,7 @@ def eval_log(request):
     data = request.data
     user = get_object_or_404(get_user_model(), username=data['userId'])
     answer = get_object_or_404(Answer, answer_id=data['contentId'])
-    is_contained = EvalLog.objects.filter(Q(user_id=user) | Q(answer_id=answer.answer_id))
+    is_contained = EvalLog.objects.filter(user_id=user,answer_id=answer.answer_id)
     favor = data['favor']
     good_cnt = data['goodCnt']
     bad_cnt = data['badCnt']
@@ -83,7 +81,7 @@ def eval_log(request):
             else:
                 content.update(user_good_cnt=good_cnt-1)
                 content.update(user_bad_cnt = bad_cnt)
-            EvalLog.objects.filter(Q(user_id=user) | Q(answer_id=answer.answer_id)).update(favor=favor)
+            EvalLog.objects.filter(user_id=user, answer_id=answer.answer_id).update(favor=favor)
             return Response(status.HTTP_301_MOVED_PERMANENTLY)
         else:
             return Response(status.HTTP_304_NOT_MODIFIED)
