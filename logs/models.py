@@ -21,7 +21,7 @@ class RecommendLog(models.Model):
 
 class EvalLog(models.Model):
     eval_log_id = models.BigAutoField(primary_key=True,null=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=False,related_name="eval_logs")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=False)
     timestamp = models.DateTimeField(auto_now_add=True)
-    answer = models.ForeignKey(Answer,on_delete=models.CASCADE,null=False,related_name="eval_logs")
+    answer = models.ForeignKey(Answer,on_delete=models.CASCADE,null=False)
     favor = models.BooleanField(null=False)
