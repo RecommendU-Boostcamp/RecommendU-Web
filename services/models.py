@@ -1,6 +1,4 @@
 from django.db import models
-from django.contrib.auth import get_user_model
-from logs.models import EvalLog
 class QuestionType(models.Model):
     question_type_id = models.IntegerField(primary_key=True,null=False,unique=True)
     question_type = models.CharField(max_length=100,null=False)
@@ -62,7 +60,6 @@ class Answer(models.Model):
     summary = models.CharField(max_length=1000,null=False)
     view = models.IntegerField(default=0)
     user_view = models.IntegerField(default=0)
-    user_eval = models.ManyToManyField(get_user_model(),related_name="eval_users",through=EvalLog)
 
 
 class Sample(models.Model):
