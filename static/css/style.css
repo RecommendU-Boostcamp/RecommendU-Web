@@ -72,9 +72,9 @@ input:checked+label::after {
 
 input[type="checkbox"]+label .cbText {
     display: block;
-    min-width: 120px;
+    width: 150px;
     height: fit-content;
-    position: absolute;
+    position: relative;
     top: -5px;
     left: 16px;
     font-size: 1em;
@@ -90,7 +90,7 @@ input[type="checkbox"]+label .cbText {
     max-width: 2560px;
     min-width: 1280px;
     height: fit-content;
-    background: url(./images/bg.jpg) no-repeat;
+    background: url(../images/bg.jpg) no-repeat;
     background-size: cover;
     margin: 0 auto;
     /* background-color: #7a75d9; */
@@ -124,6 +124,62 @@ form,
     background-color: #fff;
 }
 
+
+.formBox #major-large{
+    width: 445px;
+    height: auto;
+    line-height: normal;
+    padding: 1em 1.2em;
+    border: 2.5px solid #f0f0f0;
+    border-radius: 15px;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: #2f2f2f;
+}
+
+.formBox #major-small{
+    width: 445px;
+    height: auto;
+    line-height: normal;
+    padding: 1em 1.2em;
+    border: 2.5px solid #f0f0f0;
+    border-radius: 15px;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: #2f2f2f;
+}
+
+.formBox #career-type{
+    width: 445px;
+    height: auto;
+    line-height: normal;
+    padding: 1em 1.2em;
+    border: 2.5px solid #f0f0f0;
+    border-radius: 15px;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: #2f2f2f;
+}
+
+
+.formBox #interesting-job-large{
+    width: 445px;
+    height: auto;
+    line-height: normal;
+    padding: 1em 1.2em;
+    border: 2.5px solid #f0f0f0;
+    border-radius: 15px;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: #2f2f2f;
+}
+
+
+
 h1.title {
     font-size: 2.5em;
     font-weight: 600;
@@ -149,6 +205,17 @@ button.btn {
     font-weight: 500;
     color: #2f2f2f;
 }
+
+
+button.signup-button{
+    padding: 1em 1.2em;
+    border: 2px solid #908aff;
+    border-radius: 15px;
+    font-size: 1em;
+    font-weight: 500;
+    color: #2f2f2f;
+}
+
 
 textarea::placeholder,
 ::placeholder {
@@ -237,21 +304,23 @@ button.btn.disabled {
 .mainWrap .submitWrap {
     width: 100%;
     height: 100%;
-    /* border-right: 1px solid #f0f0f0; */
+    max-height: 1070px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-start;
 }
 
 .mainWrap .submitWrap .filter {
     width: 100%;
     height: fit-content;
+    max-height: 130px;
     display: flex;
     width: 92%;
     padding: 20px;
     border: 1px solid #f0f0f0;
     border-radius: 5px;
     margin-bottom: 40px;
+    justify-content: space-between;
 }
 
 .mainWrap .submitWrap h3 {
@@ -268,14 +337,52 @@ button.btn.disabled {
 }
 
 .mainWrap .submitWrap .cbList {
-    width: 100%;
-    height: fit-content;
+    width: 161px;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: auto;
+    padding: 0px 10px 0px 10px;
+}
+
+.mainWrap .submitWrap .cbList .cb:nth-child(2){
+    margin-top: 30px;
 }
 
 .mainWrap .submitWrap .cbList h4.filter-category {
+    display: block;
+    width: 161px;
+    height: fit-content;
     font-weight: 500;
     font-size: 1em;
     margin-bottom: 10px;
+    position: absolute;
+    background-color: #fff;
+    z-index: 1;
+}
+
+.mainWrap .submitWrap select {
+    display: block;
+    width: 99.3%;
+    padding: 1em 1.2em;
+    height: auto;
+    border-radius: 5px;
+    border: 1px solid #f0f0f0;
+    font-size: 15px;
+    color: #2f2f2f;
+    font-weight: 400;
+}
+
+.mainWrap .submitWrap #company-input{
+    width: 125px;
+    height: auto;
+    line-height: normal;
+    padding: 1em 1.2em;
+    border: 2.5px solid #f0f0f0;
+    border-radius: 15px;
+    font-size: 0.8em;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: #2f2f2f;
 }
 
 .mainWrap .submitWrap .question {
@@ -285,7 +392,7 @@ button.btn.disabled {
 
 .mainWrap .submitWrap .question-contents {
     width: 100%;
-    height: fit-content;
+    height: 100%;
     margin-top: 5px;
 }
 
@@ -301,20 +408,53 @@ button.btn.disabled {
     font-weight: 400;
 }
 
-.mainWrap .submitWrap button {
+.mainWrap .submitWrap textarea.contents{
+    height: 100%;
+}
+
+.mainWrap .submitWrap #sample-button {
+    margin-top: 7%;
+    margin-left: 72%;
+    border-radius: 30px;
+    text-decoration: underline;
+    width: fit-content;
+    height: 70px;
+    background-color: #fff;
+    font-size: 1em;
+    border: none;
+    color:  #908aff;
+    font-weight: bold;
+}
+
+.mainWrap .submitWrap #recommend-button {
     margin: 0 auto;
     width: 100px;
     font-size: 1em;
     border-radius: 30px;
-    margin-top: 20px;
+    margin-top: 35px;
 }
 
-.mainWrap .list-column {
+.mainWrap #no-data {
+    display: block;
+}
+
+.mainWrap #no-data.hide {
+    display: none;
+}
+
+.mainWrap #exist-data {
+    display: none;
+}
+
+.mainWrap #exist-data.show {
+    display: block;
+}
+
+.mainWrap .data-list .list-column {
     width: 100%;
     height: fit-content;
     margin-bottom: 30px;
 }
-
 .mainWrap .listWrap .list-column .category,
 .popup .category {
     width: fit-content;
@@ -367,23 +507,23 @@ button.btn.disabled {
 
 .mainWrap .listWrap::-webkit-scrollbar,
 .mainWrap .submitWrap textarea::-webkit-scrollbar,
-.popup .letter::-webkit-scrollbar {
+.popup .letter::-webkit-scrollbar,
+.filter .cbList::-webkit-scrollbar {
     width: 5px;
+    height: 5px;
 }
 
 .mainWrap .listWrap::-webkit-scrollbar-thumb,
 .mainWrap .submitWrap textarea::-webkit-scrollbar-thumb,
-.popup .letter::-webkit-scrollbar-thumb {
+.popup .letter::-webkit-scrollbar-thumb,
+.filter .cbList::-webkit-scrollbar-thumb {
+    width :5px;
     background-color: #d2d2d2;
     border-radius: 10px;
     background-clip: padding-box;
     border: 1px solid transparent;
 }
 
-/* .mainWrap .listWrap::-webkit-scrollbar-track {
-    background-color: #f0f0f0;
-    border-radius: 10px;
-} */
 
 
 /*popup*/
@@ -493,9 +633,9 @@ button.btn.disabled {
 
 .popup .text h4.title {
     display: block;
-    white-space: nowrap;
+    /* white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis; */
     font-size: 1.4em;
     font-weight: 500;
     margin-bottom: 0;
@@ -504,7 +644,7 @@ button.btn.disabled {
 
 .popup .text .letter {
     padding: 10px;
-    max-height: 700px;
+    max-height: 300px;
     overflow-y: auto;
     padding-left: 10px;
     margin-top: 15px;
@@ -541,14 +681,47 @@ button.btn.disabled {
     right: 20px;
 }
 
-#main {
-    /* display: none; */
+.nav_button {
+    background-color: #cc87f2; /* This is a light purple color */
+    color: rgb(251, 239, 254); /* This sets the text color to white */
+    padding: 3px 6px; /* This sets the padding for the button */
+    border-radius: 7px;
+    /* border: none; This removes the border */
+    /* cursor: pointer; This changes the cursor to a pointer when hovering over the button */
+  }
+
+
+button.username-button {
+    position: absolute;
+    top: 0;
+    left: 50px;
 }
 
+
+#logout-button {
+    display: block;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 15px;
+    padding: 5px 15px 5px 15px;
+    font-weight: 500;
+    background-color: #908aff44;
+    color: #535091;
+    font-size: 1.3em;
+    margin-bottom: 20px;
+}
+
+
+.mainWrap .listWrap .list-column .list .item .company {
+    color: #535091;
+}
+
+/* #main {
+    display: none;
+}
 #signUp {
     display: none;
 }
-
 #signIn {
     display: none;
-}
+} */

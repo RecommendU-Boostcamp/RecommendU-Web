@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/index.js' %}"></script>
+</head>
+
+{% block content %}
+<body>
+    <div id="wrapper">
+        <div class="inner">
+            <section id="main" style="position:relative">
+                {% if request.user.is_authenticated %}
+                    <div style="position:flex; display:block">
+                        <a href="{% url 'services:main' %}"><img src="{% static 'images/recommend_logo.png' %}" style="position:relative; top:0px; left:40px; z-index:1; margin-bottom:20px; margin-top:20px" width="350px" height="70px" ></a>
+                    </div>      
+                  <a id="logout-button"  style="position:absolute; top:40px; right:50px; width:65px; height 20px; font-size:20px" href="{% url 'accounts:logout' %}" method="POST">Logout</a>
+                {% endif %}
+                <div class="mainWrap">              
+                    <div class="submitWrap part">
+                        {% csrf_token %}
+                        <h3>기업 및 직무 분류 선택</h3>
+                        <div class="filter">
+                            <div class="cbList">
+                                <h4 class="filter-category">기업검색</h4>
+                                <div class="cb">
+                                    <input list="company-list" name="company-input" id="company-input">
+                                    <datalist id="company-list">
+                                    {% for company in companies %}
+                                        <option value={{ company.company }} label={{ company.company }}>
+                                    {% endfor %}
+                                    </datalist>
+                                </div>
+                            </div>
+                            <div class="cbList">
+                                <h4 class="filter-category">직무검색</h4>
+                                <br/>
+                                {% for job in job_list %}
+                                    <div class="cb">
+                                        <input type="checkbox" name="job_main" id={{ job.id }} value={{ job.job_small }} onClick="checkOnlyOne(this); job_check(this,{{ job.job_small }},{{ job.job_small_id }});">
+                                        <label for={{ job.id }}>
+                                            <span class="cbText">{{ job.job_large }}</span>
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="cbList">
+                                <h4 class="filter-category">직무 상세검색</h4>
+                                <br/>
+                                <div id = 'job_result'></div>
+                            </div>
+                        </div>
+                        <h3>내 자소서 입력하기</h3>
+                        <div class="question">
+                            <select id = "question_list" onChange = "questionDefaultCheck(this.value); explanationChange(this.value);">
+                                <option value="none">자소서 문항을 선택하세요.</option>
+                                {% for question in question_type %}
+                                    <option value = {{ question.question_type_id }}>{{ question.question_type }}</option>
+                                {% endfor %}
+                                <option value="other">직접입력</option>
+                            </select>
+                        </div>
+                        <div class="question-contents">
+                            <textarea name="" id="answers" placeholder="자소서 내용을 입력하세요.&#13;&#10; &#13;&#10;10자 이상 입력하시면 나에게 더 맞는 추천을 받을 수 있어요.&#13;&#10;만약 당장 글을 쓰기 어렵다면, 우측하단 '💫샘플 자소서 불러오기' 버튼을 클릭해보세요!&#13;&#10;미완성 샘플 자소서를 불러와 드립니다." cols="30"
+                                class="contents"></textarea>
+                        </div>
+                        <button type="submit" id="sample-button" onClick="questionTypeCheck();">💫샘플 자소서 불러오기</button>
+                        <button type="submit" id="recommend-button" class="btn" onClick="getUserLogging('{% url 'logs:recbuttonlog' %}'); getRecommentData('{% url 'services:answer_recommend' %}');">추천받기</button>  
+                    </div>
+                    <div class="listWrap part" id="no-data">
+                        <div id="waitMessage" class="listWrap part no-data">
+                            <p>
+                                <b>추천 결과가 없습니다. 🥺</b><br>
+                                다른 조건으로 입력하시거나, 추천받기 버튼을 눌러주세요.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="listWrap part" id="exist-data">
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    var count = 0
+    recommendData = ""
+    function explanationChange(value){
+        const sampleBtn = document.getElementById('answers');
+        if (value == "other") {
+            sampleBtn.setAttribute('placeholder', '자소서 내용을 입력하세요.\n10자 이상 입력하시면 나에게 더 맞는 추천을 받을 수 있어요.')
+        }
+    }
+     
+    function questionTypeCheck(){
+        const question_type = document.getElementById('question_list').value;
+        if (question_type == 'none'){
+            alert("질문 카테고리를 선택해야 샘플을 추천받을 수 있습니다.")
+        }
+        else{
+            var sample_list = "{{sample_list}}".replace(/&#x27;/g,"\"");
+            sample_list = sample_list.replace(/&quot;/g, "\"")
+            var samples = JSON.parse(sample_list);
+            count = count+1
+            document.getElementById("answers").value = ""
+            document.getElementById("answers").value = samples[question_type][count % 10]['content']
+        }
+    }
+    
+    async function getUserLogging(url){
+        const company = document.getElementById('company-input').value
+        if(company==""){
+            alert("관심기업을 선택해주세요.")
+            return -1
+        }
+        
+        var questionType = 0
+        const query = 'input[name="job_detail"]:checked';
+        var jobType =document.querySelectorAll(query)[0];
+        if (jobType){
+            jobType = document.querySelectorAll(query)[0].id
+        }
+        else{
+            alert("직무 상세검색을 선택해주세요.")
+            return -1
+        }
+        var questionContent = ""
+
+        if(document.getElementById("question_list")){ 
+            questionType = document.getElementById('question_list').value;
+            if (questionType == 'none'){
+                alert("질문을 선택해주세요")
+                return -1
+            }
+        }else{
+            questionContent = document.getElementById('question-text').value;
+            questionType = 1000023;
+        }
+        
+        const logData = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({
+                userId: '{{ request.user }}',  // url 태그와 같은 기능태그는 script태그에서 해석되지 않지만 {{ variable }}과 같은 변수 태그는 해석됨
+                company,
+                jobType,
+                questionType,
+                questionContent
+            }),
+        }
+        response = await fetch(url, logData)
+        const data = await response.json()
+    }
+
+    async function getRecommentData(url){
+        const company = document.getElementById('company-input').value;
+        if(company==""){
+            return -1
+        }
+        var question_type = 0;
+        var question_text = "";
+        const render_window = document.querySelector(".listWrap>p")
+        render_window.innerHTML = "<b>자기소개서를 가져오고 있어요 🙏🏻</b><br>잠시만 기다려주세요.</p>"
+        render_window.setAttribute('class', 'exist-data')
+
+        // 잠시만 기다려주세요 화면 render
+        if(document.getElementById("question_list")){
+            question_type = document.getElementById('question_list').value;
+        }else{
+            question_text = document.getElementById('question-text').value;
+            question_type = 1000023;
+        }
+        const query = 'input[name="job_detail"]:checked';
+        if (!document.querySelectorAll(query)[0]){
+            return -1
+        }
+        const jobType =document.querySelectorAll(query)[0].id;
+        const answer_text = document.getElementById("answers").value;
+        const recommend_data = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({  
+                company: company,
+                jobType: jobType,
+                questionType: question_type,
+                questionText:question_text,
+                content:answer_text,
+            }),
+        }
+        const response = await fetch(url, recommend_data)
+
+        const data = await response.json()
+        const no_data = document.getElementById("no-data");
+        no_data.classList.add("hide");
+        const exist_data = document.getElementById("exist-data");
+        exist_data.classList.add("show");
+
+        render_window.setAttribute('class', 'no-data')
+        if (data==412){
+            alert("질문을 다시 입력해주세요.")
+        }
+        else{
+            makingRecommendList(data);
+        }
+    }
+
+    
+    function makingRecommendList(data) {
+        var keys = Object.keys(data)
+        tagLen = keys.length
+        const a = document.querySelector('#exist-data')
+        var tag_name = 7000000
+        a.replaceChildren()
+        
+        // data의 key 순회
+        for (let i = 0; i <tagLen; i++){
+            var key = keys[i]
+            var tag = data[key]
+            var listLen = tag.length
+            tag_name += 1
+            var b = document.createElement('div')
+            b.setAttribute('class', 'list-column')
+            var c1 = document.createElement('h3')
+            c1.setAttribute('class', 'category')
+            c1.innerText = '#' + key
+            var c2 = document.createElement('div')
+            c2.setAttribute('class', 'list')
+            
+            for (let j = 0; j<listLen; j++) {
+                // 각 key의 answer들 순회
+                var answer = tag[j]
+                var content_id = answer.answer_id+tag_name.toString()
+                
+                var d1 = document.createElement('div')
+                d1.setAttribute('class', 'item')
+                d1.setAttribute('onClick', `popup_open(${content_id}); getAnswerLog(${ content_id }, '{% url "logs:answerlog" %}');`)
+                var d_title = document.createElement('h4')
+                d_title.setAttribute('class', 'title')
+                d_title.innerText = answer.question
+                var d_company = document.createElement('h4')
+                d_company.setAttribute('class', 'company')
+                d_company.innerText = answer.company + ' · ' + answer.job_small
+                var d_content = document.createElement('p')
+                d_content.setAttribute('class', 'contents')
+                d_content.innerText = answer.summary
+                var d2 = document.createElement('div')
+                d2.setAttribute('class', 'popup')
+                d2.setAttribute('id', `${content_id}`)
+                var e = document.createElement('div')
+                e.setAttribute('class', 'contents')
+                var f1 = document.createElement('h3')
+                f1.setAttribute('class', 'category')
+                f1.setAttribute('name', tag_name)
+                f1.innerText = '#' + keys[i]
+                var f2 = document.createElement('div')
+                f2.setAttribute('class', 'info')
+                var f3 = document.createElement('div')
+                f3.setAttribute('class', 'text')
+                var g1 = document.createElement('span')
+                var f4 = document.createElement('a')
+                f4.setAttribute('href', answer.document_url)
+                f4.setAttribute('target', '_blank')
+                f4.innerHTML="🔗 원본 확인하기"
+                var f5 = document.createElement('button')
+                f5.setAttribute('type', 'button')
+                f5.setAttribute('class', 'btn btn_close')
+                f5.setAttribute('onClick', `popup_close(${content_id})`)
+                f5.innerText = 'X'
+                g1.setAttribute('id', 'info-company')
+                g1.innerText = answer.company
+                var g2 = document.createElement('span')
+                g2.setAttribute('id', 'info-work')
+                g2.innerText = answer.job_small
+                var g3 = document.createElement('div')
+                g3.setAttribute('class','info-spec')
+                var g4 = document.createElement('h4')
+                g4.setAttribute('class', 'title')
+                g4.innerText = answer.question
+                var g5 = document.createElement('p')
+                g5.setAttribute('class', 'letter')
+                g5.innerText = answer.content
+                var h1 = document.createElement('span')
+                h1.setAttribute('id', 'info-spec--school')
+                h1.innerText = answer.schooltype
+                var h2 = document.createElement('span')
+                h2.setAttribute('id', 'info-spec--major')
+                h2.innerText = answer.major_small
+                var h3 = document.createElement('span')
+                h3.setAttribute('id', 'info-spec--extra_spec')
+                var spec_array = answer.spec.slice(1,-1).split(',')
+                for (let k = 0; k<spec_array.length; k++){
+                    var content = document.createElement('p')
+                    content.setAttribute('class', 'detail')
+                    content.innerText = spec_array[k]
+                    h3.append(content)
+                }
+                g3.append(h1, h2, h3)
+                f3.append(g4, g5)
+                f2.append(g1, g2, g3)
+                e.append(f1, f2, f3, f4, f5)
+                d2.append(e)
+                d1.append(d_company, d_title, d_content)
+                c2.append(d1, d2)
+            }
+            b.append(c1, c2)
+            a.append(b)
+        }
+    }
+
+    function getAnswerLog(answer_id, url){
+        const user_id = '{{ request.user }}';
+        const content_id = answer_id.id;
+        const rec_type =document.querySelector('#'+content_id+' .category').getAttribute('name');
+        const answer_data = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({  
+                userId: user_id,  
+                contentId: content_id.slice(0,7),
+                recType: rec_type,
+            }),
+        }
+        fetch(url, answer_data)
+        .then((res) => res.json())
+        .catch((error)=> console.log('error 발생'));
+    }
+</script> 
+{% endblock %}

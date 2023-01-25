@@ -1,134 +1,161 @@
-from django.shortcuts import render, get_list_or_404, get_object_or_404
-from .jkdata.initiation import dbinit, jobkoreainit
-from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample
-from rest_framework.decorators import api_view
-from django.http import HttpResponse
+from django.shortcuts import render, get_list_or_404, get_object_or_404, redirect
+from .dbinit.initiation import dbinit, jobkoreainit, question_type_init, company_init, major_large_init, major_small_init, job_large_init, job_small_init, recommend_type_init, school_init, doc_init, answer_init, sample_init
+from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType, JobList,Sample
+from .serializers import ContentListSerializer
 
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
+from django.http import HttpResponse
+from django.db.models import Q
+
+from django.db.models.functions import Length
+from services.apps import ServicesConfig
+from inference.preprocess import Recommendation
+import time
 import json
-import ast
 
 # Create your views here.
 
-def render_test(request):
-    context = {'hi': 'hi'}
-    return render(request, 'recommendu/index.html', context)
+
+@api_view(['POST', ])
+def answer_recommend(request):
+    # request에 유저가 누군지 + 회사/질문/직무/답변 달려있음
+    s_time = time.time()
+    data = request.data
+    company = get_object_or_404(Company, company=data["company"])
+    job_small = get_object_or_404(JobSmall, job_small_id=int(data["jobType"]))
+    question_type = get_object_or_404(QuestionType, question_type_id = int(data["questionType"]))
+    question_text = data["questionText"]
+    content = data["content"]
+    user = request.user
+    
+    if question_type.question_type_id == 1000023:
+        import re
+        WHITESPACE_HANDLER = lambda k: re.sub('\s+', ' ', re.sub('\n+', ' ', k.strip()))
+        question_text = WHITESPACE_HANDLER(question_text)
+        question_category, sim = ServicesConfig.embedder.match_question_top1(question_text, ServicesConfig.question_emb_matrix)
+        if len(question_text)==0 or sim < 0.5:
+            return Response(status.HTTP_412_PRECONDITION_FAILED)
+        question_category +=1000000
+        question_type = get_object_or_404(QuestionType, question_type_id = question_category)
+    
+    
+    if len(content) < 10:
+        content = ""
+        
+    recommend = Recommendation(ServicesConfig.document, ServicesConfig.item, ServicesConfig.qcate_dict, ServicesConfig.answer_emb_matrix, ServicesConfig.embedder, 
+                            question_type.question_type_id-1000000, company.company, user.favorite_company, job_small.job_large.job_large, job_small.job_small, content, 
+                            4)
+    
+    recommend.filtering()
+
+    result = {
+            "나와 가장 비슷해요" : recommend.recommend_with_company_jobtype(),
+            "비슷한 직무로 모아봤어요" : recommend.recommend_with_jobtype_without_company(),
+            "회사가 같으면 먼저 뽑았어요" : recommend.recommend_with_company_without_jobtype(),
+            "조회를 많이 했어요" : recommend.recommed_based_popularity(),
+            "전문가 평이 좋아요" : recommend.recommend_based_expert()[0],
+            "전문가 평이 별로에요" : recommend.recommend_based_expert()[1]
+            }
+    
+    result_keys = result.keys()
+    to_front = {key : [] for key in result_keys}
+    
+    for key in result:
+        ran_num=4
+        if key in ["전문가 평이 좋아요", "전문가 평이 별로에요"]:
+            ran_num = 2
+        for i in range(ran_num):
+            temp_answer = get_object_or_404(ContentList, answer_id= 'a'+str(result[key][i]).zfill(6))
+            temp_answer = ContentListSerializer(temp_answer)
+            to_front[key].append(temp_answer.data)
+
+    
+    # print(f"인퍼런스에 {time.time() - s_time}초 걸렸습니다용")
+    # for key in result:
+    #     print(f'===================={key}====================')
+    #     ran_num=4
+    #     if key in ["전문가 평이 좋아요", "전문가 평이 나빠요"]:
+    #         ran_num = 2
+    #     for i in range(ran_num):
+    #         temp_answer = get_object_or_404(Answer, answer_id= 'a'+str(result[key][i]).zfill(6))
+    #         print(f'회사: {temp_answer.document.company.company}')
+    #         print(f'대직무: {temp_answer.document.job_small.job_small}')
+    #         print(f'소직무: {temp_answer.document.job_small.job_large.job_large}')
+    #         print(f'답안: {temp_answer.content}')
+    #         print(f'question: {temp_answer.question}')
+    #         print(f'view: {temp_answer.view}')
+    
+    return Response(to_front)
+
+
+
+def main(request):
+    if not request.user.is_authenticated:  # 만약 식별된 사용자가 아니면 
+        return redirect("accounts:login")
+        
+    job_query = JobList.objects.all().order_by(Length('job_large').desc())
+    question_query = QuestionType.objects.all()[0:21]
+    sample_query = {}
+    
+    for i in range(1,22):
+        question_type = str(1000000+i)
+        samples = Sample.objects.filter(question_type_id = question_type)[3:13]
+        sample_query[question_type] = [sample.make_sample() for sample in samples] 
+        
+    for i in range(0,len(job_query)):
+        job_query[i].id = "job_"+str(i)
+        job_query[i].job_small = job_query[i].job_small.split(',')
+        job_query[i].job_small_id = job_query[i].job_small_id.split(',')
+    
+    companies = Company.objects.all()
+
+    context = {
+        "job_list":job_query,
+        "question_type" : question_query,
+        'companies' : companies,
+        "sample_list" : sample_query,
+    }
+    return render(request, 'services/main.html', context)
+
+    
+
+
+@api_view(['GET', ])
+def search_company(request):
+    companies = Company.objects.all()
+    context = {
+        'companies' : companies
+    }
+
+    # serializer 달아줘야 함
+    return render(request, 'search_test.html', context)
 
 
 def db_first(request):
-    data_path = '/opt/ml/RecommendU/RecommendU-back/services/jkdata/'
-    question_types, companies, major_larges, major_smalls, job_larges, job_smalls, recommend_types, major_dict, job_dict = dbinit(data_path)
+    data_path = '/opt/ml/RecommendU/RecommendU-back/services/dbinit/'
+    question_types, companies, major_larges, major_smalls, job_larges, job_smalls, schools, recommend_types, major_dict, job_dict = dbinit(data_path)   
     
-    # question_type
-    for i in range(len(question_types)):
-        instance = QuestionType()
-        instance.question_type_id = 1000000+(i+1)
-        instance.question_type = question_types[i]
-        instance.save()
-
-    for i in range(len(companies)):
-        instance = Company()
-        instance.company_id = 2000000+(i+1)
-        instance.company = companies[i]
-        instance.save()
-    
-    for i in range(len(major_larges)):
-        instance = MajorLarge()
-        instance.major_large_id = 3000000+(i+1)
-        instance.major_large = major_larges[i]
-        instance.save()
-
-
-    for i in range(len(major_smalls)):
-        instance = MajorSmall()
-        instance.major_small_id = 4000000+(i+1)
-        instance.major_small = major_smalls[i]
-        instance.save()
-
-
-    for i in range(len(job_larges)):
-        instance = JobLarge()
-        instance.job_large_id = 5000000+(i+1)
-        instance.job_large = job_larges[i]
-        instance.save()
-
-
-    for i in range(len(job_smalls)):
-        instance = JobSmall()
-        instance.job_small_id = 6000000+(i+1)
-        instance.job_small = job_smalls[i]
-        instance.save()
-
-
-    for i in range(len(recommend_types)):
-        instance = RecommendType()
-        instance.rectype_id = 7000000+(i+1)
-        instance.rectype = recommend_types[i]
-        instance.save()
-
-
-    # ForeignKey 등록해주는 과정
-    for i in range(len(major_smalls)):
-        instance = get_object_or_404(MajorSmall, major_small=major_smalls[i])
-        instance.major_large = get_object_or_404(MajorLarge, major_large=major_dict[major_smalls[i]][0])
-        instance.save()
-
-    for i in range(len(job_smalls)):
-        instance = get_object_or_404(JobSmall, job_small=job_smalls[i])
-        instance.job_large = get_object_or_404(JobLarge, job_large=job_dict[job_smalls[i]][0])
-        instance.save()
+    question_type_init(question_types)
+    company_init(companies)
+    major_large_init(major_larges)
+    major_small_init(major_smalls, major_dict)
+    job_large_init(job_larges)
+    job_small_init(job_smalls, job_dict)
+    recommend_type_init(recommend_types)
+    school_init(schools)
 
     return HttpResponse("Init Done!")
  
-    
 
 
 def docu_answer_init(request):
-    data_path = '/opt/ml/RecommendU/RecommendU-back/services/jkdata/'
+    data_path = '/opt/ml/RecommendU/RecommendU-back/services/dbinit/'
     answer_data, doc_data, sample_data = jobkoreainit(data_path)
 
-    n_doc = len(doc_data)
-    n_answer = len(answer_data)
-    n_sample = len(sample_data)
-
-    for i in range(n_doc):
-        doc = doc_data.iloc[i]
-        instance = Document()
-        instance.document_id ='d'+str(doc.doc_id).zfill(6)
-        instance.company = get_object_or_404(Company, company=doc.company)
-        instance.job_small = get_object_or_404(JobSmall, job_small=doc.job_small)
-        instance.major_small = get_object_or_404(MajorSmall, major_small=doc.major_small)
-        instance.document_url = doc.doc_url
-        instance.pro_rating = doc.pro_rating
-        instance.save()
-
-    for i in range(n_answer):
-        answer = answer_data.loc[i]
-        instance = Answer()
-        instance.answer_id = 'a'+str(answer.answer_id).zfill(6)
-        instance.content = answer.answer
-        instance.question = answer.question
-        instance.document = get_object_or_404(Document, document_id='d'+str(answer.doc_id).zfill(6))
-        instance.pro_good_cnt = answer.pro_good_cnt
-        instance.pro_bad_cnt = answer.pro_bad_cnt
-        instance.summary = answer.summary
-        instance.view = answer.doc_view
-        
-        qtypes = json.loads(answer.question_category)
-        for qtype in qtypes:
-            temp_qtype = get_object_or_404(QuestionType, question_type_id=1000000+qtype)
-            instance.question_types.add(temp_qtype)
-        instance.save()
-    
-    for i in range(n_sample):
-        sample = sample_data.loc[i]
-        instance = Sample()
-        instance.sample_id = 's'+str(i).zfill(6)
-        instance.question = sample.question
-        instance.content = sample.answer
-        instance.summary = sample.summary
-
-        qtype = json.loads(sample.sample_category)[0]
-        instance.question_type = get_object_or_404(QuestionType, question_type_id=1000000+qtype)
-        instance.save()
+    # doc_init(doc_data)
+    # answer_init(answer_data)
+    sample_init(sample_data)
 
     return HttpResponse(f"cover letter saving Done")    

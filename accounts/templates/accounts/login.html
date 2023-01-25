@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+<body>
+    <div id="wrapper">
+        <div class="inner">
+            <!--signIn 페이지-->
+            <section id="signIn">
+                <div class="formBox">
+                    <form style="position:flex">
+                        <h1 class="title logo"><img src="{% static 'images/recommend_logo.png' %}" alt="" style="justify-content position:absolute; width:400px; height:80px; left:45px; top:-60px"></h1>
+                        {% csrf_token %}
+                        <span>아이디</span>
+                        <input id="username" type="text" placeholder="아이디" name="username">
+                        <span>비밀번호</span>
+                        <input id="password" type="password" placeholder="비밀번호" name="password">
+                        <button type="button" class="btn btn_login" onClick="loginCheck('{% url 'accounts:login' %}','{% url 'services:main' %}')">로그인</button>
+                    </form>
+                    <p>
+                        아직 계정이 없으신가요?
+                        <a href="{% url 'accounts:signup' %}">회원가입</a>
+                    </p>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+
+<script>
+    async function loginCheck(url, mainPage) {
+        const username = document.querySelector('#username').value
+        const password = document.querySelector('#password').value
+        const checkData = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({
+                username,   // url 태그와 같은 기능태그는 script태그에서 해석되지 않지만 {{ variable }}과 같은 변수 태그는 해석됨
+                password
+            }),
+        }
+        const response = await fetch(url, checkData)
+
+        if (response.status===200) {
+            location.href=mainPage;
+            location.replace(link);
+            window.open(link);
+        } else if (username === '') {
+            alert('아이디를 입력해주세요.')
+        }  else if (response.status===203){
+            alert('등록되지 않은 아이디입니다.')
+        } else {
+            alert('비밀번호를 다시 확인해 주세요.')
+        }
+
+    }
+
+</script>
+{% endblock content %}

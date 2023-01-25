@@ -22,6 +22,9 @@ class JobLarge(models.Model):
     job_large_id = models.IntegerField(primary_key=True,null=False,unique=True)
     job_large = models.CharField(max_length=100,null=False)
     
+    def __repr__(self):
+        return f'domain name: {self.job_large}, domain id: {self.job_arge_id}'
+    
 class JobSmall(models.Model):
     job_small_id = models.IntegerField(primary_key=True,null=False,unique=True)
     job_large = models.ForeignKey(JobLarge,related_name="job_smalls",on_delete=models.SET_NULL,null=True)
@@ -31,6 +34,9 @@ class RecommendType(models.Model):
     rectype_id = models.IntegerField(primary_key=True,null=False,unique=True)
     rectype = models.CharField(max_length=100,null=False)
     
+class SchoolType(models.Model):
+    schooltype_id = models.IntegerField(primary_key=True, null=False, unique=True)
+    schooltype = models.CharField(max_length=10, null=False)
     
 class Document(models.Model):
     document_id = models.CharField(primary_key=True,max_length=10,null=False,unique=True)
@@ -38,6 +44,8 @@ class Document(models.Model):
     job_small = models.ForeignKey(JobSmall,related_name="documents",on_delete=models.SET_NULL,null=True)
     major_small = models.ForeignKey(MajorSmall,related_name="documents",on_delete=models.SET_NULL,null=True)
     document_url = models.CharField(max_length=500)
+    school = models.ForeignKey(SchoolType, related_name="documents", on_delete=models.SET_NULL, null=True)
+    spec = models.CharField(max_length=1000, default=None)
     pro_rating = models.FloatField(null=False)
     
 class Answer(models.Model):
@@ -61,5 +69,49 @@ class Sample(models.Model):
     question_type = models.ForeignKey(QuestionType, related_name='samples', on_delete=models.SET_NULL, null=True)
     qeustion = models.CharField(max_length=1000, null=False)
     summary = models.CharField(max_length=1000, null=False)
+    
+    def make_sample(self):
+        return {'sample_id' : self.sample_id,'content':self.content.replace("\'",'')}
 
 
+class ContentList(models.Model):
+    answer_id = models.CharField(primary_key=True,max_length=10,null=False,unique=True)
+    question = models.CharField(max_length=1000, null=False)
+    content = models.CharField(max_length=10000,null=False)
+    summary = models.CharField(max_length=1000,null=False)
+    spec = models.CharField(max_length=600,null=False)
+    schooltype =models.CharField(max_length=100,null=False)
+    view = models.IntegerField(default=0)
+    user_view = models.IntegerField(default=0)
+    document_url = models.CharField(max_length=500)
+    company = models.CharField(max_length=100,null=False)
+    major_small = models.CharField(max_length=100,null=False)
+    job_small = models.CharField(max_length=100,null=False)
+    question_types = models.CharField(max_length=200,null=False)
+    
+    class Meta:
+        managed = False               
+        db_table = 'content_view'
+
+
+class MajorList(models.Model):
+    major_large = models.CharField(primary_key=True,max_length=100,null=False)
+    major_small = models.CharField(max_length=600,null=False)
+    class Meta:
+        managed = False               
+        db_table = 'major_view'
+        
+    def json(self):
+        return {
+            "major_large": self.major_large,
+            "major_small": self.major_small
+        }
+        
+        
+class JobList(models.Model):
+    job_large = models.CharField(primary_key=True,max_length=100,null=False)
+    job_small = models.CharField(max_length=600,null=False)
+    job_small_id = models.CharField(max_length=1000,null=False)
+    class Meta:
+        managed = False               
+        db_table = 'job_view'
