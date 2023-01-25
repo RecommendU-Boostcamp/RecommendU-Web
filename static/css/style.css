@@ -716,6 +716,25 @@ button.username-button {
     color: #535091;
 }
 
+.mark-fill {
+    padding-top: 10px;
+    width: 21px;
+    height: 21px;
+    display:inline-block;
+    position: absolute;
+    top:81px;
+    margin-left:12px;
+}
+
+.mark-empty {
+    padding-top: 10px;
+    width: 20px;
+    height: 20px;
+    display:inline-block;
+    position: absolute;
+    top:82px;
+    margin-left:12px;
+}
 /* #main {
     display: none;
 }
