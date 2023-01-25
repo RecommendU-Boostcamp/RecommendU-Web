@@ -158,4 +158,4 @@ def docu_answer_init(request):
     # answer_init(answer_data)
     sample_init(sample_data)
 
-    return HttpResponse(f"cover letter saving Done")    
+    return HttpResponse(f"cover letter saving Done")

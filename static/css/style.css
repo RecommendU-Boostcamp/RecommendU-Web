@@ -667,6 +667,34 @@ button.btn.disabled {
     margin-top: 20px;
 }
 
+.popup button.btn_good{
+    margin: 0px;
+    padding: 0px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 200;
+    font-size: 1.2em;
+    border-radius: 5px;
+    width: 60px;
+    height: 40px;
+    position: absolute;
+    top: 91%;
+    right: 88%;
+}
+
+.popup button.btn_bad{
+    margin: 0px;
+    padding: 0px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 200;
+    font-size: 1.2em;
+    border-radius: 5px;
+    width: 60px;
+    height: 40px;
+    position: absolute;
+    top: 91%;
+    right: 80%;
+}
+
 .popup button.btn_close {
     margin: 0px;
     padding: 0px;
