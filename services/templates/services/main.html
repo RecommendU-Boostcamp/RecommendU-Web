@@ -247,6 +247,8 @@
                 var d1 = document.createElement('div')
                 d1.setAttribute('class', 'item')
                 d1.setAttribute('onClick', `popup_open(${content_id}); getAnswerLog(${ content_id }, '{% url "logs:answerlog" %}');`)
+                var d_company = document.createElement('h4')
+                d_company.innerText = answer.company + ' · ' + answer.job_small
                 var d_title = document.createElement('h4')
                 d_title.setAttribute('class', 'title')
                 d_title.innerText = answer.question
@@ -309,7 +311,7 @@
                 f2.append(g1, g2, g3)
                 e.append(f1, f2, f3, f4, f5)
                 d2.append(e)
-                d1.append(d_title, d_content)
+                d1.append(d_company,d_title, d_content)
                 c2.append(d1, d2)
             }
             b.append(c1, c2)
