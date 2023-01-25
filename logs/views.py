@@ -85,7 +85,6 @@ def eval_log(request):
             return Response(status.HTTP_301_MOVED_PERMANENTLY)
         else:
             return Response(status.HTTP_304_NOT_MODIFIED)
-    return Response(status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST', ])

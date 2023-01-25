@@ -1,7 +1,10 @@
 from django.shortcuts import render, get_list_or_404, get_object_or_404, redirect
 from .dbinit.initiation import dbinit, jobkoreainit, question_type_init, company_init, major_large_init, major_small_init, job_large_init, job_small_init, recommend_type_init, school_init, doc_init, answer_init, sample_init
+from django.contrib.auth import get_user_model
+
 from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType, JobList,Sample
 from .serializers import ContentListSerializer
+from logs.models import EvalLog
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -40,7 +43,6 @@ def answer_recommend(request):
         question_category +=1000000
         question_type = get_object_or_404(QuestionType, question_type_id = question_category)
     
-    
     if len(content) < 10:
         content = ""
         
@@ -49,11 +51,10 @@ def answer_recommend(request):
                             4)
     
     recommend.filtering()
-
     result = {
-            "사용자 님과 유사한 자소서를 골라봤어요" : recommend.recommend_with_company_jobtype(),
-            "비슷한 직무로 모아봤어요" : recommend.recommend_with_jobtype_without_company(),
+            " 님과 유사한 자소서를 골라봤어요" : recommend.recommend_with_company_jobtype(),
             "지원하는 회사가 비슷해요" : recommend.recommend_with_company_without_jobtype(),
+            "비슷한 직무로 모아봤어요" : recommend.recommend_with_jobtype_without_company(),
             "조회를 많이 했어요" : recommend.recommed_based_popularity(),
             "전문가 평이 좋아요" : recommend.recommend_based_expert()[0],
             "전문가 평이 별로에요" : recommend.recommend_based_expert()[1]
@@ -71,23 +72,63 @@ def answer_recommend(request):
             temp_answer = ContentListSerializer(temp_answer)
             to_front[key].append(temp_answer.data)
 
-    
-    # print(f"인퍼런스에 {time.time() - s_time}초 걸렸습니다용")
-    # for key in result:
-    #     print(f'===================={key}====================')
-    #     ran_num=4
-    #     if key in ["전문가 평이 좋아요", "전문가 평이 나빠요"]:
-    #         ran_num = 2
-    #     for i in range(ran_num):
-    #         temp_answer = get_object_or_404(Answer, answer_id= 'a'+str(result[key][i]).zfill(6))
-    #         print(f'회사: {temp_answer.document.company.company}')
-    #         print(f'대직무: {temp_answer.document.job_small.job_small}')
-    #         print(f'소직무: {temp_answer.document.job_small.job_large.job_large}')
-    #         print(f'답안: {temp_answer.content}')
-    #         print(f'question: {temp_answer.question}')
-    #         print(f'view: {temp_answer.view}')
-    
     return Response(to_front)
+
+
+@api_view(['POST', ])
+def check_status(request):
+    print(request.data)
+    data = request.data
+    
+    user = get_object_or_404(get_user_model(), username=data['user_id'])
+    answer = get_object_or_404(Answer, answer_id=data['answer_id'])
+    is_good_eval = None
+    
+    good_count = EvalLog.objects.filter(answer_id=answer, favor=0).count()
+    bad_count = EvalLog.objects.filter(answer_id=answer, favor=1).count()
+    
+    user_eval_list = list(user.answer_eval.all())
+    
+    try:
+        _ = bool(get_object_or_404(get_user_model(), answer_scrap=answer))
+        is_scrap = True
+    except:
+        is_scrap = False
+    
+    if answer in user_eval_list:
+        is_eval = True
+        eval_log = get_object_or_404(EvalLog, user_id=user, answer_id=answer)
+        eval_status = eval_log.favor
+    else:
+        is_eval = False
+    
+    if is_eval:
+        result = {"isScrap": is_scrap, "isEval": is_eval, "evalStatus": eval_status, "goodCnt": good_count, "badCnt": bad_count}
+    else:
+        result = {"isScrap": is_scrap, "isEval": is_eval, "goodCnt": good_count, "badCnt": bad_count}
+    
+    data = json.dumps(result)
+    return Response(data, status=status.HTTP_200_OK)
+        
+        # if eval_status:
+        #     return Response(status=status.HTTP_208_ALREADY_REPORTED)  # 둘다 이미 등록되어 있고 eval은 좋음
+        # else:
+        #     return Response(status=status.HTTP_207_MULTI_STATUS)  # 둘다 이미 등록되어 있고 eval은 나쁨
+    
+    # elif is_scrap:
+    #     return Response(status=status.HTTP_206_PARTIAL_CONTENT)  # 스크랩만 되어 있음
+    
+    # elif is_eval:
+    #     if eval_status:
+    #         return Response(status=status.HTTP_205_RESET_CONTENT)  
+        
+    # except:
+    #     is_eval = False
+        
+    # # if is_eval:
+        
+    # pass
+
 
 
 
@@ -132,6 +173,12 @@ def search_company(request):
     # serializer 달아줘야 함
     return render(request, 'search_test.html', context)
 
+
+
+
+'''
+아래의 함수는 데이터베이스에 등록하는 용도이며, 초기화 이후에는 접근 url을 차단합니다.
+'''
 
 def db_first(request):
     data_path = '/opt/ml/RecommendU/RecommendU-back/services/dbinit/'

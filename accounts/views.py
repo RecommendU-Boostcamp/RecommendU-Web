@@ -70,17 +70,17 @@ def signup(request):
             _user = None
             
         if _user:
-            data = {'message':'같은 아이디가 이미 있습니다.'}
+            data = {"message":'같은 아이디가 이미 있습니다.'}
             data = json.dumps(data)
             return Response(data, status=status.HTTP_205_RESET_CONTENT)
         
         if len(request.data['password1']) < 8:
-            data = {'message':'비밀번호가 너무 짧습니다.'}
+            data = {"message":'비밀번호가 너무 짧습니다.'}
             data = json.dumps(data)
             return Response(data, status=status.HTTP_205_RESET_CONTENT)
         
         if request.data['password1'] != request.data['password2']: 
-            data = {'message':'비밀번호가 일치하지 않습니다.'}
+            data = {"message":'비밀번호가 일치하지 않습니다.'}
             data = json.dumps(data)                      
             return Response(data, status=status.HTTP_205_RESET_CONTENT)
 
@@ -95,13 +95,13 @@ def signup(request):
 
         if form.is_valid():
             form.save()
-            data = {'message': 'Good!'}
+            data = {"message": 'Good!'}
             data = json.dumps(data)    
             return Response(data, status=status.HTTP_200_OK)
             # return redirect('services:main')
         
         else:  
-            data = {'message': '입력 정보를 다시 한 번 확인하세요.'}
+            data = {"message": '입력 정보를 다시 한 번 확인하세요.'}
             data = json.dumps(data)       
             return Response(data, status=status.HTTP_205_RESET_CONTENT)
         

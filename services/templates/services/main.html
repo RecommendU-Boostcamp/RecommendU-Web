@@ -234,10 +234,15 @@
             var listLen = tag.length
             tag_name += 1
             var b = document.createElement('div')
-            b.setAttribute('class', 'list-column')
+            b.setAttribute('class', `list-column t${tag_name.toString()}`)
             var c1 = document.createElement('h3')
             c1.setAttribute('class', 'category')
-            c1.innerText = '#' + key
+            if (i === 0) {
+                c1.innerText = '#' + '{{ request.user.username }}' + key
+            } else {
+                c1.innerText = '#' + key
+            }
+            
             var c2 = document.createElement('div')
             c2.setAttribute('class', 'list')
             
@@ -247,7 +252,7 @@
                 var content_id = answer.answer_id+tag_name.toString()
                 var d1 = document.createElement('div')
                 d1.setAttribute('class', 'item')
-                d1.setAttribute('onClick', `popup_open(${content_id}); getAnswerLog(${ content_id }, '{% url "logs:answerlog" %}');`)
+                d1.setAttribute('onClick', `popup_open(${content_id}); getAnswerLog(${ content_id }, '{% url "logs:answerlog" %}'); checkStatus('{{ request.user.username }}', ${content_id}, 't'+${tag_name.toString()}, '{% url "services:check_status" %}')`)
                 var d_title = document.createElement('h4')
                 d_title.setAttribute('class', 'title')
                 d_title.innerText = answer.question
@@ -265,7 +270,11 @@
                 var f1 = document.createElement('h3')
                 f1.setAttribute('class', 'category')
                 f1.setAttribute('name', tag_name)
-                f1.innerText = '#' + keys[i]
+                if (i === 0) {
+                    f1.innerText = '#' + '{{ request.user.username }}' + key
+                } else {
+                    f1.innerText = '#' + key
+                }
                 var f2 = document.createElement('div')
                 f2.setAttribute('class', 'info')
                 var f3 = document.createElement('div')
@@ -285,17 +294,17 @@
                 f6.setAttribute('class', 'btn btn_good')
                 f6.setAttribute('id', 'btn_good'+answer.answer_id)
                 f6.setAttribute('value',answer.user_good_cnt)
-                f6.setAttribute('onClick',`getUserGood(${content_id},${answer.user_good_cnt})`)
+                f6.setAttribute('onClick',`getUserGood(${content_id},${answer.user_good_cnt},'t'+${tag_name.toString()},'{% url "logs:evallog" %}')`)
                 f6.innerText = '👍 '+answer.user_good_cnt
                 var f7 = document.createElement('button')
                 f7.setAttribute('type', 'button')
                 f7.setAttribute('class', 'btn btn_bad')
                 f7.setAttribute('id', 'btn_bad'+answer.answer_id)
                 f7.setAttribute('value',answer.user_bad_cnt)
-                f7.setAttribute('onClick',`getUserBad(${content_id},${answer.user_bad_cnt})`)
+                f7.setAttribute('onClick',`getUserBad(${content_id},${answer.user_bad_cnt}, 't'+${tag_name.toString()},'{% url "logs:evallog" %}')`)
                 f7.innerText = '👎 '+answer.user_bad_cnt
                 g1.setAttribute('id', 'info-company')
-                g1.setAttribute('style', 'display:inline; margin-bottom:2px')
+                g1.setAttribute('style', 'display:inline; margin-bottom:2px;')
                 g1.innerText = answer.company
                 var markDiv = document.createElement('div')
                 markDiv.setAttribute('id', 'bookmark'+content_id.slice(0,7))
@@ -303,7 +312,7 @@
                 var markImg = document.createElement('img')
                 var markA = document.createElement('a')
                 markA.setAttribute('id', 'markA'+content_id.slice(0,7))
-                markA.setAttribute('onClick', `fillMark(${content_id}, '{% url "logs:userscrap" %}')`)
+                markA.setAttribute('onClick', `fillMark(${content_id}, 't'+${tag_name.toString()}, '{% url "logs:userscrap" %}')`)
                 markA.setAttribute('style', 'display:inline;')
                 markImg.setAttribute('id', 'markImg'+content_id.slice(0,7))
                 markImg.setAttribute('class', 'mark-empty')
@@ -348,6 +357,52 @@
             a.append(b)
         }
     }
+    
+    
+    async function checkStatus(username, contentId, tagId, url) {
+        const answerId = contentId.id.slice(0, 7)
+        const markImg = document.querySelector('.'+tagId+' #markImg'+answerId);
+        const goodBtn = document.querySelector("."+tagId+" #btn_good"+answerId)
+        const badBtn = document.querySelector("."+tagId+" #btn_bad"+answerId)
+
+        const markData = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({ 
+                user_id: username,
+                answer_id: answerId
+            })
+        }
+        const response = await fetch(url, markData)
+        const dataString = await response.json()
+        const data = JSON.parse(dataString)
+
+        const goodCnt = data["goodCnt"]
+        const badCnt = data["badCnt"]
+        const isBoth = data["both"]
+        const isScrap = data["isScrap"]
+        const isEval = data["isEval"]
+        
+
+        // 카운트 설정
+        goodBtn.setAttribute('value', goodCnt)
+        goodBtn.innerHTML = '👍 ' + goodCnt.toString()
+        badBtn.setAttribute('value', badCnt)
+        badBtn.innerHTML = '👎 ' + badCnt.toString()
+       
+        // 스크랩 버튼 초기화
+        if (isScrap) {
+            markImg.setAttribute('class', 'mark-fill')
+            markImg.setAttribute('src', '/static/images/mark-fill.png')
+        } else {
+            markImg.setAttribute('class', 'mark-empty')
+            markImg.setAttribute('src', '/static/images/mark-empty.png')            
+        }
+    }
+
 
     function getAnswerLog(answer_id, url){
         const user_id = '{{ request.user }}';
@@ -370,11 +425,11 @@
         .catch((error)=> console.log('error 발생'));
     }
     
-    async function getUserGood(contents_id,cnt,url){
+    async function getUserGood(contents_id,cnt,tagId,url){
         const user_id = '{{ request.user }}';
         const content_id = contents_id.id.slice(0,7)
-        var btn_good = document.getElementById("btn_good"+content_id)
-        var btn_bad = document.getElementById("btn_bad"+content_id)
+        var btn_good = document.querySelector("."+tagId+" #btn_good"+content_id)
+        var btn_bad = document.querySelector("."+tagId+" #btn_bad"+content_id)
         const good = Number(btn_good.getAttribute('value')) + 1
         var bad = Number(btn_bad.getAttribute('value'))
         const user_good = {
@@ -391,7 +446,7 @@
                 favor:1,
             }),
         }
-        const response = await fetch("../../logs/user_eval/", user_good)
+        const response = await fetch(url, user_good)
         const data = await response.json()
         if (data==201){
             btn_good.innerHTML = '👍 '+good
@@ -409,11 +464,11 @@
         }
     }
 
-    async function getUserBad(contents_id,cnt){
+    async function getUserBad(contents_id,cnt,tagId,url){
         const user_id = '{{ request.user }}';
         const content_id = contents_id.id.slice(0,7)
-        var btn_good = document.getElementById("btn_good"+content_id)
-        var btn_bad = document.getElementById("btn_bad"+content_id)
+        var btn_good = document.querySelector("."+tagId+" #btn_good"+content_id)
+        var btn_bad = document.querySelector("."+tagId+" #btn_bad"+content_id)
         var good = Number(btn_good.getAttribute('value'))
         const bad = Number(btn_bad.getAttribute('value')) + 1
         const user_bad = {
@@ -430,7 +485,7 @@
                 favor:0,
             }),
         }
-        const response = await fetch("../../logs/user_eval/", user_bad)
+        const response = await fetch(url, user_bad)
         const data = await response.json()
         if (data==201){
             btn_bad.innerHTML = '👎 '+bad
@@ -449,9 +504,9 @@
     }   
 
 
-    async function fillMark(answerTag, url) {
+    async function fillMark(answerTag, tagId, url) {
         const answerId = answerTag.id.slice(0, 7)
-        const markImg = document.querySelector('#markImg'+answerId);
+        const markImg = document.querySelector('.'+tagId+' #markImg'+answerId);
         const userId = '{{ request.user }}';
         
         const markData = {
