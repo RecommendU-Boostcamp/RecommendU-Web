@@ -18,13 +18,15 @@
         <div class="inner">
             <section id="main" style="position:relative">
                 {% if request.user.is_authenticated %}
-                <a href="{% url 'services:main' %}"><img src="{% static 'images/recommend_logo.png' %}" style="position:absolute; bottom:1080px; left:0px; z-index:1; transform:rotate(350deg);" width="300px" height="300px" ></a>
                   <a id="logout-button"  style="position:absolute; top:20px; right:50px; width:65px; height 20px; font-size:20px" href="{% url 'accounts:logout' %}" method="POST">Logout</a>
                 {% endif %}
                 <div class="mainWrap">
                     <div class="submitWrap part">
                         {% csrf_token %}
-                        <h3>기업 및 직무 분류 선택</h3>
+                        <div style="display:flex">
+                          <h3>기업 및 직무 분류 선택</h3>
+                          <a href="{% url 'services:main' %}"><img src="{% static 'images/recommend_logo.png' %}" style="position:absolute; top:-130px; left:-50px; z-index:1; transform:rotate(350deg);" width="300px" height="300px" ></a>
+                        </div>
                         <div class="filter">
                             <div class="cbList">
                                 <h4 class="filter-category">기업검색</h4>
@@ -57,7 +59,7 @@
                         </div>
                         <h3>내 자소서 입력하기</h3>
                         <div class="question">
-                            <select id = "question_list" onChange = "questionDefaultCheck(this.value)">
+                            <select id = "question_list" onChange = "questionDefaultCheck(this.value); explanationChange(this.value);">
                                 <option value="none">자소서 문항을 선택하세요.</option>
                                 {% for question in question_type %}
                                     <option value = {{ question.question_type_id }}>{{ question.question_type }}</option>
@@ -66,10 +68,10 @@
                             </select>
                         </div>
                         <div class="question-contents">
-                            <textarea name="" id="answers" placeholder="자소서 내용을 입력하세요.&#13;&#10;내용은 10자 이상 입력 시 자소서 내용으로 추천받으실 수 있습니다.&#13;&#10;우측하단 '💫샘플 자소서 불러오기' 버튼을 클릭하면 샘플 자소서를 보여드립니다." cols="30"
+                            <textarea name="" id="answers" placeholder="자소서 내용을 입력하세요.&#13;&#10; &#13;&#10;10자 이상 입력하시면 나에게 더 맞는 추천을 받을 수 있어요.&#13;&#10;만약 당장 글을 쓰기 어렵다면, 우측하단 '💫샘플 자소서 불러오기' 버튼을 클릭해보세요!&#13;&#10;미완성 샘플 자소서를 불러와 드립니다." cols="30"
                                 class="contents"></textarea>
                         </div>
-                        <button type="submit" id="sample-button" onClick="questionTypeCheck()">💫샘플 자소서 불러오기</button>
+                        <button type="submit" id="sample-button" onClick="questionTypeCheck();">💫샘플 자소서 불러오기</button>
                         <button type="submit" id="recommend-button" class="btn" onClick="getUserLogging('{% url 'logs:recbuttonlog' %}'); getRecommentData('{% url 'services:answer_recommend' %}');">추천받기</button>  
                     </div>
                     <div class="listWrap part" id="no-data">
@@ -91,8 +93,13 @@
 <script type="text/javascript">
     var count = 0
     recommendData = ""
-
-
+    function explanationChange(value){
+        const sampleBtn = document.getElementById('answers');
+        if (value == "other") {
+            sampleBtn.setAttribute('placeholder', '자소서 내용을 입력하세요.\n10자 이상 입력하시면 나에게 더 맞는 추천을 받을 수 있어요.')
+        }
+    }
+     
     function questionTypeCheck(){
         const question_type = document.getElementById('question_list').value;
         if (question_type == 'none'){
