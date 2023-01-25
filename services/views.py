@@ -51,9 +51,9 @@ def answer_recommend(request):
     recommend.filtering()
 
     result = {
-            "나와 가장 비슷해요" : recommend.recommend_with_company_jobtype(),
+            "사용자 님과 유사한 자소서를 골라봤어요" : recommend.recommend_with_company_jobtype(),
             "비슷한 직무로 모아봤어요" : recommend.recommend_with_jobtype_without_company(),
-            "회사가 같으면 먼저 뽑았어요" : recommend.recommend_with_company_without_jobtype(),
+            "지원하는 회사가 비슷해요" : recommend.recommend_with_company_without_jobtype(),
             "조회를 많이 했어요" : recommend.recommed_based_popularity(),
             "전문가 평이 좋아요" : recommend.recommend_based_expert()[0],
             "전문가 평이 별로에요" : recommend.recommend_based_expert()[1]
@@ -154,8 +154,8 @@ def docu_answer_init(request):
     data_path = '/opt/ml/RecommendU/RecommendU-back/services/dbinit/'
     answer_data, doc_data, sample_data = jobkoreainit(data_path)
 
-    # doc_init(doc_data)
-    # answer_init(answer_data)
+    doc_init(doc_data)
+    answer_init(answer_data)
     sample_init(sample_data)
 
     return HttpResponse(f"cover letter saving Done")

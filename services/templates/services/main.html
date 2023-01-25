@@ -245,7 +245,6 @@
                 // 각 key의 answer들 순회
                 var answer = tag[j]
                 var content_id = answer.answer_id+tag_name.toString()
-                
                 var d1 = document.createElement('div')
                 d1.setAttribute('class', 'item')
                 d1.setAttribute('onClick', `popup_open(${content_id}); getAnswerLog(${ content_id }, '{% url "logs:answerlog" %}');`)
@@ -299,14 +298,14 @@
                 g1.setAttribute('style', 'display:inline; margin-bottom:2px')
                 g1.innerText = answer.company
                 var markDiv = document.createElement('div')
-                markDiv.setAttribute('id', 'bookmark')
+                markDiv.setAttribute('id', 'bookmark'+content_id.slice(0,7))
                 markDiv.setAttribute('style', 'position:flex')
                 var markImg = document.createElement('img')
                 var markA = document.createElement('a')
-                markA.setAttribute('id', 'markA')
-                markA.setAttribute('onClick', 'fillMark()')
+                markA.setAttribute('id', 'markA'+content_id.slice(0,7))
+                markA.setAttribute('onClick', `fillMark(${content_id}, '{% url "logs:userscrap" %}')`)
                 markA.setAttribute('style', 'display:inline;')
-                markImg.setAttribute('id', 'markImg')
+                markImg.setAttribute('id', 'markImg'+content_id.slice(0,7))
                 markImg.setAttribute('class', 'mark-empty')
                 markImg.setAttribute('src', '/static/images/mark-empty.png')
                 var g2 = document.createElement('span')
@@ -420,13 +419,31 @@
         .then((res) => res.json())
         .catch((error)=> console.log('error 발생'));
     }   
-    function fillMark() {
-        const markImg = document.querySelector('#markImg')
-        const status = markImg.getAttribute('class')
-        console.log(status)
-        if (status === 'mark-empty') {
+
+
+    async function fillMark(answerTag, url) {
+        const answerId = answerTag.id.slice(0, 7)
+        const markImg = document.querySelector('#markImg'+answerId);
+        const userId = '{{ request.user }}';
+        
+        const markData = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({ 
+                user_id: userId,
+                answer_id: answerId
+            })
+        }
+        const response = await fetch(url, markData)
+        if (response.status === 201) {
             markImg.setAttribute('class', 'mark-fill')
             markImg.setAttribute('src', '/static/images/mark-fill.png')
+        } else if (response.status === 200) {
+            markImg.setAttribute('class', 'mark-empty')
+            markImg.setAttribute('src', '/static/images/mark-empty.png')
         }
     }
 </script> 

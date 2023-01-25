@@ -62,3 +62,27 @@ def eval_log(request):
     else:
        Answer.objects.filter(answer_id=answer.answer_id).update(user_bad_cnt=cnt)
     return Response(status.HTTP_201_CREATED)
+
+
+
+@api_view(['POST', ])
+def user_scrap(request):
+    data = request.data
+    user = get_object_or_404(get_user_model(), username=data['user_id'])
+    answer = get_object_or_404(Answer, answer_id=data['answer_id'])
+
+    try:
+        _user = get_object_or_404(get_user_model(), answer_scrap=answer)
+    except:
+        _user = None
+    
+    # 만약 스크랩 하지 않았으면 201, 스크랩 했으면 200
+    if _user == None:
+        answer.scrap_users.add(user)
+        return Response(status=status.HTTP_201_CREATED)
+    else:
+        answer.scrap_users.remove(user)
+        return Response(status=status.HTTP_200_OK)
+    
+    
+    
