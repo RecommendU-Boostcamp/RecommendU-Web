@@ -9,8 +9,8 @@
             <!--signIn 페이지-->
             <section id="signIn">
                 <div class="formBox">
-                    <h1 class="title logo">RecommendU</h1>
-                    <form>
+                    <form style="position:flex">
+                        <h1 class="title logo"><img src="{% static 'images/recommend_logo.png' %}" alt="" style="justify-content position:absolute; width:400px; height:80px; left:45px; top:-60px"></h1>
                         {% csrf_token %}
                         <span>아이디</span>
                         <input id="username" type="text" placeholder="아이디" name="username">
