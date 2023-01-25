@@ -46,7 +46,7 @@
                             <option value='경력'>경력</option>
                         </select>
                         <!--form 완성 안 됐을 때는 disabled. 완성 되면 disabled클래스 없애면 됨-->
-                        <button id="submit_fake" type="button" class="btn btn_join" onClick="signupCheck('{% url 'accounts:signup' %}')">회원가입</button>
+                        <button id="submit_fake" type="button" class="btn btn_join" onClick="signupCheck('{% url 'accounts:signup' %}','{% url 'services:main' %}')">회원가입</button>
                     </form>
                     <p>
                         이미 계정이 있으신가요?
@@ -63,7 +63,7 @@
     let isSame = false  // 비밀번호 일치 여부
     let isStart = false
     
-    async function signupCheck(url) {
+    async function signupCheck(url, mainPage) {
         const username = document.querySelector('#username').value
         const password1 = document.querySelector('#password1').value
         const password2 = document.querySelector('#password2').value
@@ -92,7 +92,9 @@
         const status = await response.status
         
         if (status === 200) {
-            document.querySelector('form').submit()
+            location.href=mainPage;
+            location.replace(link);
+            window.open(link);
         } else {
             alert('아이디와 비밀번호를 다시 확인해주세요!')
         }

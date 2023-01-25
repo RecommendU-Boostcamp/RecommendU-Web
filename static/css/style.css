@@ -682,9 +682,10 @@ button.btn.disabled {
 }
 
 .nav_button {
-    background-color: #ecd1fb; /* This is a light purple color */
-    color: white; /* This sets the text color to white */
+    background-color: #cc87f2; /* This is a light purple color */
+    color: rgb(251, 239, 254); /* This sets the text color to white */
     padding: 3px 6px; /* This sets the padding for the button */
+    border-radius: 7px;
     /* border: none; This removes the border */
     /* cursor: pointer; This changes the cursor to a pointer when hovering over the button */
   }
@@ -694,6 +695,20 @@ button.username-button {
     position: absolute;
     top: 0;
     left: 50px;
+}
+
+
+#logout-button {
+    display: block;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 15px;
+    padding: 5px 15px 5px 15px;
+    font-weight: 500;
+    background-color: #908aff44;
+    color: #535091;
+    font-size: 1.3em;
+    margin-bottom: 20px;
 }
 
 

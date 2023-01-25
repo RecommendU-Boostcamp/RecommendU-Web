@@ -16,7 +16,11 @@
 <body>
     <div id="wrapper">
         <div class="inner">
-            <section id="main">
+            <section id="main" style="position:relative">
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'services:main' %}"><img src="{% static 'images/recommend_logo.png' %}" style="position:absolute; bottom:1080px; left:0px; z-index:1; transform:rotate(350deg);" width="300px" height="300px" ></a>
+                  <a id="logout-button"  style="position:absolute; top:20px; right:50px; width:65px; height 20px; font-size:20px" href="{% url 'accounts:logout' %}" method="POST">Logout</a>
+                {% endif %}
                 <div class="mainWrap">
                     <div class="submitWrap part">
                         {% csrf_token %}
@@ -62,14 +66,14 @@
                             </select>
                         </div>
                         <div class="question-contents">
-                            <textarea name="" id="answers" placeholder="자소서 내용을 입력하세요. 내용은 10자 이상 입력 시 자소서 내용으로 추천받으실 수 있습니다. 우측하단 '💫샘플 자소서 불러오기' 버튼을 클릭하면 샘플 자소서로 보여드립니다." cols="30"
+                            <textarea name="" id="answers" placeholder="자소서 내용을 입력하세요.&#13;&#10;내용은 10자 이상 입력 시 자소서 내용으로 추천받으실 수 있습니다.&#13;&#10;우측하단 '💫샘플 자소서 불러오기' 버튼을 클릭하면 샘플 자소서를 보여드립니다." cols="30"
                                 class="contents"></textarea>
                         </div>
                         <button type="submit" id="sample-button" onClick="questionTypeCheck()">💫샘플 자소서 불러오기</button>
-                        <button type="submit" id="recommend-button" class="btn" onClick="listShow(); getUserLogging('{% url 'logs:recbuttonlog' %}'); getRecommentData('{% url 'services:answer_recommend' %}');">추천받기</button>  
+                        <button type="submit" id="recommend-button" class="btn" onClick="getUserLogging('{% url 'logs:recbuttonlog' %}'); getRecommentData('{% url 'services:answer_recommend' %}');">추천받기</button>  
                     </div>
                     <div class="listWrap part" id="no-data">
-                        <div class="listWrap part no-data">
+                        <div id="waitMessage" class="listWrap part no-data">
                             <p>
                                 <b>추천 결과가 없습니다. 🥺</b><br>
                                 다른 조건으로 입력하시거나, 추천받기 버튼을 눌러주세요.
@@ -92,7 +96,7 @@
     function questionTypeCheck(){
         const question_type = document.getElementById('question_list').value;
         if (question_type == 'none'){
-            alert("질문 카테고리를 선택해야지 샘플을 추천받을 수 있습니다.")
+            alert("질문 카테고리를 선택해야 샘플을 추천받을 수 있습니다.")
         }
         else{
             var sample_list = "{{sample_list}}".replace(/&#x27;/g,"\"");
@@ -160,7 +164,7 @@
         var question_type = 0;
         var question_text = "";
         const render_window = document.querySelector(".listWrap>p")
-        render_window.innerHTML = "<b>자기소개서를 가져오고 있어요!</b><br>잠시만 기다려주세요.</p>"
+        render_window.innerHTML = "<b>자기소개서를 가져오고 있어요 🙏🏻</b><br>잠시만 기다려주세요.</p>"
         render_window.setAttribute('class', 'exist-data')
 
         // 잠시만 기다려주세요 화면 render
@@ -191,7 +195,13 @@
             }),
         }
         const response = await fetch(url, recommend_data)
+
         const data = await response.json()
+        const no_data = document.getElementById("no-data");
+        no_data.classList.add("hide");
+        const exist_data = document.getElementById("exist-data");
+        exist_data.classList.add("show");
+
         render_window.setAttribute('class', 'no-data')
         if (data==412){
             alert("질문을 다시 입력해주세요.")

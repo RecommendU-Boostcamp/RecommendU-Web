@@ -20,7 +20,7 @@ def dbinit(data_path):
     companies = list(doc_data.company.unique())
 
     # major_large
-    major_larges = list(doc_data.major_large.unique())
+    major_larges = ['인문/사회계열', '자연/공학/의약계열', '교육계열', '예체능계열', '기타']
 
     # major_small
     major_smalls = list(doc_data.major_small.unique())
@@ -167,7 +167,7 @@ def sample_init(sample_data):
         instance = Sample()
         instance.sample_id = 's'+str(i).zfill(6)
         instance.question = sample.question
-        instance.content = sample.answer
+        instance.content = sample.slice_answer
         instance.summary = sample.summary
 
         qtype = json.loads(sample.sample_category)[0]

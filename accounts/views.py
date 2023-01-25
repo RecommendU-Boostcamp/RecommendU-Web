@@ -25,26 +25,25 @@ import json
 
 # Create your views here.
 
+@api_view(['GET', 'POST',])
 def login(request):  # GET요청에 대해서는 로그인 페이지를, POST요청에 대해서는 로그인처리를 해주는 함수  
     if request.user.is_authenticated:  # is_authenticated는 식별된 유저라는 뜻
         return redirect('services:main')
     
     if request.method == 'POST':
-        
         try:
-            _user = get_object_or_404(get_user_model(), username=request.POST['username'])            
+            _user = get_object_or_404(get_user_model(), username=request.data['username'])            
         except:
             _user = None            
         if not _user:
-            return HttpResponse('등록되지 않은 아이디입니다')
+            return Response(status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
         
-        form = AuthenticationForm(request, request.POST)
+        form = AuthenticationForm(request, request.data)
         if form.is_valid():
             auth_login(request, form.get_user())  # user를 로그인함수의 인자로 넣기 위해 불러오는 메소드를 사용해줘야 함
-            next_url = request.GET.get('next')
-            return redirect(next_url or 'services:main')
+            return Response(status=status.HTTP_200_OK)
         else:
-            return HttpResponse('비밀번호를 확인해주세요')
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
     
     context = {
     }

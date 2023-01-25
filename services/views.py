@@ -56,7 +56,7 @@ def answer_recommend(request):
             "회사가 같으면 먼저 뽑았어요" : recommend.recommend_with_company_without_jobtype(),
             "조회를 많이 했어요" : recommend.recommed_based_popularity(),
             "전문가 평이 좋아요" : recommend.recommend_based_expert()[0],
-            "전문가 평이 나빠요" : recommend.recommend_based_expert()[1]
+            "전문가 평이 별로에요" : recommend.recommend_based_expert()[1]
             }
     
     result_keys = result.keys()
@@ -64,7 +64,7 @@ def answer_recommend(request):
     
     for key in result:
         ran_num=4
-        if key in ["전문가 평이 좋아요", "전문가 평이 나빠요"]:
+        if key in ["전문가 평이 좋아요", "전문가 평이 별로에요"]:
             ran_num = 2
         for i in range(ran_num):
             temp_answer = get_object_or_404(ContentList, answer_id= 'a'+str(result[key][i]).zfill(6))
@@ -98,10 +98,12 @@ def main(request):
     job_query = JobList.objects.all().order_by(Length('job_large').desc())
     question_query = QuestionType.objects.all()[0:21]
     sample_query = {}
+    
     for i in range(1,22):
         question_type = str(1000000+i)
         samples = Sample.objects.filter(question_type_id = question_type)[3:13]
         sample_query[question_type] = [sample.make_sample() for sample in samples] 
+        
     for i in range(0,len(job_query)):
         job_query[i].id = "job_"+str(i)
         job_query[i].job_small = job_query[i].job_small.split(',')
@@ -152,8 +154,8 @@ def docu_answer_init(request):
     data_path = '/opt/ml/RecommendU/RecommendU-back/services/dbinit/'
     answer_data, doc_data, sample_data = jobkoreainit(data_path)
 
-    doc_init(doc_data)
-    answer_init(answer_data)
+    # doc_init(doc_data)
+    # answer_init(answer_data)
     sample_init(sample_data)
 
     return HttpResponse(f"cover letter saving Done")    
