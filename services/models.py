@@ -1,4 +1,6 @@
 from django.db import models
+
+
 class QuestionType(models.Model):
     question_type_id = models.IntegerField(primary_key=True,null=False,unique=True)
     question_type = models.CharField(max_length=100,null=False)

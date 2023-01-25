@@ -86,3 +86,23 @@ def eval_log(request):
         else:
             return Response(status.HTTP_304_NOT_MODIFIED)
     return Response(status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST', ])
+def user_scrap(request):
+    data = request.data
+    user = get_object_or_404(get_user_model(), username=data['user_id'])
+    answer = get_object_or_404(Answer, answer_id=data['answer_id'])
+
+    try:
+        _user = get_object_or_404(get_user_model(), answer_scrap=answer)
+    except:
+        _user = None
+    
+    # 만약 스크랩 하지 않았으면 201, 스크랩 했으면 200
+    if _user == None:
+        answer.scrap_users.add(user)
+        return Response(status=status.HTTP_201_CREATED)
+    else:
+        answer.scrap_users.remove(user)
+        return Response(status=status.HTTP_200_OK)

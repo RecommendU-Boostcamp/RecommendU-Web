@@ -7,7 +7,7 @@ import json
 
 
 def dbinit(data_path):
-    doc_data = pd.read_csv(data_path+'jk_documents_3_2.csv')
+    doc_data = pd.read_csv(data_path+'jk_documents_3_4.csv')
 
     # question_types
     question_types = ['성장 환경', '전공, 과목', '취미, 특기', '성격의 장/단점', '역량, 강점', 
@@ -45,9 +45,9 @@ def dbinit(data_path):
 
 
 def jobkoreainit(data_path):
-    answer_data = pd.read_csv(data_path+'jk_answers_without_samples_3_2.csv')
-    doc_data = pd.read_csv(data_path+'jk_documents_3_2.csv')
-    sample_data = pd.read_csv(data_path+'jk_samples_3_2.csv')
+    answer_data = pd.read_csv(data_path+'jk_answers_without_samples_3_4.csv')
+    doc_data = pd.read_csv(data_path+'jk_documents_3_4.csv')
+    sample_data = pd.read_csv(data_path+'jk_samples_3_4.csv')
     
     return answer_data, doc_data, sample_data
 
@@ -137,6 +137,7 @@ def doc_init(doc_data):
         instance.spec = doc.extra_spec
         instance.save()
 
+
 def answer_init(answer_data):
     n_answer = len(answer_data)
 
@@ -151,7 +152,12 @@ def answer_init(answer_data):
         instance.pro_bad_cnt = answer.pro_bad_cnt
         instance.summary = answer.summary
         instance.view = answer.doc_view
-        
+        instance.save()
+    
+    # question type을 모두 등록해주기
+    for i in range(n_answer):
+        answer = answer_data.loc[i]
+        instance = get_object_or_404(Answer, answer_id='a'+str(answer.answer_id).zfill(6))
         qtypes = json.loads(answer.question_category)
         for qtype in qtypes:
             temp_qtype = get_object_or_404(QuestionType, question_type_id=1000000+qtype)

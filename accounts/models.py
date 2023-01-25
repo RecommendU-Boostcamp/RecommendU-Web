@@ -13,3 +13,4 @@ class User(AbstractUser):
     interesting_job_large = models.ForeignKey(JobLarge,related_name="users",on_delete=models.SET_NULL,null=True)
     answer_log = models.ManyToManyField(Answer,related_name='recorded_user',through=AnswerLog)
     answer_eval = models.ManyToManyField(Answer,related_name="eval_answers",through=EvalLog)
+    answer_scrap = models.ManyToManyField(Answer,related_name="scrap_users")
