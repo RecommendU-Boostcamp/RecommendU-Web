@@ -84,8 +84,8 @@ def check_status(request):
     answer = get_object_or_404(Answer, answer_id=data['answer_id'])
     is_good_eval = None
     
-    good_count = EvalLog.objects.filter(answer_id=answer, favor=0).count()
-    bad_count = EvalLog.objects.filter(answer_id=answer, favor=1).count()
+    good_count = EvalLog.objects.filter(answer_id=answer, favor=1).count()
+    bad_count = EvalLog.objects.filter(answer_id=answer, favor=0).count()
     
     user_eval_list = list(user.answer_eval.all())
     
