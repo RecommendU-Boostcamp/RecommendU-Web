@@ -71,7 +71,6 @@
                             <br>둘, 직접 입력한 답변이 없거나 너무 짧다면, 답변은 추천 결과에 반영되지 않아요.
                             <br>셋, 만일 직접 입력이 막막하다면 미완성 샘플을 사용해보세요.
                             <br>마지막으로, 합격자소서는 참고용일뿐! 똑같이 따라쓰시면 안되는거 아시죠? 😉
-
                             </p>                      
                           </div>
                         </div>                                              
@@ -339,7 +338,7 @@
                 var markA = document.createElement('a')
                 markA.setAttribute('id', 'markA'+content_id.slice(0,7))
                 markA.setAttribute('onClick', `fillMark(${content_id}, 't'+${tag_name.toString()}, '{% url "logs:userscrap" %}')`)
-                markA.setAttribute('style', 'display:inline;')
+                markA.setAttribute('style', 'display:inline; cursor: pointer;')
                 markImg.setAttribute('id', 'markImg'+content_id.slice(0,7))
                 markImg.setAttribute('class', 'mark-empty')
                 markImg.setAttribute('src', '/static/images/mark-empty.png')
