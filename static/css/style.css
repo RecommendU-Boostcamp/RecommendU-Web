@@ -813,8 +813,21 @@ button.username-button {
     width: fit-content;
     height: fit-content;
     border-radius: 15px;
-    padding: 5px 15px 5px 15px;
-    font-weight: 500;
+    padding: 5px 15px 15px 15px;
+    font-weight: 600;
+    background-color: #908aff44;
+    color: #535091;
+    font-size: 1.3em;
+    margin-bottom: 20px;
+}
+
+#feedback-button {
+    display: block;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 15px;
+    padding: 5px 15px 15px 15px;
+    font-weight: 600;
     background-color: #908aff44;
     color: #535091;
     font-size: 1.3em;
