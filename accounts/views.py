@@ -2,6 +2,7 @@ from django.shortcuts import render
 from services.models import JobList,MajorList
 
 from django.contrib.auth import get_user_model
+from django.db.models.functions import Length
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
 from django.contrib.auth.decorators import login_required
@@ -109,7 +110,8 @@ def signup(request):
         form = CustomUserCreationForm()  # ModelForm 
         
     jobquery = JobList.objects.all()
-    majorquery = MajorList.objects.all()
+    majorquery = MajorList.objects.all().order_by(Length('major_large').desc())
+    
     for i in range(0,len(majorquery)):
         majorquery[i].id = "job_"+str(i)
         majorquery[i].major_small = majorquery[i].major_small.split(',')       

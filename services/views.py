@@ -54,7 +54,7 @@ def answer_recommend(request):
     recommend.filtering()
     result = {
             " 님과 유사한 자소서를 골라봤어요" : recommend.recommend_with_company_jobtype(),
-            "지원하는 회사가 비슷해요" : recommend.recommend_with_company_without_jobtype(),
+            "지원하는 회사를 먼저 고려했어요" : recommend.recommend_with_company_without_jobtype(),
             "비슷한 직무로 모아봤어요" : recommend.recommend_with_jobtype_without_company(),
             "조회를 많이 했어요" : recommend.recommed_based_popularity(),
             "전문가 평이 좋아요" : recommend.recommend_based_expert()[0],
@@ -78,7 +78,6 @@ def answer_recommend(request):
 
 @api_view(['POST', ])
 def check_status(request):
-    print(request.data)
     data = request.data
     
     user = get_object_or_404(get_user_model(), username=data['user_id'])
@@ -121,19 +120,20 @@ def main(request):
     job_query = JobList.objects.all().order_by(Length('job_large').desc())
     question_query = QuestionType.objects.all()[0:21]
     sample_query = {}
-    
 
     for i in range(1,22):
         question_type = str(1000000+i)
         samples = Sample.objects.filter(question_type_id = question_type)
-        sample_query[question_type] = random.shuffle([json.dumps(sample.make_sample()) for sample in samples])
+        result = [json.dumps(sample.make_sample()) for sample in samples]
+        random.shuffle(result)
+        sample_query[question_type] = result
         
     for i in range(0,len(job_query)):
         job_query[i].id = "job_"+str(i)
         job_query[i].job_small = job_query[i].job_small.split(',')
         job_query[i].job_small_id = job_query[i].job_small_id.split(',')
     
-    companies = Company.objects.all()
+    companies = Company.objects.all().order_by('company')
 
     context = {
         "job_list":job_query,

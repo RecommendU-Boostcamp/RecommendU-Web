@@ -100,6 +100,7 @@ class ContentList(models.Model):
 class MajorList(models.Model):
     major_large = models.CharField(primary_key=True,max_length=100,null=False)
     major_small = models.CharField(max_length=600,null=False)
+    
     class Meta:
         managed = False               
         db_table = 'major_view'
