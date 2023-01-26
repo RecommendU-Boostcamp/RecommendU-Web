@@ -101,18 +101,18 @@
         }
     }
      
-    function questionTypeCheck(){
+    async function questionTypeCheck(){
+        count = count+1
         const question_type = document.getElementById('question_list').value;
         if (question_type == 'none'){
             alert("질문 카테고리를 선택해야 샘플을 추천받을 수 있습니다.")
         }
         else{
-            var sample_list = "{{sample_list}}".replace(/&#x27;/g,"\"");
-            sample_list = sample_list.replace(/&quot;/g, "\"")
-            var samples = JSON.parse(sample_list);
-            count = count+1
+            var samples = {{sample_list|safe}};
             document.getElementById("answers").value = ""
-            document.getElementById("answers").value = samples[question_type][count % 10]['content']
+            var now_sample = await JSON.parse(samples[question_type][count%10])
+            console.log(now_sample)
+            document.getElementById("answers").value = now_sample['content']
         }
     }
     
@@ -529,5 +529,17 @@
             markImg.setAttribute('src', '/static/images/mark-empty.png')
         }
     }
+
+    function regExp(str){  
+        var reg = /[?|\)*~`!^\-_+<>@\#$%\=\(\']/gi
+        //특수문자 검증
+        if(reg.test(str)){
+          //특수문자 제거후 리턴
+          return str.replace(reg, "");    
+        } else {
+          //특수문자가 없으므로 본래 문자 리턴
+          return str;
+        }
+    }      
 </script> 
 {% endblock %}

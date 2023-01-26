@@ -133,10 +133,10 @@ def namecheck(request):
         _user = None
         
     if _user:
-        return Response({'Bad': '이미 사용하는 아이디입니다'}, status=status.HTTP_205_RESET_CONTENT)
+        return Response({"Bad": '이미 사용하는 아이디입니다'}, status=status.HTTP_205_RESET_CONTENT)
     
     else:
-        return Response({'Good': '사용할 수 있는 아이디입니다'}, status=status.HTTP_200_OK)
+        return Response({"Good": '사용할 수 있는 아이디입니다'}, status=status.HTTP_200_OK)
 
 
 # def signup(request):

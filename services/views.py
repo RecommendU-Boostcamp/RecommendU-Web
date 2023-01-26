@@ -17,6 +17,7 @@ from services.apps import ServicesConfig
 from inference.preprocess import Recommendation
 import time
 import json
+import random
 
 # Create your views here.
 
@@ -84,8 +85,8 @@ def check_status(request):
     answer = get_object_or_404(Answer, answer_id=data['answer_id'])
     is_good_eval = None
     
-    good_count = EvalLog.objects.filter(answer_id=answer, favor=0).count()
-    bad_count = EvalLog.objects.filter(answer_id=answer, favor=1).count()
+    good_count = EvalLog.objects.filter(answer_id=answer, favor=1).count()
+    bad_count = EvalLog.objects.filter(answer_id=answer, favor=0).count()
     
     user_eval_list = list(user.answer_eval.all())
     
@@ -109,25 +110,6 @@ def check_status(request):
     
     data = json.dumps(result)
     return Response(data, status=status.HTTP_200_OK)
-        
-        # if eval_status:
-        #     return Response(status=status.HTTP_208_ALREADY_REPORTED)  # 둘다 이미 등록되어 있고 eval은 좋음
-        # else:
-        #     return Response(status=status.HTTP_207_MULTI_STATUS)  # 둘다 이미 등록되어 있고 eval은 나쁨
-    
-    # elif is_scrap:
-    #     return Response(status=status.HTTP_206_PARTIAL_CONTENT)  # 스크랩만 되어 있음
-    
-    # elif is_eval:
-    #     if eval_status:
-    #         return Response(status=status.HTTP_205_RESET_CONTENT)  
-        
-    # except:
-    #     is_eval = False
-        
-    # # if is_eval:
-        
-    # pass
 
 
 
@@ -140,10 +122,11 @@ def main(request):
     question_query = QuestionType.objects.all()[0:21]
     sample_query = {}
     
+
     for i in range(1,22):
         question_type = str(1000000+i)
-        samples = Sample.objects.filter(question_type_id = question_type)[3:13]
-        sample_query[question_type] = [sample.make_sample() for sample in samples] 
+        samples = Sample.objects.filter(question_type_id = question_type)
+        sample_query[question_type] = random.shuffle([json.dumps(sample.make_sample()) for sample in samples])
         
     for i in range(0,len(job_query)):
         job_query[i].id = "job_"+str(i)

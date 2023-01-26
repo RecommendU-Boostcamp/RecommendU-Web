@@ -49,6 +49,7 @@ def recbuttonlog(request):
     instance.save()
     return Response(status.HTTP_201_CREATED)
 
+
 @api_view(['POST'])
 def eval_log(request):
     data = request.data
@@ -64,7 +65,7 @@ def eval_log(request):
         answer=answer,
         favor = favor
     )
-    if count ==0:
+    if count == 0:
         if favor==1:
             Answer.objects.filter(answer_id=answer.answer_id).update(user_good_cnt=good_cnt)
         else:
