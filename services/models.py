@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class QuestionType(models.Model):
     question_type_id = models.IntegerField(primary_key=True,null=False,unique=True)
     question_type = models.CharField(max_length=100,null=False)
@@ -82,6 +83,8 @@ class ContentList(models.Model):
     spec = models.CharField(max_length=600,null=False)
     schooltype =models.CharField(max_length=100,null=False)
     view = models.IntegerField(default=0)
+    user_good_cnt = models.IntegerField(default=0)
+    user_bad_cnt = models.IntegerField(default=0)
     user_view = models.IntegerField(default=0)
     document_url = models.CharField(max_length=500)
     company = models.CharField(max_length=100,null=False)
@@ -97,6 +100,7 @@ class ContentList(models.Model):
 class MajorList(models.Model):
     major_large = models.CharField(primary_key=True,max_length=100,null=False)
     major_small = models.CharField(max_length=600,null=False)
+    
     class Meta:
         managed = False               
         db_table = 'major_view'

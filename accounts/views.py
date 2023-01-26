@@ -2,6 +2,7 @@ from django.shortcuts import render
 from services.models import JobList,MajorList
 
 from django.contrib.auth import get_user_model
+from django.db.models.functions import Length
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
 from django.contrib.auth.decorators import login_required
@@ -70,17 +71,17 @@ def signup(request):
             _user = None
             
         if _user:
-            data = {'message':'같은 아이디가 이미 있습니다.'}
+            data = {"message":'같은 아이디가 이미 있습니다.'}
             data = json.dumps(data)
             return Response(data, status=status.HTTP_205_RESET_CONTENT)
         
         if len(request.data['password1']) < 8:
-            data = {'message':'비밀번호가 너무 짧습니다.'}
+            data = {"message":'비밀번호가 너무 짧습니다.'}
             data = json.dumps(data)
             return Response(data, status=status.HTTP_205_RESET_CONTENT)
         
         if request.data['password1'] != request.data['password2']: 
-            data = {'message':'비밀번호가 일치하지 않습니다.'}
+            data = {"message":'비밀번호가 일치하지 않습니다.'}
             data = json.dumps(data)                      
             return Response(data, status=status.HTTP_205_RESET_CONTENT)
 
@@ -95,13 +96,13 @@ def signup(request):
 
         if form.is_valid():
             form.save()
-            data = {'message': 'Good!'}
+            data = {"message": 'Good!'}
             data = json.dumps(data)    
             return Response(data, status=status.HTTP_200_OK)
             # return redirect('services:main')
         
         else:  
-            data = {'message': '입력 정보를 다시 한 번 확인하세요.'}
+            data = {"message": '입력 정보를 다시 한 번 확인하세요.'}
             data = json.dumps(data)       
             return Response(data, status=status.HTTP_205_RESET_CONTENT)
         
@@ -109,7 +110,8 @@ def signup(request):
         form = CustomUserCreationForm()  # ModelForm 
         
     jobquery = JobList.objects.all()
-    majorquery = MajorList.objects.all()
+    majorquery = MajorList.objects.all().order_by(Length('major_large').desc())
+    
     for i in range(0,len(majorquery)):
         majorquery[i].id = "job_"+str(i)
         majorquery[i].major_small = majorquery[i].major_small.split(',')       
@@ -133,10 +135,10 @@ def namecheck(request):
         _user = None
         
     if _user:
-        return Response({'Bad': '이미 사용하는 아이디입니다'}, status=status.HTTP_205_RESET_CONTENT)
+        return Response({"Bad": '이미 사용하는 아이디입니다'}, status=status.HTTP_205_RESET_CONTENT)
     
     else:
-        return Response({'Good': '사용할 수 있는 아이디입니다'}, status=status.HTTP_200_OK)
+        return Response({"Good": '사용할 수 있는 아이디입니다'}, status=status.HTTP_200_OK)
 
 
 # def signup(request):

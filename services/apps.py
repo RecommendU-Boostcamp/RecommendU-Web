@@ -8,8 +8,8 @@ import json
 class ServicesConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'services'
-    document = pd.read_csv("inference/data/jk_documents_3_2.csv")
-    item = pd.read_csv("inference/data/jk_answers_without_samples_3_2.csv")
+    document = pd.read_csv("inference/data/jk_documents_3_4.csv")
+    item = pd.read_csv("inference/data/jk_answers_without_samples_3_4.csv")
     answer_emb_matrix = np.load("inference/data/answer_embedding_matrix.npy")
     question_emb_matrix = np.load("inference/data/question_embedding_matrix.npy")
     embedder = FeatureExtractor("jhgan/ko-sroberta-multitask")

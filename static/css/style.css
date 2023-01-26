@@ -460,10 +460,10 @@ button.btn.disabled {
     width: fit-content;
     font-size: 1.3em;
     font-weight: 500;
-    background: #f0f0f0;
+    background: #fae9f6;
     padding: 5px 10px 5px 10px;
     border-radius: 5px;
-    color: #646464;
+    color: #7b4a6f;
 }
 
 .mainWrap .listWrap .list-column .list {
@@ -524,7 +524,89 @@ button.btn.disabled {
     border: 1px solid transparent;
 }
 
+/*help-tip*/
+#help-main {
+	position: relative;
+	top: 6px;
+    left: 10px;
+    width: 24px;
+	height: 24px;
+    font-size: 14px;
+}
 
+#help-answer {
+    position: relative;
+    display: inline-block;
+    top: -1px;
+    left: 28px;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+}
+
+#help-tag {
+    position: relative;
+    top: 31px;
+    left: 198px;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+}
+
+.help-tip {
+	text-align: center;
+	background-color: #535091;
+	border-radius: 50%;
+	line-height: 26px;
+	cursor: pointer;
+}
+
+.help-tip:before{
+	content:'?';
+	font-weight: bold;
+	color:#fff;
+    font-size: 15px;
+}
+
+.help-tip:hover p{
+	display:block;
+	transform-origin: 100% 0%;
+	-webkit-animation: fadeIn 0.3s ease-in-out;
+	animation: fadeIn 0.3s ease-in-out
+}
+.help-tip p{
+	display: none;
+	text-align: left;
+	background-color: #535091;
+	padding: 20px;
+	width: 500px;
+	position: absolute;
+	border-radius: 7px;
+	box-shadow: 1px 1px 1px rgba(0.2, 0.2, 0.2, 0.2);
+	color: #FFF;
+	font-size: 13px;
+    top: 35px;
+	line-height: 1.8;
+    z-index: 1;
+}
+.help-tip p:before{
+	position: absolute;
+    content: '';
+	width:0;
+	height: 0;
+	border:6px solid transparent;
+	border-bottom-color:#535091;
+	left: 6px;
+    top: -12px;
+}
+.help-tip p:after{
+	width:100%;
+	height:40px;
+	content:'';
+	position: absolute;
+	top:-40px;
+	left:0;
+}
 
 /*popup*/
 .popup {
@@ -667,6 +749,34 @@ button.btn.disabled {
     margin-top: 20px;
 }
 
+.popup button.btn_good{
+    margin-bottom:15px;
+    padding: 0px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 200;
+    font-size: 1.2em;
+    border-radius: 5px;
+    width: 60px;
+    height: 34px;
+    position: absolute;
+    bottom: 7px;
+    left: 360px;
+}
+
+.popup button.btn_bad{
+    margin-bottom:15px;
+    padding: 0px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 200;
+    font-size: 1.2em;
+    border-radius: 5px;
+    width: 60px;
+    height: 34px;
+    position: absolute;
+    bottom: 7px;
+    left: 425px;
+}
+
 .popup button.btn_close {
     margin: 0px;
     padding: 0px;
@@ -716,6 +826,25 @@ button.username-button {
     color: #535091;
 }
 
+.mark-fill {
+    padding-top: 10px;
+    width: 21px;
+    height: 21px;
+    display:inline-block;
+    position: absolute;
+    top:81px;
+    margin-left:12px;
+}
+
+.mark-empty {
+    padding-top: 10px;
+    width: 20px;
+    height: 20px;
+    display:inline-block;
+    position: absolute;
+    top:82px;
+    margin-left:12px;
+}
 /* #main {
     display: none;
 }

@@ -113,9 +113,9 @@ class Recommendation:
         
         tag2 = self.item.copy()
         tag2['weight_score'] = np.zeros(len(self.item))
-        tag2['weight_score'] += np.where(self.item['answer_id'].isin(self.fquestion), 2, 0)
-        tag2['weight_score'] += np.where(self.item['doc_id'].isin(self.job_large), 1, 0)
-        tag2['weight_score'] += np.where(self.item['doc_id'].isin(self.job_small), 0.3, 0)
+        tag2['weight_score'] += np.where(self.item['answer_id'].isin(self.fquestion), 1, 0)
+        tag2['weight_score'] += np.where(self.item['doc_id'].isin(self.job_large), 2, 0)
+        tag2['weight_score'] += np.where(self.item['doc_id'].isin(self.job_small), 2, 0)
         
         if self.answer != None:
             tag2 = tag2.sort_values(by = 'weight_score', ascending = False).iloc[:10]
