@@ -119,7 +119,6 @@
             var samples = {{sample_list|safe}};
             document.getElementById("answers").value = ""
             var now_sample = await JSON.parse(samples[question_type][count%10])
-            console.log(now_sample)
             document.getElementById("answers").value = now_sample['content']
         }
     }
@@ -538,16 +537,6 @@
         }
     }
 
-    function regExp(str){  
-        var reg = /[?|\)*~`!^\-_+<>@\#$%\=\(\']/gi
-        //특수문자 검증
-        if(reg.test(str)){
-          //특수문자 제거후 리턴
-          return str.replace(reg, "");    
-        } else {
-          //특수문자가 없으므로 본래 문자 리턴
-          return str;
-        }
-    }      
+
 </script> 
 {% endblock %}
