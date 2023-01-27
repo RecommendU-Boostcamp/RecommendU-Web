@@ -18,7 +18,6 @@ def answerlog(request):
     user = get_object_or_404(get_user_model(), username=data['userId'])
     rec_type = get_object_or_404(RecommendType, rectype_id=int(data['recType']))
     answer = get_object_or_404(Answer, answer_id=data['contentId'])
-    print(answer)
     Answer.objects.filter(answer_id=data['contentId']).update(user_view=F('user_view')+1)
 
     instance = AnswerLog(
