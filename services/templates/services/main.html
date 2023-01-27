@@ -89,7 +89,7 @@
                                 class="contents"></textarea>
                         </div>
                         <button type="submit" id="sample-button" onClick="questionTypeCheck();">💫샘플 자소서 불러오기</button>
-                        <button type="submit" id="recommend-button" class="btn" onClick="getUserLogging('{% url 'logs:recbuttonlog' %}'); getRecommentData('{% url 'services:answer_recommend' %}');">추천받기</button>  
+                        <button type="submit" id="recommend-button" class="btn" onClick="recbuttonClick('{% url 'logs:recbuttonlog' %}', '{% url 'services:answer_recommend' %}');">추천받기</button>  
                     </div>
                     <div class="listWrap part" id="no-data">
                         <div id="waitMessage" class="listWrap part no-data">
@@ -129,6 +129,13 @@
             var now_sample = await JSON.parse(samples[question_type][count%10])
             document.getElementById("answers").value = now_sample['content']
         }
+    }
+
+
+    async function recbuttonClick(logUrl, getAnswerUrl){
+        const logId = await getUserLogging(logUrl)
+        console.log(logId)
+        getRecommendData(getAnswerUrl, logId)
     }
     
     async function getUserLogging(url){
@@ -177,9 +184,11 @@
         }
         response = await fetch(url, logData)
         const data = await response.json()
+        const logId = JSON.parse(data)['logId']
+        return logId
     }
 
-    async function getRecommentData(url){
+    async function getRecommendData(url, logId){
         const company = document.getElementById('company-input').value;
         if(company==""){
             return -1
@@ -215,6 +224,7 @@
                 questionType: question_type,
                 questionText:question_text,
                 content:answer_text,
+                logId: logId
             }),
         }
         const response = await fetch(url, recommend_data)

@@ -62,6 +62,7 @@ class Answer(models.Model):
     summary = models.CharField(max_length=1000,null=False)
     view = models.IntegerField(default=0)
     user_view = models.IntegerField(default=0)
+    user_impression_cnt = models.IntegerField(default=0)
 
 
 class Sample(models.Model):

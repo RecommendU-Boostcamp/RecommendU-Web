@@ -6,7 +6,9 @@ from rest_framework.decorators import api_view
 from .models import RecommendLog, AnswerLog,EvalLog
 from services.models import Company, JobSmall, QuestionType
 from rest_framework import status
+from django.db.models import F
 from django.contrib.auth import get_user_model
+import json
 
 
 # Create your views here.
@@ -16,6 +18,8 @@ def answerlog(request):
     user = get_object_or_404(get_user_model(), username=data['userId'])
     rec_type = get_object_or_404(RecommendType, rectype_id=int(data['recType']))
     answer = get_object_or_404(Answer, answer_id=data['contentId'])
+    print(answer)
+    Answer.objects.filter(answer_id=data['contentId']).update(user_view=F('user_view')+1)
 
     instance = AnswerLog(
         user=user,
@@ -47,7 +51,12 @@ def recbuttonlog(request):
         question_from_user=question_content
     )
     instance.save()
-    return Response(status.HTTP_201_CREATED)
+    
+    log_id = get_list_or_404(RecommendLog, user=user, company=company, job_small=job_small, question_type=question_type, question_from_user=question_content)[-1].rec_log_id
+    
+    data = {"logId": log_id}
+    data = json.dumps(data)
+    return Response(data, status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])

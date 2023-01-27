@@ -4,13 +4,13 @@ from django.contrib.auth import get_user_model
 
 from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType, JobList,Sample
 from .serializers import ContentListSerializer
-from logs.models import EvalLog
+from logs.models import EvalLog, RecommendLog
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 from django.http import HttpResponse
-from django.db.models import Q
+from django.db.models import F
 
 from django.db.models.functions import Length
 from services.apps import ServicesConfig
@@ -33,6 +33,8 @@ def answer_recommend(request):
     question_text = data["questionText"]
     content = data["content"]
     user = request.user
+    rec_log_id = data["logId"]
+    
     
     if question_type.question_type_id == 1000023:
         import re
@@ -52,14 +54,22 @@ def answer_recommend(request):
                             4)
     
     recommend.filtering()
+    tag1, tag2, tag3, tag4, tag5 = recommend.recommend_with_company_jobtype(), recommend.recommend_with_company_without_jobtype(), recommend.recommend_with_jobtype_without_company(), recommend.recommed_based_popularity(), recommend.recommend_based_expert()
+    rec_log_list = [*tag1, *tag2, *tag3, *tag4, *tag5[0], *tag5[1]]
+    rec_log_list = list(map(lambda x: 'a'+str(x).zfill(6), rec_log_list))
+
+    # 노출된 모든 아이템에 노출 카운트롤 하나 더해줌
+    Answer.objects.filter(answer_id__in=rec_log_list).update(user_impression_cnt=F('user_impression_cnt')+1)
+    
     result = {
-            " 님과 유사한 자소서를 골라봤어요" : recommend.recommend_with_company_jobtype(),
-            "지원하는 회사를 먼저 고려했어요" : recommend.recommend_with_company_without_jobtype(),
-            "비슷한 직무로 모아봤어요" : recommend.recommend_with_jobtype_without_company(),
-            "조회를 많이 했어요" : recommend.recommed_based_popularity(),
-            "전문가 평이 좋아요" : recommend.recommend_based_expert()[0],
-            "전문가 평이 별로에요" : recommend.recommend_based_expert()[1]
+            " 님과 유사한 자소서를 골라봤어요" : tag1,
+            "지원하는 회사를 먼저 고려했어요" : tag2,
+            "비슷한 직무로 모아봤어요" : tag3,
+            "조회를 많이 했어요" : tag4,
+            "전문가 평이 좋아요" : tag5[0],
+            "전문가 평이 별로에요" : tag5[1]
             }
+    
     
     result_keys = result.keys()
     to_front = {key : [] for key in result_keys}
@@ -73,6 +83,12 @@ def answer_recommend(request):
             temp_answer = ContentListSerializer(temp_answer)
             to_front[key].append(temp_answer.data)
 
+
+    # 레코멘드버튼 로그에 추천된 아이템을 스트링 형태로 남겨줌
+    rec_log = get_object_or_404(RecommendLog, rec_log_id=rec_log_id)
+    rec_log.impressions = str(rec_log_list)
+    rec_log.save()
+    
     return Response(to_front)
 
 
