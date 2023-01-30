@@ -81,7 +81,7 @@
                                 {% for question in question_type %}
                                     <option value = {{ question.question_type_id }}>{{ question.question_type }}</option>
                                 {% endfor %}
-                                <option value="other">직접입력</option>
+                                <option value='other'>직접입력</option>
                             </select>
                             <div id="question-insert"></div>
                         </div>
@@ -157,15 +157,15 @@
         }
         var questionContent = ""
 
-        if(document.getElementById("question_list")){ 
+        if(document.getElementById("question-insert")){ 
+            questionContent = document.getElementById('question-text').value;
+            questionType = 1000023;
+        }else{
             questionType = document.getElementById('question_list').value;
             if (questionType == 'none'){
                 alert("질문을 선택해주세요")
                 return -1
             }
-        }else{
-            questionContent = document.getElementById('question-text').value;
-            questionType = 1000023;
         }
         
         const logData = {
@@ -200,11 +200,11 @@
         render_window.setAttribute('class', 'exist-data')
 
         // 잠시만 기다려주세요 화면 render
-        if(document.getElementById("question_list")){
-            question_type = document.getElementById('question_list').value;
-        }else{
+        if(document.getElementById("question-input")){
             question_text = document.getElementById('question-text').value;
             question_type = 1000023;
+        }else{
+            question_type = document.getElementById('question_list').value;
         }
         const query = 'input[name="job_detail"]:checked';
         if (!document.querySelectorAll(query)[0]){

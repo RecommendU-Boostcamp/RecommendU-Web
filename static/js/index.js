@@ -41,7 +41,7 @@ function checkSmallOnlyOne(element) {
 }
 
 function questionDefaultCheck(value) {
-	if (value == "other") {
+	if (value == 'other') {
 		document.getElementById("question_list").style.display='none';
 		document.getElementById("question-insert").innerHTML = '<div id="question-input" style="display:flex;"><textarea list="question_list" name="" id="question-text" placeholder="자소서 문항을 입력하세요.(지원동기, 포부 등)" rows="1" cols="30" maxlength="150"></textarea><button class="return-button" onClick="questionReverse();">돌아가기</button><div>'
 		document.getElementById("sample-button").style.display='none';
