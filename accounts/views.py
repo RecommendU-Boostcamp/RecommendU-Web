@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from services.models import JobList,MajorList
-
+from .serializers import UserSerializer
 from django.contrib.auth import get_user_model
 from django.db.models.functions import Length
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
@@ -139,6 +139,12 @@ def namecheck(request):
     
     else:
         return Response({"Good": '사용할 수 있는 아이디입니다'}, status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+def totaluser(request):
+    queryset = get_user_model().objects.all()
+    serializer = UserSerializer(queryset,many=True)
+    return Response(serializer.data)
 
 
 # def signup(request):

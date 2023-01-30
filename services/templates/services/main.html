@@ -339,7 +339,7 @@
                 var markA = document.createElement('a')
                 markA.setAttribute('id', 'markA'+content_id.slice(0,7))
                 markA.setAttribute('onClick', `fillMark(${content_id}, 't'+${tag_name.toString()}, '{% url "logs:userscrap" %}')`)
-                markA.setAttribute('style', 'display:inline;')
+                markA.setAttribute('style', 'display:inline; cursor: pointer;')
                 markImg.setAttribute('id', 'markImg'+content_id.slice(0,7))
                 markImg.setAttribute('class', 'mark-empty')
                 markImg.setAttribute('src', '/static/images/mark-empty.png')

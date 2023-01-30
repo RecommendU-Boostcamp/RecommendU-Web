@@ -119,3 +119,21 @@ class JobList(models.Model):
     class Meta:
         managed = False               
         db_table = 'job_view'
+        
+class AnswerList(models.Model):
+    answer_id = models.CharField(primary_key=True,max_length=10,null=False,unique=True)
+    document_id = models.CharField(max_length=100, null=False)
+    content = models.CharField(max_length=10000,null=False)
+    question = models.CharField(max_length=1000, null=False)
+    user_good_cnt = models.IntegerField(default=0)
+    user_bad_cnt = models.IntegerField(default=0)
+    pro_good_cnt = models.IntegerField(default=0)
+    pro_bad_cnt = models.IntegerField(default=0)
+    summary = models.CharField(max_length=1000,null=False)
+    view = models.IntegerField(default=0)
+    user_view = models.IntegerField(default=0)
+    question_types = models.CharField(max_length=200,null=False)
+    user_impression_cnt = models.IntegerField(null=False)
+    class Meta:
+        managed = False               
+        db_table = 'answer_view'

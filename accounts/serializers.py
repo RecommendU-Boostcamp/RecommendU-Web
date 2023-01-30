@@ -1,10 +1,15 @@
 from rest_framework import serializers
-from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.contrib.auth import get_user_model
 from django.shortcuts import render, get_list_or_404, get_object_or_404
-
+from .models import User
 from services.serializers import MajorSmallSerializer, JobLargeSerializer
 from services.models import MajorSmall, JobLarge
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields=("id","username","recommend_cnt","career_type","favorite_company","interesting_job_large","major_small")
 
 # class MyRegisterSerializer(RegisterSerializer):
 #     major = serializers.PrimaryKeyRelatedField(queryset=MajorSmall.objects.all())

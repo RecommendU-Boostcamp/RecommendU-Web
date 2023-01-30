@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import (
     QuestionType, Company, MajorLarge, MajorSmall,
     JobLarge, JobSmall, RecommendType, SchoolType, 
-    Document, Answer, Sample, ContentList,
+    Document, Answer, Sample, ContentList,AnswerList
 )
 
 class QuestionTypeSerializer(serializers.ModelSerializer):
@@ -66,15 +66,13 @@ class SchoolSerializer(serializers.ModelSerializer):
 class AnswerSerializer(serializers.ModelSerializer):
     
     class Meta:
-        model = Answer
-        fields = '__all__'
+        model = AnswerList
+        fields = ("answer_id","user_good_cnt","user_bad_cnt","pro_good_cnt","pro_bad_cnt","view","user_view","document_id","user_impression_cnt","question_types")
         
         
 class DocumentSerializer(serializers.ModelSerializer):
-    answers = AnswerSerializer(many=True, read_only=True)
-    
     class Meta:
-        model = QuestionType
+        model = Document
         fields = '__all__'
         
         

@@ -12,4 +12,5 @@ urlpatterns = [
     # path('update/', views.update, name='update'),
     # path('password/', views.change_password, name='change_password'),
     path('namecheck/', views.namecheck, name='namecheck'),
+    path('total/',views.totaluser,name='total')
 ]

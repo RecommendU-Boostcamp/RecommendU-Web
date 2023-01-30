@@ -2,8 +2,8 @@ from django.shortcuts import render, get_list_or_404, get_object_or_404, redirec
 from .dbinit.initiation import dbinit, jobkoreainit, question_type_init, company_init, major_large_init, major_small_init, job_large_init, job_small_init, recommend_type_init, school_init, doc_init, answer_init, sample_init
 from django.contrib.auth import get_user_model
 
-from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType, JobList,Sample
-from .serializers import ContentListSerializer
+from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType, JobList,Sample,AnswerList
+from .serializers import ContentListSerializer,DocumentSerializer,AnswerSerializer
 from logs.models import EvalLog
 
 from rest_framework.response import Response
@@ -189,3 +189,16 @@ def docu_answer_init(request):
     sample_init(sample_data)
 
     return HttpResponse(f"cover letter saving Done")
+
+# document, answer 데이터를 model server로 보낼 api
+@api_view(["GET"])
+def document_total(request):
+    queryset = Document.objects.all()
+    serializer = DocumentSerializer(queryset,many=True)
+    return Response(serializer.data)
+
+@api_view(["GET"])
+def answer_total(request):
+    queryset = AnswerList.objects.all()
+    serializer = AnswerSerializer(queryset,many=True)
+    return Response(serializer.data)
