@@ -4,6 +4,7 @@ from services.models import QuestionType, Company, MajorLarge, MajorSmall, JobLa
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import RecommendLog, AnswerLog,EvalLog
+from .serializers import AnswerLogSerializer,RecommendLogSerializer,EvalLogSerializer
 from services.models import Company, JobSmall, QuestionType
 from rest_framework import status
 from django.db.models import F
@@ -115,3 +116,22 @@ def user_scrap(request):
     else:
         answer.scrap_users.remove(user)
         return Response(status=status.HTTP_200_OK)
+    
+@api_view(["GET"])
+def answer_log_total(request):
+    queryset = AnswerLog.objects.all()
+    serializer = AnswerLogSerializer(queryset,many=True)
+    return Response(serializer.data)
+
+@api_view(["GET"])
+def recommend_log_total(request):
+    queryset = RecommendLog.objects.all()
+    serializer = RecommendLogSerializer(queryset,many=True)
+    return Response(serializer.data)
+
+@api_view(["GET"])
+def eval_log_total(request):
+    queryset = EvalLog.objects.all()
+    serializer = EvalLogSerializer(queryset,many=True)
+    return Response(serializer.data)
+    
