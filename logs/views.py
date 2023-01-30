@@ -6,12 +6,15 @@ from rest_framework.decorators import api_view
 from .models import RecommendLog, AnswerLog,EvalLog
 from services.models import Company, JobSmall, QuestionType
 from rest_framework import status
+from django.db.models import F
 from django.contrib.auth import get_user_model
+import json
 
 
 # Create your views here.
 @api_view(['GET','POST'])
 def answerlog(request):
+
     if request.method == 'GET':
         queryset = AnswerLog.objects.all()
         serializer = AnswerLogSerializer(queryset,many=True)
