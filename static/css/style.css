@@ -412,7 +412,20 @@ button.btn.disabled {
     height: 100%;
 }
 
+button.return-button{
+    padding: 0.7em 1em;
+    border: 2px solid #908aff;
+    background-color: #908aff;
+    border-radius: 15px;
+    font-size: 1em;
+    font-weight: 500;
+    color: #fff;
+    width:17%;
+    font-family: 'Roboto', sans-serif;
+}
+
 .mainWrap .submitWrap #sample-button {
+    position:relative;
     margin-top: 7%;
     margin-left: 72%;
     border-radius: 30px;
