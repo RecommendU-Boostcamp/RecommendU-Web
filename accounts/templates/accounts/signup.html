@@ -14,7 +14,7 @@
                         {% csrf_token %}
                         <div style="position:relative">
                         <span>아이디</span>
-                        <input type="text" placeholder="영문, 숫자 포함하여 10자 이내", maxlength="15" name="username" style="position:relative" require id='username'>
+                        <input type="text" placeholder="영문, 숫자 포함하여 10자 이내", maxlength="15" name="username" style="position:relative" require id='username' onkeyup="this.value=this.value.replace(/[^a-zA-Z-_0-9]/g,'');">
                         <button class="signup-button" style="position:absolute; right:4px; top:41px;" onClick="usernameCheck('{% url 'accounts:namecheck' %}')">중복확인</button>
                         </div>
                         <div style="position:relative">
