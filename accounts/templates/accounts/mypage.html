@@ -1,0 +1,376 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <script src="{% static 'js/index.js' %}"></script>
+</head>
+
+{% block content %}
+<body onload="myInformation('{% url 'accounts:myinfo' %}'); myScrap('{% url 'accounts:myscrap' %}');">    
+    <div id="wrapper">
+        <div class="inner">
+            <section id="main" style="position:relative">
+                {% if request.user.is_authenticated %}
+                    <div style="position:flex; display:block">
+                        <a href="{% url 'services:main' %}"><img src="{% static 'images/recommend_logo.png' %}" style="position:relative; top:0px; left:40px; z-index:1; margin-bottom:20px; margin-top:20px" width="350px" height="70px" ></a>
+                    </div>      
+                   <a id="logout-button"  style="position:absolute; top:40px; right:50px; width:65px; height:20px; font-size:20px" href="{% url 'accounts:logout' %}" method="POST">logout</a>
+                {% endif %}
+                <div class="mainWrap">              
+                    <div class="submitWrap part">
+                        {% csrf_token %}
+                        <h3>{{ request.user }}님의 페이지</h3>
+                        <div class='mypage-content'>
+                            <span>아이디</span>
+                            <span id='user-id'></span>
+                        </div>
+                        <div class='mypage-content'>
+                            <span>비밀번호</span>
+                            <span id='user-pw'>********</span>
+                        </div>
+                        <div class='mypage-content'>
+                            <span>전공 대분류</span>
+                            <span id='user-majorlarge'></span>
+                        </div>
+                        <div class='mypage-content'>
+                            <span>전공 소분류</span>
+                            <span id='user-majorsmall'></span>
+                        </div>
+                        <div class='mypage-content'>
+                            <span>관심분야</span>
+                            <span id='user-job'></span>
+                        </div>
+                        <div class='mypage-content'>
+                            <span>신입/경력 여부</span>
+                            <span id='user-school'></span>
+                        </div>
+                    </div>
+                    <div class="listWrap part" id="exist-data">
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    async function myInformation(url){
+        const user = "{{ request.user }}"
+        const info_data = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({  
+                userId : user
+            }),
+        }
+        response = await fetch(url,info_data)
+        const data = await response.json()   
+        document.getElementById('user-id').innerText = data['id']
+        document.getElementById('user-majorlarge').innerText = data['major_large']
+        document.getElementById('user-majorsmall').innerText = data['major_small']
+        document.getElementById('user-job').innerText = data['interesting_job_large']
+        document.getElementById('user-school').innerText = data['career_type']
+    }
+
+    async function myScrap(url){
+        const user = "{{ request.user }}"
+        const scrap_data = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({  
+                userId : user
+            }),
+        }
+        response = await fetch(url,scrap_data)
+        const data = await response.json()   
+        scrapRender(data)
+    }
+
+    function scrapRender(data){
+        document.querySelector('#exist-data').style.display = 'block'
+        const a = document.querySelector('#exist-data')
+        const tag_name = "scraped"
+        const scrapText = "#{{ request.user }}" + "님의 저장된 자소서"
+        a.replaceChildren()
+        var listLen = data.length
+        var b = document.createElement('div')
+        b.setAttribute('class', `list-column ${tag_name}`)
+        var c1 = document.createElement('h3')
+        c1.setAttribute('class', 'category')
+        c1.innerText = scrapText
+        var c2 = document.createElement('div')
+        c2.setAttribute('class', 'list')
+        for (let j = 0; j<listLen; j++) {
+            // 각 key의 answer들 순회
+            var answer = data[j]
+            var content_id = answer.answer_id+tag_name
+            var d1 = document.createElement('div')
+            d1.setAttribute('class', 'item')
+            d1.setAttribute('onClick', `popup_open(${content_id}); checkStatus('{{ request.user.username }}', ${content_id}, '${tag_name}', '{% url "services:check_status" %}');`)
+            var d_title = document.createElement('h4')
+            d_title.setAttribute('class', 'title')
+            d_title.innerText = answer.question
+            var d_company = document.createElement('h4')
+            d_company.setAttribute('class', 'company')
+            d_company.innerText = answer.company + ' · ' + answer.job_small
+            var d_content = document.createElement('p')
+            d_content.setAttribute('class', 'contents')
+            d_content.innerText = answer.summary
+            var d2 = document.createElement('div')
+            d2.setAttribute('class', 'popup')
+            d2.setAttribute('id', `${content_id}`)
+            var e = document.createElement('div')
+            e.setAttribute('class', 'contents')
+            var f1 = document.createElement('h3')
+            f1.setAttribute('class', 'category')
+            f1.setAttribute('name', tag_name)
+            f1.innerText = scrapText
+            var f2 = document.createElement('div')
+            f2.setAttribute('class', 'info')
+            var f3 = document.createElement('div')
+            f3.setAttribute('class', 'text')
+            var g1 = document.createElement('span')
+            var f4 = document.createElement('a')
+            f4.setAttribute('href', answer.document_url)
+            f4.setAttribute('target', '_blank')
+            f4.innerHTML="🔗 원본 확인하기"
+            var f5 = document.createElement('button')
+            f5.setAttribute('type', 'button')
+            f5.setAttribute('class', 'btn btn_close')
+            f5.setAttribute('onClick', `popup_close(${content_id})`)
+            f5.innerText = 'X'
+            var f6 = document.createElement('button')
+            f6.setAttribute('type', 'button')
+            f6.setAttribute('class', 'btn btn_good')
+            f6.setAttribute('id', 'btn_good'+answer.answer_id)
+            f6.setAttribute('value',answer.user_good_cnt)
+            f6.setAttribute('onClick',`getUserGood(${content_id},${answer.user_good_cnt},'${tag_name}','{% url "logs:evallog" %}')`)
+            f6.innerText = '👍 '+answer.user_good_cnt
+            var f7 = document.createElement('button')
+            f7.setAttribute('type', 'button')
+            f7.setAttribute('class', 'btn btn_bad')
+            f7.setAttribute('id', 'btn_bad'+answer.answer_id)
+            f7.setAttribute('value',answer.user_bad_cnt)
+            f7.setAttribute('onClick',`getUserBad(${content_id},${answer.user_bad_cnt}, '${tag_name}','{% url "logs:evallog" %}')`)
+            f7.innerText = '👎 '+answer.user_bad_cnt
+            g1.setAttribute('id', 'info-company')
+            g1.setAttribute('style', 'display:inline; margin-bottom:2px;')
+            g1.innerText = answer.company
+            var markDiv = document.createElement('div')
+            markDiv.setAttribute('id', 'bookmark'+content_id.slice(0,7))
+            markDiv.setAttribute('style', 'position:flex')
+            var markImg = document.createElement('img')
+            var markA = document.createElement('a')
+            markA.setAttribute('id', 'markA'+content_id.slice(0,7))
+            markA.setAttribute('onClick', `fillMark(${content_id}, '${tag_name}', '{% url "logs:userscrap" %}')`)
+            markA.setAttribute('style', 'display:inline; cursor: pointer;')
+            markImg.setAttribute('id', 'markImg'+content_id.slice(0,7))
+            markImg.setAttribute('class', 'mark-empty')
+            markImg.setAttribute('src', '/static/images/mark-empty.png')
+            var g2 = document.createElement('span')
+            g2.setAttribute('id', 'info-work')
+            g2.innerText = answer.job_small
+            var g3 = document.createElement('div')
+            g3.setAttribute('class','info-spec')
+            var g4 = document.createElement('h4')
+            g4.setAttribute('class', 'title')
+            g4.innerText = answer.question
+            var g5 = document.createElement('p')
+            g5.setAttribute('class', 'letter')
+            g5.innerText = answer.content
+            var h1 = document.createElement('span')
+            h1.setAttribute('id', 'info-spec--school')
+            h1.innerText = answer.schooltype
+            var h2 = document.createElement('span')
+            h2.setAttribute('id', 'info-spec--major')
+            h2.innerText = answer.major_small
+            var h3 = document.createElement('span')
+            h3.setAttribute('id', 'info-spec--extra_spec')
+            var spec_array = answer.spec.slice(1,-1).split(',')
+            for (let k = 0; k<spec_array.length; k++){
+                var content = document.createElement('p')
+                content.setAttribute('class', 'detail')
+                content.innerText = spec_array[k]
+                h3.append(content)
+            }
+            var helpDiv = document.createElement('div')
+            helpDiv.setAttribute('class', 'help-tip')
+            helpDiv.setAttribute('id', 'help-answer')
+            var helpP = document.createElement('p')
+            helpP.innerText = "<북마크 아이콘>\n 자소서 답변이 맘에 든다면, 북마크를 클릭해보세요.\n 마이페이지에서 북마크한 답변들을 확인할 수 있습니다(구현 예정).\n\n <좋아요 / 별로에요>\n 이 답변이 괜찮았다면 👍🏻를, 별로였다면 👎🏻를 눌러주세요."
+            helpDiv.append(helpP)
+
+            g3.append(h1, h2, h3)
+            markA.append(markImg)
+            markDiv.append(g1, markA, helpDiv)
+            f3.append(g4, g5)
+            f2.append(markDiv, g2, g3)
+            e.append(f1, f2, f3, f4, f5, f6, f7)
+            d2.append(e)
+            d1.append(d_company, d_title, d_content)
+            c2.append(d1, d2)
+        }
+        b.append(c1, c2)
+        a.append(b)
+    }
+
+    async function checkStatus(username, contentId, tagId, url) {
+        const answerId = contentId.id.slice(0, 7)
+        const markImg = document.querySelector('.'+tagId+' #markImg'+answerId)
+        const goodBtn = document.querySelector("."+tagId+" #btn_good"+answerId)
+        const badBtn = document.querySelector("."+tagId+" #btn_bad"+answerId)
+
+        const markData = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({ 
+                user_id: username,
+                answer_id: answerId
+            })
+        }
+        const response = await fetch(url, markData)
+        const dataString = await response.json()
+        const data = JSON.parse(dataString)
+
+        const goodCnt = data["goodCnt"]
+        const badCnt = data["badCnt"]
+        const isBoth = data["both"]
+        const isScrap = data["isScrap"]
+        const isEval = data["isEval"]
+        goodBtn.setAttribute('value', goodCnt)
+        goodBtn.innerHTML = '👍🏻 ' + goodCnt.toString()
+        badBtn.setAttribute('value', badCnt)
+        badBtn.innerHTML = '👎🏻 ' + badCnt.toString()
+       
+        // 스크랩 버튼 초기화
+        if (isScrap) {
+            markImg.setAttribute('class', 'mark-fill')
+            markImg.setAttribute('src', '/static/images/mark-fill.png')
+        } else {
+            markImg.setAttribute('class', 'mark-empty')
+            markImg.setAttribute('src', '/static/images/mark-empty.png')            
+        }
+    }
+    async function getUserGood(contents_id,cnt,tagId,url){
+        const user_id = '{{ request.user }}';
+        const content_id = contents_id.id.slice(0,7)
+        var btn_good = document.querySelector("."+tagId+" #btn_good"+content_id)
+        var btn_bad = document.querySelector("."+tagId+" #btn_bad"+content_id)
+        const good = Number(btn_good.getAttribute('value')) + 1
+        var bad = Number(btn_bad.getAttribute('value'))
+        const user_good = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({
+                userId: user_id, 
+                contentId: content_id,
+                goodCnt: good,
+                badCnt:bad,
+                favor:1,
+            }),
+        }
+        const response = await fetch(url, user_good)
+        const data = await response.json()
+        if (data==201){
+            btn_good.innerHTML = '👍🏻 '+good
+            btn_good.value = good
+        }
+        else if(data==301){
+            bad = bad-1
+            btn_bad.innerHTML = '👎🏻 '+bad
+            btn_bad.value = bad
+            btn_good.innerHTML = '👍🏻 '+good
+            btn_good.value = good
+        }
+        else{
+            alert("이미 좋아요를 누른 자소서입니다.")
+        }
+    }
+
+    async function getUserBad(contents_id,cnt,tagId,url){
+        const user_id = '{{ request.user }}';
+        const content_id = contents_id.id.slice(0,7)
+        var btn_good = document.querySelector("."+tagId+" #btn_good"+content_id)
+        var btn_bad = document.querySelector("."+tagId+" #btn_bad"+content_id)
+        var good = Number(btn_good.getAttribute('value'))
+        const bad = Number(btn_bad.getAttribute('value')) + 1
+        const user_bad = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({ 
+                userId: user_id, 
+                contentId: content_id,
+                goodCnt: good,
+                badCnt:bad,
+                favor:0,
+            }),
+        }
+        const response = await fetch(url, user_bad)
+        const data = await response.json()
+        if (data==201){
+            btn_bad.innerHTML = '👎🏻 '+bad
+            btn_bad.value = bad
+        }
+        else if(data==301){
+            good = good-1
+            btn_bad.innerHTML = '👎🏻 '+bad
+            btn_bad.value = bad
+            btn_good.innerHTML = '👍🏻 '+good
+            btn_good.value = good
+        }
+        else{
+            alert("이미 별로에요를 누른 자소서입니다.")
+        }
+    }   
+
+
+    async function fillMark(answerTag, tagId, url) {
+        const answerId = answerTag.id.slice(0, 7)
+        const markImg = document.querySelector('.'+tagId+' #markImg'+answerId);
+        const userId = '{{ request.user }}';
+        
+        const markData = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({ 
+                user_id: userId,
+                answer_id: answerId
+            })
+        }
+        const response = await fetch(url, markData)
+        if (response.status === 201) {
+            markImg.setAttribute('class', 'mark-fill')
+            markImg.setAttribute('src', '/static/images/mark-fill.png')
+        } else if (response.status === 200) {
+            markImg.setAttribute('class', 'mark-empty')
+            markImg.setAttribute('src', '/static/images/mark-empty.png')
+        }
+    }
+</script>
+{% endblock %}

@@ -21,6 +21,8 @@ from django.http import HttpResponse
 from services.models import MajorSmall, JobLarge
 from rest_framework import status
 from rest_framework.response import Response
+from services.models import ContentList
+from services.serializers import ContentListSerializer
 import json
 
 
@@ -251,6 +253,41 @@ def totaluser(request):
 def login_test(request):
     context = {"context":"hello"}
     return render(request, 'login.html',context)
+
+@api_view(["POST"])
+def myscrap(request):
+    user = request.user
+    scrap_answers = user.answer_scrap.all()
+    scrap_list = []
+    for contents in scrap_answers:
+        scrap_list.append(contents.answer_id)
+    scrap_data = ContentList.objects.filter(answer_id__in=scrap_list)
+    serializer = ContentListSerializer(scrap_data, many=True)
+    return Response(serializer.data,status=status.HTTP_200_OK)
+
+@api_view(["POST"])
+def myinfo(request):
+    user = request.user
+    user_info = {
+        'id':user.username,
+        'major_large':user.major_small.major_large.major_large,
+        'major_small':user.major_small.major_small,
+        'interesting_job_large':user.interesting_job_large.job_large,
+        'career_type':user.career_type
+        }
+    return Response(user_info)
+    # career_type = models.CharField(max_length=10,null=False)
+    # recommend_cnt = models.IntegerField(default=0)
+    # major_small = models.ForeignKey(MajorSmall,related_name="users",on_delete=models.SET_NULL,null=True)
+    # favorite_company = models.ForeignKey(Company,related_name="users",on_delete=models.SET_NULL,null=True)
+    # interesting_job_large = models.ForeignKey(JobLarge,related_name="users",on_delete=models.SET_NULL,null=True)
+    # answer_log = models.ManyToManyField(Answer,related_name='recorded_user',through=AnswerLog)
+    # answer_eval = models.ManyToManyField(Answer,related_name="eval_users",through=EvalLog)
+    # answer_scrap = models.ManyToManyField(Answer,related_name="scrap_users")
+    
+def mypage(request):
+    context = {"context":"hello"}
+    return render(request, 'accounts/mypage.html',context)
 
 def signup_test(request):
     jobquery = JobList.objects.all()
