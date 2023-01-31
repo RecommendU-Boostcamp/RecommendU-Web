@@ -195,9 +195,6 @@
         }
         var question_type = 0;
         var question_text = "";
-        const render_window = document.querySelector(".listWrap>p")
-        render_window.innerHTML = "<b>자기소개서를 가져오고 있어요 🙏🏻</b><br>잠시만 기다려주세요.</p>"
-        render_window.setAttribute('class', 'exist-data')
 
         // 잠시만 기다려주세요 화면 render
         if(document.getElementById("question-input")){
@@ -205,7 +202,13 @@
             question_type = 1000023;
         }else{
             question_type = document.getElementById('question_list').value;
+            if (question_type == 'none'){
+                return -1
+            }
         }
+        const render_window = document.querySelector(".listWrap>p")
+        render_window.innerHTML = "<b>자기소개서를 가져오고 있어요 🙏🏻</b><br>잠시만 기다려주세요.</p>"
+        render_window.setAttribute('class', 'exist-data')
         const query = 'input[name="job_detail"]:checked';
         if (!document.querySelectorAll(query)[0]){
             return -1

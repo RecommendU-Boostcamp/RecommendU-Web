@@ -34,8 +34,6 @@ def answer_recommend(request):
     content = data["content"]
     user = request.user
     rec_log_id = data["logId"]
-    
-    
     if question_type.question_type_id == 1000023:
         import re
         WHITESPACE_HANDLER = lambda k: re.sub('\s+', ' ', re.sub('\n+', ' ', k.strip()))
