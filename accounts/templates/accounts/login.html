@@ -15,7 +15,7 @@
                         <span>아이디</span>
                         <input id="username" type="text" placeholder="아이디" name="username">
                         <span>비밀번호</span>
-                        <input id="password" type="password" placeholder="비밀번호" name="password">
+                        <input id="password" type="password" placeholder="비밀번호" name="password" onkeypress = "enterPress(event,'{% url 'accounts:login' %}','{% url 'services:main' %}');">
                         <button type="button" class="btn btn_login" onClick="loginCheck('{% url 'accounts:login' %}','{% url 'services:main' %}')">로그인</button>
                     </form>
                     <p>
@@ -58,6 +58,10 @@
         }
 
     }
-
+    function enterPress(event,url, mainPage){
+        if (event.code == 'Enter'){
+            loginCheck(url, mainPage)
+        }
+    }
 </script>
 {% endblock content %}

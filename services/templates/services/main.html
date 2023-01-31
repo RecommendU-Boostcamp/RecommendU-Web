@@ -81,7 +81,7 @@
                                 {% for question in question_type %}
                                     <option value = {{ question.question_type_id }}>{{ question.question_type }}</option>
                                 {% endfor %}
-                                <option value='other'>직접입력</option>
+                                <option value="other">직접입력</option>
                             </select>
                             <div id="question-insert"></div>
                         </div>
@@ -157,7 +157,7 @@
         }
         var questionContent = ""
 
-        if(document.getElementById("question-insert")){ 
+        if(document.getElementById("question-input")){ 
             questionContent = document.getElementById('question-text').value;
             questionType = 1000023;
         }else{

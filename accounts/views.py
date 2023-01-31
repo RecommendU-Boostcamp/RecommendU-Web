@@ -145,7 +145,7 @@ def totaluser(request):
     queryset = get_user_model().objects.all()
     serializer = UserSerializer(queryset,many=True)
     return Response(serializer.data)
-
+    
 
 # def signup(request):
 #     if request.method == "POST":
