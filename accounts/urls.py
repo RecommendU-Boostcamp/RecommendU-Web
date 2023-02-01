@@ -12,6 +12,7 @@ urlpatterns = [
     path('mypage/',views.mypage,name='mypage'),
     path('myscrap/',views.myscrap,name='myscrap'),
     path('myinfo/',views.myinfo,name='myinfo'),
+    path('update/',views.update,name='update'),
     # path('update/', views.update, name='update'),
     # path('password/', views.change_password, name='change_password'),
     path('namecheck/', views.namecheck, name='namecheck'),

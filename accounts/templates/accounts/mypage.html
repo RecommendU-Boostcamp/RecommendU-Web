@@ -35,22 +35,68 @@
                         <div class='mypage-content'>
                             <span>비밀번호</span>
                             <span id='user-pw'>********</span>
+                            <button style="width:30%" onClick="Clicked('user-pw','user-pw-click');">비밀번호 수정</button>
+                        </div>
+                        <div id='user-pw-click' style="display:none">
+                            <div style="display:flex">
+                                <span>현재 비밀번호</span>
+                                <input id="origin-password" type="password" placeholder="비밀번호" name="password">
+                            </div>
+                            <div style="display:flex">
+                                <span>신규 비밀번호</span>
+                                <input id="new-password" type="password" placeholder="비밀번호" name="password">
+                            </div>
+                            <div style="display:flex">
+                                <span>신규 비밀번호 확인</span>
+                                <input id="new-password-confirm" type="password" placeholder="비밀번호" name="password">
+                            </div>
+                            <button>확인</button>
+                            <button onClick="canceled('user-pw-click')">취소</button>
                         </div>
                         <div class='mypage-content'>
-                            <span>전공 대분류</span>
-                            <span id='user-majorlarge'></span>
-                        </div>
-                        <div class='mypage-content'>
-                            <span>전공 소분류</span>
+                            <span>전공</span>
                             <span id='user-majorsmall'></span>
+                            <button style="width:30%" onClick="Clicked('user-majorsmall','user-major-click');">전공 수정</button>
+                        </div>
+                        <div id='user-major-click' style="display:none">
+                            <select id="major-large" name="major-large", class="mypage-select" required onChange="callSmall(this.value, {{ majorlist_json }})" required>
+                                <option value='none' selected disabled hidden>대분류 선택</option>
+                                {% for large in majorlist %}
+                                    <option value={{ large.major_large }}>{{ large.major_large }}</option>
+                                {% endfor %}
+                            </select>
+                            <select id="major-small" name="major-small" class="mypage-select" required>
+                                <option id='small_init' value='none'>대분류를 먼저 선택하세요</option>
+                            </select>
+                            <button onClick="majorChange('{% url 'accounts:update' %}')">확인</button>
+                            <button onClick="canceled('user-major-click')">취소</button>
                         </div>
                         <div class='mypage-content'>
                             <span>관심분야</span>
                             <span id='user-job'></span>
+                            <button style="width:30%" onClick="Clicked('user-job','user-job-click');">관심분야 수정</button>
+                        </div>
+                        <div id="user-job-click" style="display:none">
+                            <select id='interesting-job-large' placeholder="관심 분야를 선택해주세요." class="mypage-select" name="interesting-job-large" value='none' required>
+                                {% for job in joblist %}
+                                    <option value = {{ job.job_large }}>{{ job.job_large }}</option>
+                                {% endfor %}
+                            </select>
+                            <button onClick="jobChange()">확인</button>
+                            <button onClick="canceled('user-job-click')">취소</button>
                         </div>
                         <div class='mypage-content'>
                             <span>신입/경력 여부</span>
-                            <span id='user-school'></span>
+                            <span id='user-career'></span>
+                            <button style="width:30%" onClick="Clicked('user-career','user-career-click');">여부 수정</button>
+                        </div>
+                        <div id="user-career-click" style="display:none">
+                            <select id="career-type" name="career-type" class="mypage-select" required>
+                                <option value='신입'>신입</option>
+                                <option value='경력'>경력</option>
+                            </select>
+                            <button onClick="careerChange()">확인</button>
+                            <button onClick="canceled('user-career-click')">취소</button>
                         </div>
                     </div>
                     <div class="listWrap part" id="exist-data">
@@ -62,6 +108,60 @@
 </body>
 </html>
 <script type="text/javascript">
+    function Clicked(unclick,click){
+       var clicked = document.getElementById(click)
+       var unclicked = document.getElementById(unclick)
+        if (clicked.style.display == "block"){
+            clicked.style.display = "none"
+        }
+        else{
+            clicked.style.display = "block" 
+        }
+    }
+    function canceled(clicked){
+        var clicked = document.getElementById(clicked)
+        clicked.style.display="none"
+    }
+
+    async function majorChange(url){
+        const user = '{{ request.user }}'
+        const majorLarge = document.querySelector('#major-large').value
+        const majorSmall = document.querySelector('#major-small').value
+        const job = document.getElementById('user-job').innerText
+        const career = document.getElementById('user-career').innerText
+        if (majorLarge == 'none'){
+            alert("변경할 대분류를 선택해주세요")
+        }
+        else{
+            const change_data = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{csrf_token}}",
+                },
+                body: JSON.stringify({  
+                    major_small :majorSmall,
+                    interesting_job_large:job,
+                    career_type:career,
+                }),
+            }
+            response = await fetch(url,change_data)
+            const data = await response.json()
+            console.log(data)
+            document.getElementById('user-majorsmall').innerText = majorSmall+"("+majorLarge+")"
+        }
+    }
+
+    async function jobChange(){
+        const interestingJobLarge = document.querySelector('#interesting-job-large').value
+        document.getElementById('user-job').innerText = interestingJobLarge
+    }
+    
+    async function careerChange(){
+        const careerType = document.querySelector('#career-type').value
+        document.getElementById('user-career').innerText = careerType
+    }
+
     async function myInformation(url){
         const user = "{{ request.user }}"
         const info_data = {
@@ -77,10 +177,9 @@
         response = await fetch(url,info_data)
         const data = await response.json()   
         document.getElementById('user-id').innerText = data['id']
-        document.getElementById('user-majorlarge').innerText = data['major_large']
-        document.getElementById('user-majorsmall').innerText = data['major_small']
+        document.getElementById('user-majorsmall').innerText = data['major_small']+"("+data['major_large']+")"
         document.getElementById('user-job').innerText = data['interesting_job_large']
-        document.getElementById('user-school').innerText = data['career_type']
+        document.getElementById('user-career').innerText = data['career_type']
     }
 
     async function myScrap(url){

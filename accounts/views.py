@@ -142,113 +142,20 @@ def namecheck(request):
     else:
         return Response({"Good": '사용할 수 있는 아이디입니다'}, status=status.HTTP_200_OK)
 
+@api_view(["POST"])
+def update(request):
+    if request.method == 'POST':
+        print(request.data)
+        user_change_form = CustomUserChangeForm(data=request.data, instance=request.user)
+        if user_change_form.is_valid():
+            user_change_form.save()
+            return Response(status=status.HTTP_301_MOVED_PERMANENTLY)
+
 @api_view(["GET"])
 def totaluser(request):
     queryset = get_user_model().objects.all()
     serializer = UserSerializer(queryset,many=True)
     return Response(serializer.data)
-    
-
-# def signup(request):
-#     if request.method == "POST":
-#         print(request.POST)
-        
-#         # 유저 아이디 중복검사
-#         try:
-#             _user = get_object_or_404(get_user_model(), username=request.POST['username'])
-            
-#         except:
-#             _user = None
-            
-#         if _user:
-#             return Response({'message':'같은 아이디가 이미 있습니다.'}, status=status.HTTP_205_RESET_CONTENT)
-        
-#         if len(request.POST['password1']) < 8:
-#             return Response({'message':'비밀번호가 너무 짧습니다.'}, status=status.HTTP_205_RESET_CONTENT)
-        
-#         if request.POST['password1'] != request.POST['password2']:
-#             return Response({'message':'비밀번호가 일치하지 않습니다.'}, status=status.HTTP_205_RESET_CONTENT)
-
-#         major_name = request.POST.get("major_small")
-#         major_instance = MajorSmall.objects.get(major_small=major_name)
-#         job_large_name = request.POST.get("interesting-job-large")
-#         job_large_instance = JobLarge.objects.get(job_large=job_large_name)
-#         request.POST = request.POST.copy()
-#         request.POST["major_small"] = str(major_instance.major_small_id)
-#         request.POST['interesting-job-large'] = str(job_large_instance.job_large_id)
-#         form = CustomUserCreationForm(request.POST)
-
-#         if form.is_valid():
-#             form.save()
-#             return Response({'message': 'Good!'}, status=status.HTTP_200_OK)
-#             # return redirect('services:main')
-        
-#         else:  
-#             print(form.error_messages)
-#             return Response({'message': '입력 정보를 다시 한 번 확인하세요.'}, status=status.HTTP_205_RESET_CONTENT)
-        
-#     else:
-#         form = CustomUserCreationForm()  # ModelForm 
-        
-#     jobquery = JobList.objects.all()
-#     majorquery = MajorList.objects.all()
-#     for i in range(0,len(majorquery)):
-#         majorquery[i].id = "job_"+str(i)
-#         majorquery[i].major_small = majorquery[i].major_small.split(',')       
-         
-#     context = {
-#         'form': form,
-#         "joblist":jobquery,
-#         "majorlist" : majorquery,
-#         "majorlist_json" : json.dumps([majors.json() for majors in majorquery])
-#     }
-#     return render(request,'accounts/signup.html', context)
-
-
-
-
-
-# def delete(request):
-#     if request.user.is_authenticated:
-#         request.user.delete()
-#         auth_logout(request)
-#     return redirect('articles:index')
-
-
-# def update(request):
-#     if request.method == "POST":
-#         form = CustomUserChangeForm(request.POST, instance=request.user)
-#         if form.is_valid():
-#             form.save()
-#             return redirect ('articles:index')
-#     else:
-#         form = CustomUserChangeForm(instance=request.user)
-#     context = {
-#         'form': form,
-#     }
-#     return render(request, 'accounts/update.html', context)
-
-
-# def change_password(request):
-#     if request.method == "POST":
-#         form = PasswordChangeForm(request.user, request.POST)
-#         if form.is_valid():
-#             # 1
-#             # user = form.save
-#             # update_session_auth_hash(request, user)
-#             form.save()
-#             update_session_auth_hash(request, form.user)
-#             redirect('articles:index')
-#     else:
-#         form = PasswordChangeForm(request.user)  # 새비밀번호/확인은 SetPasswordForm 것이고, PasswordChangeForm은 여기에 기존 비밀번호를 추가한 폼. 
-#     context = {
-#         'form': form
-#     }
-#     return render(request, 'accounts/change_password.html', context)
-
-
-
-# Create your views here.
 
 def login_test(request):
     context = {"context":"hello"}
@@ -276,17 +183,20 @@ def myinfo(request):
         'career_type':user.career_type
         }
     return Response(user_info)
-    # career_type = models.CharField(max_length=10,null=False)
-    # recommend_cnt = models.IntegerField(default=0)
-    # major_small = models.ForeignKey(MajorSmall,related_name="users",on_delete=models.SET_NULL,null=True)
-    # favorite_company = models.ForeignKey(Company,related_name="users",on_delete=models.SET_NULL,null=True)
-    # interesting_job_large = models.ForeignKey(JobLarge,related_name="users",on_delete=models.SET_NULL,null=True)
-    # answer_log = models.ManyToManyField(Answer,related_name='recorded_user',through=AnswerLog)
-    # answer_eval = models.ManyToManyField(Answer,related_name="eval_users",through=EvalLog)
-    # answer_scrap = models.ManyToManyField(Answer,related_name="scrap_users")
     
 def mypage(request):
-    context = {"context":"hello"}
+    jobquery = JobList.objects.all()
+    majorquery = MajorList.objects.all().order_by(Length('major_large').desc())
+    
+    for i in range(0,len(majorquery)):
+        majorquery[i].id = "job_"+str(i)
+        majorquery[i].major_small = majorquery[i].major_small.split(',')       
+         
+    context = {
+        "joblist":jobquery,
+        "majorlist" : majorquery,
+        "majorlist_json" : json.dumps([majors.json() for majors in majorquery])
+    }
     return render(request, 'accounts/mypage.html',context)
 
 def signup_test(request):
