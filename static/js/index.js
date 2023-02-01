@@ -82,7 +82,6 @@ function callSmall(large, majorList){
 		const temp_small = document.createElement('option')
 		temp_small.setAttribute('value', majorSmalls[i]);
 		temp_small.innerHTML = majorSmalls[i]
-		console.log(temp_small)
 		small_elem.appendChild(temp_small)
 	}
 }
