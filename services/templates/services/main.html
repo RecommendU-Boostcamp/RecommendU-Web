@@ -21,9 +21,10 @@
                 {% if request.user.is_authenticated %}
                     <div style="position:flex; display:block">
                         <a href="{% url 'services:main' %}"><img src="{% static 'images/recommend_logo.png' %}" style="position:relative; top:0px; left:40px; z-index:1; margin-bottom:20px; margin-top:20px" width="350px" height="70px" ></a>
-                    </div>      
-                   <a id="feedback-button"  style="position:absolute; top:40px; right:160px; width:125px; height:20px; font-size:17px" href="https://forms.gle/BvTpzUj9m6N7jvgQA">📮피드백 남기기</a>
-                   <a id="logout-button"  style="position:absolute; top:40px; right:50px; width:65px; height:20px; font-size:20px" href="{% url 'accounts:logout' %}" method="POST">logout</a>
+                    </div>
+                    <a id="logout-button"  style="position:absolute; top:40px; right:330px; width:100px; height:20px; font-size:20px" href="{% url 'accounts:mypage' %}" method="POST">🏠MyPage</a>
+                    <a id="feedback-button"  style="position:absolute; top:40px; right:160px; width:125px; height:20px; font-size:17px" href="https://forms.gle/BvTpzUj9m6N7jvgQA">📮피드백 남기기</a>
+                    <a id="logout-button"  style="position:absolute; top:40px; right:50px; width:65px; height:20px; font-size:20px" href="{% url 'accounts:logout' %}" method="POST">logout</a>
                 {% endif %}
                 <div class="mainWrap">              
                     <div class="submitWrap part">
@@ -117,7 +118,8 @@
             sampleBtn.setAttribute('placeholder', '자소서 내용을 입력하세요.\n10자 이상 입력하시면 나에게 더 맞는 추천을 받을 수 있어요.')
         }
     }
-     
+    
+
     async function questionTypeCheck(){
         count = count+1
         const question_type = document.getElementById('question_list').value;

@@ -8,8 +8,6 @@ from rest_framework.decorators import api_view
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import (
     AuthenticationForm,
-    UserCreationForm,
-    UserChangeForm, 
     PasswordChangeForm,
 )
 from django.contrib.auth import login as auth_login
@@ -62,9 +60,11 @@ def logout(request):
     }
     return render(request, 'accounts/login.html', context)
 
+
 @api_view(['GET', 'POST', ])
 def signup(request):
     if request.method == "POST":        
+        print(request)
         # 유저 아이디 중복검사
         try:
             _user = get_object_or_404(get_user_model(), username=request.data['username'])
@@ -91,7 +91,6 @@ def signup(request):
         major_instance = MajorSmall.objects.get(major_small=major_name)
         job_large_name = request.data.get("interesting_job_large")
         job_large_instance = JobLarge.objects.get(job_large=job_large_name)
-        # request.data = request.data.copy()
         request.data["major_small"] = str(major_instance.major_small_id)
         request.data['interesting_job_large'] = str(job_large_instance.job_large_id)
         form = CustomUserCreationForm(request.data)
@@ -142,14 +141,33 @@ def namecheck(request):
     else:
         return Response({"Good": '사용할 수 있는 아이디입니다'}, status=status.HTTP_200_OK)
 
+
 @api_view(["POST"])
 def update(request):
     if request.method == 'POST':
-        print(request.data)
+        major_name = request.data.get("major_small")
+        major_instance = MajorSmall.objects.get(major_small=major_name)
+        job_large_name = request.data.get("interesting_job_large")
+        job_large_instance = JobLarge.objects.get(job_large=job_large_name)
+        request.data["major_small"] = str(major_instance.major_small_id)
+        request.data['interesting_job_large'] = str(job_large_instance.job_large_id)
         user_change_form = CustomUserChangeForm(data=request.data, instance=request.user)
         if user_change_form.is_valid():
             user_change_form.save()
-            return Response(status=status.HTTP_301_MOVED_PERMANENTLY)
+            return Response(status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST", ])
+def change_password(request):
+    form = PasswordChangeForm(request.user, request.data)
+    if form.is_valid():
+        form.save()
+        update_session_auth_hash(request, form.user)
+        return Response(status=status.HTTP_200_OK)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(["GET"])
 def totaluser(request):
@@ -157,9 +175,11 @@ def totaluser(request):
     serializer = UserSerializer(queryset,many=True)
     return Response(serializer.data)
 
+
 def login_test(request):
     context = {"context":"hello"}
     return render(request, 'login.html',context)
+
 
 @api_view(["POST"])
 def myscrap(request):
@@ -171,6 +191,7 @@ def myscrap(request):
     scrap_data = ContentList.objects.filter(answer_id__in=scrap_list)
     serializer = ContentListSerializer(scrap_data, many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
+
 
 @api_view(["POST"])
 def myinfo(request):
@@ -184,8 +205,10 @@ def myinfo(request):
         }
     return Response(user_info)
     
+    
 def mypage(request):
     jobquery = JobList.objects.all()
+    majorsmall_list = MajorSmall.objects.all()
     majorquery = MajorList.objects.all().order_by(Length('major_large').desc())
     
     for i in range(0,len(majorquery)):
@@ -194,6 +217,7 @@ def mypage(request):
          
     context = {
         "joblist":jobquery,
+        "majorsmall_list": majorsmall_list,
         "majorlist" : majorquery,
         "majorlist_json" : json.dumps([majors.json() for majors in majorquery])
     }
