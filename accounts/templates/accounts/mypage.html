@@ -29,8 +29,11 @@
                         {% csrf_token %}
                         <h3>{{ request.user }}님의 마이페이지</h3>
                         <div>
-                            <div class="mypage-tag">비밀번호 변경</div>
-                            <div id='user-pw-click'>
+                            <div style="display:flex;">
+                                <div class="mypage-tag">비밀번호 변경</div>
+                                <button id="pw-click" class="mypage-btn" onClick="Clicked('pw-click','user-pw-click')">변경하기</button>
+                            </div>
+                            <div id='user-pw-click' style="display:none">
                                 <div style="display:flex">
                                     <input id="old-password" type="password" placeholder="현재 비밀번호" name="old_password">
                                 </div>
@@ -40,7 +43,10 @@
                                 <div style="display:flex">
                                     <input id="new-password2" type="password" placeholder="새로운 비밀번호 확인" name="new_password2">
                                 </div>
-                                <button class="mypage-btn" onClick="passwordChange('{% url 'accounts:change_password' %}')">비밀번호 변경</button>
+                                <div style="display:flex;">
+                                    <button class="mypage-btn" style="left:70px;" onClick="passwordChange('{% url 'accounts:change_password' %}')">비밀번호 변경</button>
+                                    <button id="pw-click" class="mypage-btn" style="left:95px;" onClick="Clicked('user-pw-click','pw-click')">취소</button>
+                                </div>
                             </div>
                         </div>
                         <div>
@@ -100,12 +106,8 @@
     function Clicked(unclick,click){
        var clicked = document.getElementById(click)
        var unclicked = document.getElementById(unclick)
-        if (clicked.style.display == "block"){
-            clicked.style.display = "none"
-        }
-        else{
-            clicked.style.display = "block" 
-        }
+       unclicked.style.display = "none"
+       clicked.style.display = "block"
     }
 
     
@@ -129,6 +131,7 @@
         const response = await fetch(url,change_data)
         if (response.status==200){
             alert("비밀번호가 변경되었습니다")
+            Clicked('user-pw-click','pw-click')
         } else {
             alert("비밀번호를 다시 확인해주세요")
         }
