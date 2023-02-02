@@ -44,8 +44,8 @@
                                     <input id="new-password2" type="password" placeholder="새로운 비밀번호 확인" name="new_password2">
                                 </div>
                                 <div style="display:flex;">
-                                    <button class="mypage-btn" style="left:70px;" onClick="passwordChange('{% url 'accounts:change_password' %}')">비밀번호 변경</button>
-                                    <button id="pw-click" class="mypage-btn" style="left:95px;" onClick="Clicked('user-pw-click','pw-click')">취소</button>
+                                    <button class="mypage-btn" style="left:70px;" onClick="passwordChange('{% url 'accounts:change_password' %}')">변경 완료</button>
+                                    <button id="pw-click" class="mypage-btn" style="left:95px; background-color:#C2C2C2;" onClick="Clicked('user-pw-click','pw-click')">취소</button>
                                 </div>
                             </div>
                         </div>
@@ -133,7 +133,7 @@
             alert("비밀번호가 변경되었습니다")
             Clicked('user-pw-click','pw-click')
         } else {
-            alert("비밀번호를 다시 확인해주세요")
+            alert("비밀번호를 다시 확인해주세요. \n새로운 비밀번호는 8자리 이상이어야 하며, 아이디 5자 이상이 포함되면 안됩니다.")
         }
     }
 
@@ -307,7 +307,7 @@
             for (let k = 0; k<spec_array.length; k++){
                 var content = document.createElement('p')
                 content.setAttribute('class', 'detail')
-                content.innerText = spec_array[k]
+                content.innerText = spec_array[k].replace(/'/g, '')
                 h3.append(content)
             }
             var helpDiv = document.createElement('div')

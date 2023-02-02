@@ -381,7 +381,7 @@
                 for (let k = 0; k<spec_array.length; k++){
                     var content = document.createElement('p')
                     content.setAttribute('class', 'detail')
-                    content.innerText = spec_array[k]
+                    content.innerText = spec_array[k].replace(/'/g, '')
                     h3.append(content)
                 }
                 var helpDiv = document.createElement('div')
