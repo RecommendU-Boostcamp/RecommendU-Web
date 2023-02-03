@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType, JobList,Sample,AnswerList
 from .serializers import ContentListSerializer,DocumentSerializer,AnswerSerializer
 from logs.models import EvalLog, RecommendLog
+from inference.similarity import content_based_filtering_cosine_with_tag1
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -21,10 +22,132 @@ import random
 
 # Create your views here.
 
+@api_view(['POST', ])
+def answer_test(request):
+    s_time = time.time()
+    data = request.data
+    company = get_object_or_404(Company, company=data["company"])
+    job_small = get_object_or_404(JobSmall, job_small_id=int(data["jobType"]))
+    question_type = get_object_or_404(QuestionType, question_type_id = int(data["questionType"]))
+    question_text = data["questionText"]
+    content = data["content"]
+    user = request.user
+    rec_log_id = data["logId"]
+    if question_type.question_type_id == 1000023:
+        import re
+        WHITESPACE_HANDLER = lambda k: re.sub('\s+', ' ', re.sub('\n+', ' ', k.strip()))
+        question_text = WHITESPACE_HANDLER(question_text)
+        question_category, sim = ServicesConfig.embedder.match_question_top1(question_text, ServicesConfig.question_emb_matrix)
+        if len(question_text)==0 or sim < 0.5:
+            return Response(status.HTTP_412_PRECONDITION_FAILED)
+        question_category +=1000000
+        question_type = get_object_or_404(QuestionType, question_type_id = question_category)
+    
+    if len(content) < 10:
+        content = ""
+        
+    recommend = Recommendation(ServicesConfig.document, ServicesConfig.item, ServicesConfig.qcate_dict, ServicesConfig.answer_emb_matrix, ServicesConfig.embedder, 
+                            question_type.question_type_id-1000000, company.company, user.favorite_company, job_small.job_large.job_large, job_small.job_small, content, 
+                            4)
+    
+    recommend.filtering()
+    tag2, tag3, tag4, tag5 = recommend.recommend_with_company_without_jobtype(), recommend.recommend_with_jobtype_without_company(), recommend.recommed_based_popularity(), recommend.recommend_based_expert()
+    tag1 = recommend.recommend_with_company_jobtype()
+    
+    ###### merge #######
+    ##### use feature : [['user_job_large', 'user_major_small', 'answer', 'document', 'coin_company', 
+                                # 'coin_jobsmall', 'coin_question_type', 'answer_pro_good_cnt',
+                                # 'answer_pro_bad_cnt', 'doc_view', 'label' ]] 
+    
+    answers = ServicesConfig.input_answer.copy()
+    answers['answer'] = answers['answer'].apply(make_label)
+    input_answers = answers[answers["answer"].isin(tag1)].reset_index()
+    pool_len = len(input_answers)
+    input_answers.loc[:,'user_job_large'] = user.interesting_job_large.job_large_id
+    input_answers.loc[:,'user_major_small'] = user.major_small.major_small_id
+    input_answers.loc[:,'coin_company'] = 0
+    input_answers.loc[:,'coin_jobsmall'] = 0
+    input_answers.loc[:,'coin_question_type'] = 0
+    input_answers.loc[input_answers['doc_company_id'] == company.company_id,'coin_company'] = 1
+    input_answers.loc[input_answers['doc_job_small_id'] == job_small.job_small_id,'coin_jobsmall'] = 1
+    # 퀘스쳔타입 일치여부 확인
+    for i in range(pool_len):
+        answer = ServicesConfig.answer_question_types[input_answers.loc[i, 'answer']]
+        if question_type.question_type_id in answer:
+            input_answers.loc[i, 'coin_question_type'] = 1
+    
+    input_answers = input_answers[["user_job_large", "user_major_small", "answer", "document", "coin_company",
+                                   "coin_jobsmall", "coin_question_type", "answer_pro_good_cnt", "answer_pro_bad_cnt", "doc_view"]]
+    input_answers['user_job_large'] = input_answers['user_job_large'].astype('str').apply(make_label)
+    input_answers['user_major_small'] = input_answers['user_major_small'].astype('str').apply(make_label)
+    input_answers['document'] = input_answers['document'].astype('str').apply(make_label)
+    input_answers['answer_pro_good_cnt'] = input_answers['answer_pro_good_cnt'].apply(good2categ)
+    input_answers['answer_pro_bad_cnt'] = input_answers['answer_pro_bad_cnt'].apply(bad2categ)
+    input_answers['doc_view'] = input_answers['doc_view'].apply(view2categ)
+
+    now_answers = input_answers['answer'].values
+    result = ServicesConfig.cbst.predict_proba(input_answers)[:,1]
+    sim = content_based_filtering_cosine_with_tag1(now_answers, ServicesConfig.answer_emb_matrix, content, ServicesConfig.embedder)
+    result_with_sim = result+sim
+    
+    tag1 = list(input_answers.iloc[result_with_sim.argsort()[::-1][:10],:].answer)
+    rec_log_list = [*tag1, *tag2, *tag3, *tag4, *tag5[0], *tag5[1]]
+    rec_log_list = list(map(lambda x: 'a'+str(x).zfill(6), rec_log_list))
+    
+    # 노출된 모든 아이템에 노출 카운트롤 하나 더해줌
+    Answer.objects.filter(answer_id__in=rec_log_list).update(user_impression_cnt=F('user_impression_cnt')+1)
+    
+    result = {
+            " 님에게 AI가 자소서를 추천해줍니다" : tag1,
+            "지원하는 회사를 먼저 고려했어요" : tag2,
+            "비슷한 직무로 모아봤어요" : tag3,
+            "조회를 많이 했어요" : tag4,
+            "전문가 평이 좋아요" : tag5[0],
+            "전문가 평이 별로에요" : tag5[1]
+            }
+    
+    
+    result_keys = result.keys()
+    to_front = {key : [] for key in result_keys}
+    
+    for key in result:
+        ran_num=4
+        if key in ["전문가 평이 좋아요", "전문가 평이 별로에요"]:
+            ran_num = 2
+        for i in range(ran_num):
+            temp_answer = get_object_or_404(ContentList, answer_id= 'a'+str(result[key][i]).zfill(6))
+            temp_answer = ContentListSerializer(temp_answer)
+            to_front[key].append(temp_answer.data)
+
+
+    # 레코멘드버튼 로그에 추천된 아이템을 스트링 형태로 남겨줌
+    rec_log = get_object_or_404(RecommendLog, rec_log_id=rec_log_id)
+    rec_log.impressions = str(rec_log_list)
+    rec_log.save()
+    
+    return Response(to_front)
+    # for k in top_result:
+    #     now_answer = get_object_or_404(Answer, answer_id='a'+str(k).zfill(6))
+    #     print(f'질문타입: {now_answer.question_types.all()}')
+    #     print(f'회사: {now_answer.document.company.company}')
+    #     print(f'직무: {now_answer.document.job_small.job_small}')
+    #     print(f'질문: {now_answer.question}')
+    #     print(f'내용: {now_answer.content}')
+    #     print()
+        
+    # print(f'{time.time() - s_time}초 걸렸습니다')
+    # breakpoint()
+
+    # rec_log_list = [*tag1, *tag2, *tag3, *tag4, *tag5[0], *tag5[1]]
+    # rec_log_list = list(map(lambda x: 'a'+str(x).zfill(6), rec_log_list))
+    
+    
+    # return Response(status=status.HTTP_200_OK)
 
 @api_view(['POST', ])
 def answer_recommend(request):
     # request에 유저가 누군지 + 회사/질문/직무/답변 달려있음
+    print(request)
     s_time = time.time()
     data = request.data
     company = get_object_or_404(Company, company=data["company"])
@@ -216,3 +339,41 @@ def answer_total(request):
     queryset = AnswerList.objects.all()
     serializer = AnswerSerializer(queryset,many=True)
     return Response(serializer.data)
+
+
+def make_label(thing):
+    return int(str(thing)[1:])
+
+def view2categ(x):
+    x = int(x)
+    if x < 12673:
+        return 0
+    elif x >= 12673 and x < 25064:
+        return 1
+    elif x >= 25064 and x < 79171:
+        return 2
+    else:
+        return 3
+
+
+def good2categ(x):
+    x = int(x)
+    if x < 1:
+        return 0
+    elif x >= 1 and x < 2:
+        return 1
+    elif x >= 2 and x < 3:
+        return 2
+    else:
+        return 3
+
+def bad2categ(x):
+    x = int(x)
+    if x < 1:
+        return 0
+    elif x >= 1 and x < 2:
+        return 1
+    elif x >= 2 and x < 3:
+        return 2
+    else:
+        return 3
