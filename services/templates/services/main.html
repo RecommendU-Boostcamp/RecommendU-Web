@@ -267,19 +267,9 @@
             b.setAttribute('class', `list-column t${tag_name.toString()}`)
             var c1 = document.createElement('h3')
             c1.setAttribute('class', 'category')
-            if (i === tagLen-1) {
-                var Taghelp = document.createElement('div')
-                Taghelp.setAttribute('class', 'help-tip')
-                Taghelp.setAttribute('id', 'help-tag')
-                var TagP = document.createElement('p')
-                TagP.innerText = "🤔 평이 안좋은 자소서가 왜 추천됐나요? \n\n 🤩 #전문가 평이 좋아요의 자소서 문항들과 비교해보세요. \n \t어쩌면 자기소개서를 작성할 때 도움이 될 수 있을 거에요. \n '이 지원자의 다른 문항 더보기' 버튼을 클릭하면 전문가의 구체적인 코멘트를 확인할 수 있습니다. \n "
-                Taghelp.append(TagP)
-                b.append(Taghelp)
-            }
-
 
             if (i === 0) {
-                c1.innerText = '#' + '{{ request.user.username }}' + key
+                c1.innerText = '# AI가 ' + '{{ request.user.username }}' + key
             } else {
                 c1.innerText = '#' + key
             }

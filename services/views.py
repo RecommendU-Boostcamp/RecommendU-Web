@@ -51,7 +51,7 @@ def answer_test(request):
                             4)
     
     recommend.filtering()
-    tag2, tag3, tag4, tag5 = recommend.recommend_with_company_without_jobtype(), recommend.recommend_with_jobtype_without_company(), recommend.recommed_based_popularity(), recommend.recommend_based_expert()
+    tag2, tag3, tag4 = recommend.recommend_with_company_without_jobtype(), recommend.recommend_with_jobtype_without_company(), recommend.recommed_based_popularity()
     tag1 = recommend.recommend_with_company_jobtype()
     
     ###### merge #######
@@ -91,19 +91,17 @@ def answer_test(request):
     result_with_sim = result+sim
     
     tag1 = list(input_answers.iloc[result_with_sim.argsort()[::-1][:10],:].answer)
-    rec_log_list = [*tag1, *tag2, *tag3, *tag4, *tag5[0], *tag5[1]]
+    rec_log_list = [*tag1, *tag2, *tag3, *tag4]
     rec_log_list = list(map(lambda x: 'a'+str(x).zfill(6), rec_log_list))
     
     # 노출된 모든 아이템에 노출 카운트롤 하나 더해줌
     Answer.objects.filter(answer_id__in=rec_log_list).update(user_impression_cnt=F('user_impression_cnt')+1)
     
     result = {
-            " 님에게 AI가 자소서를 추천해줍니다" : tag1,
+            " 님에게 추천했어요" : tag1,
             "지원하는 회사를 먼저 고려했어요" : tag2,
             "비슷한 직무로 모아봤어요" : tag3,
             "조회를 많이 했어요" : tag4,
-            "전문가 평이 좋아요" : tag5[0],
-            "전문가 평이 별로에요" : tag5[1]
             }
     
     
@@ -112,8 +110,6 @@ def answer_test(request):
     
     for key in result:
         ran_num=4
-        if key in ["전문가 평이 좋아요", "전문가 평이 별로에요"]:
-            ran_num = 2
         for i in range(ran_num):
             temp_answer = get_object_or_404(ContentList, answer_id= 'a'+str(result[key][i]).zfill(6))
             temp_answer = ContentListSerializer(temp_answer)

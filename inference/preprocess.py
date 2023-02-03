@@ -148,7 +148,14 @@ class Recommendation:
         """
         Tag 4 : popularity
         """
-        tag4 = self.item[self.item["answer_id"].isin(self.fquestion)].sort_values('doc_view', ascending = False)
+        tag4 = self.item.copy()
+        tag4['weight_score'] = np.zeros(len(self.item))
+        tag4['weight_score'] += np.where(self.item['answer_id'].isin(self.fquestion), 2, 0)
+        tag4['weight_score'] += np.where(self.item['doc_id'].isin(self.job_large), 1, 0)
+        tag4['weight_score'] += np.where(self.item['doc_id'].isin(self.job_small), 1, 0)
+        tag4['weight_score'] += np.where(self.item['doc_id'].isin(self.fcompany), 2, 0)
+        tag4 = tag4.sort_values(by = 'weight_score', ascending = False).iloc[:50]
+        tag4 = tag4.sort_values('doc_view', ascending = False)
                              
         return list(tag4["answer_id"])[:self.topk]
     
