@@ -92,18 +92,15 @@ class Recommendation:
 
         tag1 = self.item.copy()
         tag1['weight_score'] = np.zeros(len(self.item))
-        tag1['weight_score'] += np.where(self.item['answer_id'].isin(self.fquestion), 2, 0)
-        tag1['weight_score'] += np.where(self.item['doc_id'].isin(self.fcompany), 1, 0)
-        tag1['weight_score'] += np.where(self.item['doc_id'].isin(self.job_large), 0.7, 0)
-        tag1['weight_score'] += np.where(self.item['doc_id'].isin(self.job_small), 0.3, 0)
-    
-        if self.answer != None:
-            tag1 = tag1.sort_values(by = 'weight_score', ascending = False).iloc[:10]
-            tag1 = content_based_filtering_cosine(np.array(tag1["answer_id"]), self.matrix[tag1["answer_id"]], self.answer,
-                                   self.embedder, self.topk)
-            return list(tag1)
-        else:
-            return self._process_without_answer(tag1)
+        tag1['weight_score'] += np.where(self.item['answer_id'].isin(self.fquestion), 1, 0)
+        tag1['weight_score'] += np.where(self.item['doc_id'].isin(self.fcompany), 2.5, 0)
+        tag1['weight_score'] += np.where(self.item['doc_id'].isin(self.job_large), 1, 0)
+        tag1['weight_score'] += np.where(self.item['doc_id'].isin(self.job_small), 1, 0)
+        # if self.answer != None:
+        #     tag1['weight_score'] += content_based_filtering_cosine(np.array(tag1["answer_id"]), self.matrix[tag1["answer_id"]], self.answer,self.embedder)
+        tag1 = tag1.sort_values(by = 'weight_score', ascending = False).iloc[:50]["answer_id"].reset_index(drop=True)
+        return tag1
+
     
 
     def recommend_with_jobtype_without_company(self):

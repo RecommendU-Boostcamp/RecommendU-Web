@@ -19,6 +19,18 @@ def content_based_filtering_euclidean(content_id_list, embedding_matrix, sentenc
     return content_id_list[sorted_idx]
     
 
+def content_based_filtering_cosine_with_tag1(content_id_list, embedding_matrix, sentence, embedder):
+    encoded_input = embedder.tokenizer(sentence, padding = True, truncation = True, return_tensors = 'pt')
+    with torch.no_grad():
+        output = embedder.model(**encoded_input)
+        embedding = embedder.mean_pooling(output, encoded_input['attention_mask'])
+    
+    sim_matrix = cosine_similarity(embedding, embedding_matrix)[0]
+    # sorted_idx = np.argsort(sim_matrix)[::-1][:topn]
+    return sim_matrix[content_id_list]
+    # return sim_matrix
+
+
 def content_based_filtering_cosine(content_id_list, embedding_matrix, sentence, embedder, topn):
     encoded_input = embedder.tokenizer(sentence, padding = True, truncation = True, return_tensors = 'pt')
     with torch.no_grad():
@@ -27,9 +39,9 @@ def content_based_filtering_cosine(content_id_list, embedding_matrix, sentence, 
     
     sim_matrix = cosine_similarity(embedding, embedding_matrix)[0]
     sorted_idx = np.argsort(sim_matrix)[::-1][:topn]
-
+    # return sim_matrix[content_id_list]
     return content_id_list[sorted_idx]
-
+    
 
 def content_based_filtering_jaccard(content_id_list, token_set_dict, sentence, embedder, topn):
     encoded_input = embedder.tokenizer(sentence, padding = True, truncation = True, return_tensors = 'pt')
