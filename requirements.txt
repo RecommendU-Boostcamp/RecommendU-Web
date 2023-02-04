@@ -1,15 +1,22 @@
 asgiref==3.6.0
 backports.zoneinfo==0.2.1
+catboost==1.1.1
 certifi @ file:///croot/certifi_1671487769961/work/certifi
 charset-normalizer==3.0.1
+contourpy==1.0.7
+cycler==0.11.0
 Django==4.1.5
 django-environ==0.9.0
 djangorestframework==3.14.0
 environ==1.0
 filelock==3.9.0
+fonttools==4.38.0
+graphviz==0.20.1
 huggingface-hub==0.11.1
 idna==3.4
 joblib==1.2.0
+kiwisolver==1.4.4
+matplotlib==3.6.3
 mysql==0.0.3
 mysqlclient==2.1.1
 numpy==1.24.1
@@ -19,6 +26,9 @@ nvidia-cuda-runtime-cu11==11.7.99
 nvidia-cudnn-cu11==8.5.0.96
 packaging==23.0
 pandas==1.5.2
+Pillow==9.4.0
+plotly==5.13.0
+pyparsing==3.0.9
 python-dateutil==2.8.2
 pytz==2022.7.1
 PyYAML==6.0
@@ -29,6 +39,7 @@ scipy==1.10.0
 six==1.16.0
 sklearn==0.0.post1
 sqlparse==0.4.3
+tenacity==8.1.0
 threadpoolctl==3.1.0
 tokenizers==0.13.2
 torch==1.13.1
