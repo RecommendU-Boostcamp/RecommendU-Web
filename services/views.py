@@ -3,7 +3,7 @@ from .dbinit.initiation import dbinit, jobkoreainit, question_type_init, company
 from django.contrib.auth import get_user_model
 
 from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType, JobList,Sample,AnswerList
-from .serializers import ContentListSerializer,DocumentSerializer,AnswerSerializer
+from .serializers import ContentListSerializer,DocumentSerializer,AnswerSerializer,JobSmallTypeSerializer
 from logs.models import EvalLog, RecommendLog
 from inference.similarity import content_based_filtering_cosine_with_tag1
 
@@ -336,6 +336,11 @@ def answer_total(request):
     serializer = AnswerSerializer(queryset,many=True)
     return Response(serializer.data)
 
+@api_view(["GET"])
+def job_total(request):
+    queryset = JobSmall.objects.all()
+    serializer = JobSmallTypeSerializer(queryset,many=True)
+    return Response(serializer.data)
 
 def make_label(thing):
     return int(str(thing)[1:])

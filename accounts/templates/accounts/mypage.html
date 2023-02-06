@@ -295,6 +295,9 @@
             var g5 = document.createElement('p')
             g5.setAttribute('class', 'letter')
             g5.innerText = answer.content
+            var h0 = document.createElement('span')
+            h0.setAttribute('id', 'info-spec--school')
+            h0.innerText = answer.spec.slice(1,-1).split(',')[0]
             var h1 = document.createElement('span')
             h1.setAttribute('id', 'info-spec--school')
             h1.innerText = answer.schooltype
@@ -304,7 +307,7 @@
             var h3 = document.createElement('span')
             h3.setAttribute('id', 'info-spec--extra_spec')
             var spec_array = answer.spec.slice(1,-1).split(',')
-            for (let k = 0; k<spec_array.length; k++){
+            for (let k = 1; k<spec_array.length; k++){
                 var content = document.createElement('p')
                 content.setAttribute('class', 'detail')
                 content.innerText = spec_array[k].replace(/'/g, '')
@@ -317,7 +320,7 @@
             helpP.innerText = "<북마크 아이콘>\n 자소서 답변이 맘에 든다면, 북마크를 클릭해보세요.\n 마이페이지에서 북마크한 자소서들을 확인할 수 있습니다.\n\n <좋아요 / 별로에요>\n 이 답변이 괜찮았다면 👍🏻를, 별로였다면 👎🏻를 눌러주세요."
             helpDiv.append(helpP)
 
-            g3.append(h1, h2, h3)
+            g3.append(h0,h1, h2, h3)
             markA.append(markImg)
             markDiv.append(g1, markA, helpDiv)
             f3.append(g4, g5)

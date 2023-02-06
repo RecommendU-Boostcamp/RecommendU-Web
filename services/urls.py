@@ -12,4 +12,5 @@ urlpatterns = [
     path('check_status/', views.check_status, name='check_status'),
     path('document_total/',views.document_total,name='document_total'),
     path('answer_total/',views.answer_total,name='answer_total'),
+    path('job_total/',views.job_total,name='job_total')
 ]
