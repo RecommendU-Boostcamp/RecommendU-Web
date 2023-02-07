@@ -283,6 +283,7 @@
                 var answer = tag[j]
                 var content_id = answer.answer_id+tag_name.toString()
                 var d1 = document.createElement('div')
+                const season = answer.spec.slice(1,-1).split(',')[0]
                 d1.setAttribute('class', 'item')
                 d1.setAttribute('onClick', `popup_open(${content_id}); getAnswerLog(${ content_id }, '{% url "logs:answerlog" %}'); checkStatus('{{ request.user.username }}', ${content_id}, 't'+${tag_name.toString()}, '{% url "services:check_status" %}')`)
                 var d_title = document.createElement('h4')
@@ -290,7 +291,7 @@
                 d_title.innerText = answer.question
                 var d_company = document.createElement('h4')
                 d_company.setAttribute('class', 'company')
-                d_company.innerText = answer.company + ' · ' + answer.job_small
+                d_company.innerText = answer.company + ' · ' + answer.job_small + ' · ' + season
                 var d_content = document.createElement('p')
                 d_content.setAttribute('class', 'contents')
                 d_content.innerText = answer.summary
@@ -362,7 +363,7 @@
                 g5.innerText = answer.content
                 var h0 = document.createElement('span')
                 h0.setAttribute('id', 'info-spec--school')
-                h0.innerText = answer.spec.slice(1,-1).split(',')[0]
+                h0.innerText = season
                 var h1 = document.createElement('span')
                 h1.setAttribute('id', 'info-spec--school')
                 h1.innerText = answer.schooltype

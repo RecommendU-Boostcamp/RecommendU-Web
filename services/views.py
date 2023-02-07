@@ -16,6 +16,9 @@ from django.db.models import F
 from django.db.models.functions import Length
 from services.apps import ServicesConfig
 from inference.preprocess import Recommendation
+from django.core.files.storage import FileSystemStorage
+import os
+import os.path
 import time
 import json
 import random
@@ -341,6 +344,25 @@ def job_total(request):
     queryset = JobSmall.objects.all()
     serializer = JobSmallTypeSerializer(queryset,many=True)
     return Response(serializer.data)
+
+# 서버로부터 모델 저장하는 api
+@api_view(["POST"])
+def save_model(request):
+    data = request.data
+    if data['model'] == 'CatBoost':
+        model_name = 'catboost'
+    elif data['model'] == 'FM':
+        model_name = 'fm'
+    else:
+        print('model not exist')
+        return Response('model not exist',status=status.HTTP_400_BAD_REQUEST) 
+    model_file = data['file']
+    save_path = f"../inference/models/{model_name}_model.cbm" 
+    fs = FileSystemStorage()
+    if os.path.isfile(save_path):
+        os.remove(save_path)
+    filename = fs.save(save_path, model_file)
+    return Response(filename,status=status.HTTP_201_CREATED)
 
 def make_label(thing):
     return int(str(thing)[1:])
