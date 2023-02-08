@@ -22,6 +22,7 @@ import os.path
 import time
 import json
 import random
+import pickle
 
 # Create your views here.
 
@@ -345,6 +346,7 @@ def job_total(request):
     serializer = JobSmallTypeSerializer(queryset,many=True)
     return Response(serializer.data)
 
+from catboost import CatBoostClassifier
 # 서버로부터 모델 저장하는 api
 @api_view(["POST"])
 def save_model(request):
@@ -357,7 +359,7 @@ def save_model(request):
         print('model not exist')
         return Response('model not exist',status=status.HTTP_400_BAD_REQUEST) 
     model_file = data['file']
-    save_path = f"../inference/models/{model_name}_model.cbm" 
+    save_path = f"./inference/models/{model_name}_model.cbm" 
     fs = FileSystemStorage()
     if os.path.isfile(save_path):
         os.remove(save_path)
