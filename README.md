@@ -8,7 +8,7 @@
 ### Backend
 <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=Python&logoColor=white"> <img src="https://img.shields.io/badge/Django-092E20?style=flat-square&logo=Django&logoColor=white"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=MySQL&logoColor=white">
 
-## 📋 DataBase ERD
+## 📋 Database Schema Diagram
 ![image](https://user-images.githubusercontent.com/46878756/217413934-be4973f7-1273-43ea-beb1-4ea817d8219a.png)
 
 ## ⚙ Core Functions
