@@ -5,6 +5,10 @@
 .env
 */dbinit/*.csv
 */dbinit/*.tsv
+*/dbinit/*.ipynb
+*/dbinit/.ipynb_checkpoints
+*/dbinit/data_0129
+*/.ipynb_checkpoints
 inference/data/
 inference/models
 
