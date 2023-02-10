@@ -349,8 +349,8 @@
         var f1 = document.createElement('h3')
         f1.setAttribute('class', 'category')
         f1.setAttribute('name', tag_name)
-        if (i === 0) {
-            f1.innerText = '#' + '{{ request.user.username }}' + key
+        if (tag_name === 7000001) {
+            f1.innerText = '#AI가 ' + '{{ request.user.username }}' + key
         } else {
             f1.innerText = '#' + key
         }
