@@ -112,7 +112,17 @@
 </html>
 <script type="text/javascript">
     var count = 0
-    recommendData = ""
+    var totalData = ""
+    var totalKeys = ""
+    var isShown = [[true, false, false], [true, false, false], [true, false, false], [true, false, false]]
+    var nowPages = [0, 0, 0, 0]
+    var nowLogId = ""
+    var nowCompany = ""
+    var nowJobSmall = ""
+    var nowQuestionType = ""
+    var nowQuestionText = ""
+    var nowContent = ""
+
     function explanationChange(value){
         const sampleBtn = document.getElementById('answers');
         if (value == "other") {
@@ -137,35 +147,44 @@
 
 
     async function recbuttonClick(logUrl, getAnswerUrl){
-        const logId = await getUserLogging(logUrl)
-        getRecommendData(getAnswerUrl, logId)
+        nowLogId = await getUserLogging(logUrl)
+        getRecommendData(getAnswerUrl, nowLogId)
+        isShown = [[true, false, false, false], [true, false, false, false], [true, false, false, false], [true, false, false, false]]  // 새로 추천버튼을 눌렀으면 태그 클릭 기록과 현재 페이지를 초기화 하기
+        nowPages = [0, 0, 0, 0]
     }
     
     async function getUserLogging(url){
-        const company = document.getElementById('company-input').value
-        if(company==""){
+        /*
+        var nowLogId = ""
+        var nowCompany = ""
+        var nowJobSmall = ""
+        var nowQuestionType = ""
+        var nowQuestionText = ""
+        var nowContent = ""
+        */
+
+        nowCompany = document.getElementById('company-input').value
+        if(nowCompany==""){
             alert("관심기업을 선택해주세요.")
             return -1
         }
         
-        var questionType = 0
         const query = 'input[name="job_detail"]:checked';
-        var jobType =document.querySelectorAll(query)[0];
-        if (jobType){
-            jobType = document.querySelectorAll(query)[0].id
+        nowJobSmall=document.querySelectorAll(query)[0];
+        if (nowJobSmall){
+            nowJobSmall = document.querySelectorAll(query)[0].id
         }
         else{
             alert("직무 상세검색을 선택해주세요.")
             return -1
         }
-        var questionContent = ""
 
         if(document.getElementById("question-input")){ 
-            questionContent = document.getElementById('question-text').value;
-            questionType = 1000023;
+            nowQuestionText = document.getElementById('question-text').value;
+            nowQuestionType = 1000023;
         }else{
-            questionType = document.getElementById('question_list').value;
-            if (questionType == 'none'){
+            nowQuestionType = document.getElementById('question_list').value;
+            if (nowQuestionType == 'none'){
                 alert("질문을 선택해주세요")
                 return -1
             }
@@ -179,10 +198,10 @@
             },
             body: JSON.stringify({
                 userId: '{{ request.user }}',  // url 태그와 같은 기능태그는 script태그에서 해석되지 않지만 {{ variable }}과 같은 변수 태그는 해석됨
-                company,
-                jobType,
-                questionType,
-                questionContent
+                company: nowCompany,
+                jobType: nowJobSmall,
+                questionType: nowQuestionType,
+                questionContent: nowQuestionText
             }),
         }
         response = await fetch(url, logData)
@@ -192,32 +211,24 @@
     }
 
     async function getRecommendData(url, logId){
-        const company = document.getElementById('company-input').value;
-        if(company==""){
-            return -1
-        }
-        var question_type = 0;
-        var question_text = "";
+                /*
+        var nowLogId = ""
+        var nowCompany = ""
+        var nowJobSmall = ""
+        var nowQuestionType = ""
+        var nowQuestionText = ""
+        var nowContent = ""
+        */
+
 
         // 잠시만 기다려주세요 화면 render
-        if(document.getElementById("question-input")){
-            question_text = document.getElementById('question-text').value;
-            question_type = 1000023;
-        }else{
-            question_type = document.getElementById('question_list').value;
-            if (question_type == 'none'){
-                return -1
-            }
-        }
+
         const render_window = document.querySelector(".listWrap>p")
         render_window.innerHTML = "<b>자기소개서를 가져오고 있어요 🙏🏻</b><br>잠시만 기다려주세요.</p>"
         render_window.setAttribute('class', 'exist-data')
-        const query = 'input[name="job_detail"]:checked';
-        if (!document.querySelectorAll(query)[0]){
-            return -1
-        }
-        const jobType =document.querySelectorAll(query)[0].id;
-        const answer_text = document.getElementById("answers").value;
+
+
+        nowContent = document.getElementById("answers").value;
         const recommend_data = {
             method: "POST",
             headers: {
@@ -225,14 +236,15 @@
               "X-CSRFToken": "{{csrf_token}}",
             },
             body: JSON.stringify({  
-                company: company,
-                jobType: jobType,
-                questionType: question_type,
-                questionText:question_text,
-                content:answer_text,
-                logId: logId
+                company: nowCompany,
+                jobType: nowJobSmall,
+                questionType: nowQuestionType,
+                questionText:nowQuestionText,
+                content:nowContent,
+                logId: nowLogId
             }),
         }
+
         const response = await fetch(url, recommend_data)
 
         const data = await response.json()
@@ -252,22 +264,24 @@
 
     
     function makingRecommendList(data) {
-        var keys = Object.keys(data)
-        tagLen = keys.length
+        totalData = data["recommendation"]
+        totalKeys = Object.keys(totalData)
+        tagLen = totalKeys.length
         const a = document.querySelector('#exist-data')
         var tag_name = 7000000
         a.replaceChildren()
         
         // data의 key 순회
         for (let i = 0; i <tagLen; i++){
-            var key = keys[i]
-            var tag = data[key]
+            var key = totalKeys[i]
+            var tag = totalData[key]
             var listLen = tag.length
             tag_name += 1
             var b = document.createElement('div')
             b.setAttribute('class', `list-column t${tag_name.toString()}`)
             var c1 = document.createElement('h3')
             c1.setAttribute('class', 'category')
+            c1.setAttribute('style', 'display:inline-block;')
 
             if (i === 0) {
                 c1.innerText = '# AI가 ' + '{{ request.user.username }}' + key
@@ -275,132 +289,259 @@
                 c1.innerText = '#' + key
             }
             
+
+            var pageDiv = document.createElement('div')
+            pageDiv.setAttribute('id', `tagIndex${i}`)
+            pageDiv.setAttribute('style', 'position:flex')
+            var nextPageImg = document.createElement('img')
+            nextPageImg.setAttribute('class', 'changePage')
+            var previousPageImg = document.createElement('img')
+            previousPageImg.setAttribute('class', 'changePage')
+            var nextPageA = document.createElement('a')
+            var previousPageA = document.createElement('a')
+            nextPageA.setAttribute('onClick', `nextPage(${i}, '{% url "services:page_change" %}')`)
+            nextPageA.setAttribute('style', 'display:inline; cursor: pointer;')
+            nextPageImg.setAttribute('id', `nextPage${i}`)
+            nextPageImg.setAttribute('src', '/static/images/next.png')
+            nextPageA.append(nextPageImg)
+            previousPageA.setAttribute('onClick', `previousPage(${i}, '{% url "services:page_change" %}')`)
+            previousPageA.setAttribute('style', 'display:inline; cursor: pointer;')
+            previousPageImg.setAttribute('id', `previousPage${i}`)
+            previousPageImg.setAttribute('src', '/static/images/noprevious.png')
+            previousPageA.append(previousPageImg)
+            pageDiv.append(c1, previousPageA, nextPageA)
+
+
             var c2 = document.createElement('div')
             c2.setAttribute('class', 'list')
-            
-            for (let j = 0; j<listLen; j++) {
-                // 각 key의 answer들 순회
-                var answer = tag[j]
-                var content_id = answer.answer_id+tag_name.toString()
-                var d1 = document.createElement('div')
-                const season = answer.spec.slice(1,-1).split(',')[0]
-                d1.setAttribute('class', 'item')
-                d1.setAttribute('onClick', `popup_open(${content_id}); getAnswerLog(${ content_id }, '{% url "logs:answerlog" %}'); checkStatus('{{ request.user.username }}', ${content_id}, 't'+${tag_name.toString()}, '{% url "services:check_status" %}')`)
-                var d_title = document.createElement('h4')
-                d_title.setAttribute('class', 'title')
-                d_title.innerText = answer.question
-                var d_company = document.createElement('h4')
-                d_company.setAttribute('class', 'company')
-                d_company.innerText = answer.company + ' · ' + answer.job_small + ' · ' + season
-                var d_content = document.createElement('p')
-                d_content.setAttribute('class', 'contents')
-                d_content.innerText = answer.summary
-                var d2 = document.createElement('div')
-                d2.setAttribute('class', 'popup')
-                d2.setAttribute('id', `${content_id}`)
-                var e = document.createElement('div')
-                e.setAttribute('class', 'contents')
-                var f1 = document.createElement('h3')
-                f1.setAttribute('class', 'category')
-                f1.setAttribute('name', tag_name)
-                if (i === 0) {
-                    f1.innerText = '#' + '{{ request.user.username }}' + key
-                } else {
-                    f1.innerText = '#' + key
-                }
-                var f2 = document.createElement('div')
-                f2.setAttribute('class', 'info')
-                var f3 = document.createElement('div')
-                f3.setAttribute('class', 'text')
-                var g1 = document.createElement('span')
-                var f4 = document.createElement('a')
-                f4.setAttribute('href', answer.document_url)
-                f4.setAttribute('target', '_blank')
-                f4.innerHTML="🔗 이 지원자의 다른 문항 더보기"
-                var f5 = document.createElement('button')
-                f5.setAttribute('type', 'button')
-                f5.setAttribute('class', 'btn btn_close')
-                f5.setAttribute('onClick', `popup_close(${content_id})`)
-                f5.innerText = 'X'
-                var f6 = document.createElement('button')
-                f6.setAttribute('type', 'button')
-                f6.setAttribute('class', 'btn btn_good')
-                f6.setAttribute('id', 'btn_good'+answer.answer_id)
-                f6.setAttribute('value',answer.user_good_cnt)
-                f6.setAttribute('onClick',`getUserGood(${content_id},${answer.user_good_cnt},'t'+${tag_name.toString()},'{% url "logs:evallog" %}')`)
-                f6.innerText = '👍 '+answer.user_good_cnt
-                var f7 = document.createElement('button')
-                f7.setAttribute('type', 'button')
-                f7.setAttribute('class', 'btn btn_bad')
-                f7.setAttribute('id', 'btn_bad'+answer.answer_id)
-                f7.setAttribute('value',answer.user_bad_cnt)
-                f7.setAttribute('onClick',`getUserBad(${content_id},${answer.user_bad_cnt}, 't'+${tag_name.toString()},'{% url "logs:evallog" %}')`)
-                f7.innerText = '👎 '+answer.user_bad_cnt
-                g1.setAttribute('id', 'info-company')
-                g1.setAttribute('style', 'display:inline; margin-bottom:2px;')
-                g1.innerText = answer.company
-                var markDiv = document.createElement('div')
-                markDiv.setAttribute('id', 'bookmark'+content_id.slice(0,7))
-                markDiv.setAttribute('style', 'position:flex')
-                var markImg = document.createElement('img')
-                var markA = document.createElement('a')
-                markA.setAttribute('id', 'markA'+content_id.slice(0,7))
-                markA.setAttribute('onClick', `fillMark(${content_id}, 't'+${tag_name.toString()}, '{% url "logs:userscrap" %}')`)
-                markA.setAttribute('style', 'display:inline; cursor: pointer;')
-                markImg.setAttribute('id', 'markImg'+content_id.slice(0,7))
-                markImg.setAttribute('class', 'mark-empty')
-                markImg.setAttribute('src', '/static/images/mark-empty.png')
-                var g2 = document.createElement('span')
-                g2.setAttribute('id', 'info-work')
-                g2.innerText = answer.job_small
-                var g3 = document.createElement('div')
-                g3.setAttribute('class','info-spec')
-                var g4 = document.createElement('h4')
-                g4.setAttribute('class', 'title')
-                g4.innerText = answer.question
-                var g5 = document.createElement('p')
-                g5.setAttribute('class', 'letter')
-                g5.innerText = answer.content
-                var h0 = document.createElement('span')
-                h0.setAttribute('id', 'info-spec--school')
-                h0.innerText = season
-                var h1 = document.createElement('span')
-                h1.setAttribute('id', 'info-spec--school')
-                h1.innerText = answer.schooltype
-                var h2 = document.createElement('span')
-                h2.setAttribute('id', 'info-spec--major')
-                h2.innerText = answer.major_small
-                var h3 = document.createElement('span')
-                h3.setAttribute('id', 'info-spec--extra_spec')
-                var spec_array = answer.spec.slice(1,-1).split(',')
-                for (let k = 1; k<spec_array.length; k++){
-                    var content = document.createElement('p')
-                    content.setAttribute('class', 'detail')
-                    content.innerText = spec_array[k].replace(/'/g, '')
-                    h3.append(content)
-                }
-                var helpDiv = document.createElement('div')
-                helpDiv.setAttribute('class', 'help-tip')
-                helpDiv.setAttribute('id', 'help-answer')
-                var helpP = document.createElement('p')
-                helpP.innerText = "<북마크 아이콘>\n 자소서 답변이 맘에 든다면, 북마크를 클릭해보세요.\n 마이페이지에서 북마크한 자소서들을 확인할 수 있습니다.\n\n <좋아요 / 별로에요>\n 이 답변이 괜찮았다면 👍🏻를, 별로였다면 👎🏻를 눌러주세요."
-                helpDiv.append(helpP)
+            c2.setAttribute('id', `tag${i}Div`)
 
-                g3.append(h0,h1, h2, h3)
-                markA.append(markImg)
-                markDiv.append(g1, markA, helpDiv)
-                f3.append(g4, g5)
-                f2.append(markDiv, g2, g3)
-                e.append(f1, f2, f3, f4, f5, f6, f7)
-                d2.append(e)
-                d1.append(d_company, d_title, d_content)
-                c2.append(d1, d2)
+            for (let j = 0; j<4; j++) {
+                // 각 key의 answer들 순회
+                createTagElements(tag, tag_name, c2, j, key)
             }
-            b.append(c1, c2)
+            b.append(pageDiv, c2)
             a.append(b)
         }
     }
+
+    function createTagElements(tag, tag_name, tagDiv, j, key) {
+        var answer = tag[j]
+        var content_id = answer.answer_id+tag_name.toString()
+        var d1 = document.createElement('div')
+        const season = answer.spec.slice(1,-1).split(',')[0]
+        d1.setAttribute('class', 'item')
+        d1.setAttribute('onClick', `popup_open(${content_id}); getAnswerLog(${ content_id }, '{% url "logs:answerlog" %}'); checkStatus('{{ request.user.username }}', ${content_id}, 't'+${tag_name.toString()}, '{% url "services:check_status" %}')`)
+        var d_title = document.createElement('h4')
+        d_title.setAttribute('class', 'title')
+        d_title.innerText = answer.question
+        var d_company = document.createElement('h4')
+        d_company.setAttribute('class', 'company')
+        d_company.innerText = answer.company + ' · ' + answer.job_small + ' · ' + season
+        var d_content = document.createElement('p')
+        d_content.setAttribute('class', 'contents')
+        d_content.innerText = answer.summary
+        var d2 = document.createElement('div')
+        d2.setAttribute('class', 'popup')
+        d2.setAttribute('id', `${content_id}`)
+        var e = document.createElement('div')
+        e.setAttribute('class', 'contents')
+        var f1 = document.createElement('h3')
+        f1.setAttribute('class', 'category')
+        f1.setAttribute('name', tag_name)
+        if (i === 0) {
+            f1.innerText = '#' + '{{ request.user.username }}' + key
+        } else {
+            f1.innerText = '#' + key
+        }
+        var f2 = document.createElement('div')
+        f2.setAttribute('class', 'info')
+        var f3 = document.createElement('div')
+        f3.setAttribute('class', 'text')
+        var g1 = document.createElement('span')
+        var f4 = document.createElement('a')
+        f4.setAttribute('href', answer.document_url)
+        f4.setAttribute('target', '_blank')
+        f4.innerHTML="🔗 이 지원자의 다른 문항 더보기"
+        var f5 = document.createElement('button')
+        f5.setAttribute('type', 'button')
+        f5.setAttribute('class', 'btn btn_close')
+        f5.setAttribute('onClick', `popup_close(${content_id})`)
+        f5.innerText = 'X'
+        var f6 = document.createElement('button')
+        f6.setAttribute('type', 'button')
+        f6.setAttribute('class', 'btn btn_good')
+        f6.setAttribute('id', 'btn_good'+answer.answer_id)
+        f6.setAttribute('value',answer.user_good_cnt)
+        f6.setAttribute('onClick',`getUserGood(${content_id},${answer.user_good_cnt},'t'+${tag_name.toString()},'{% url "logs:evallog" %}')`)
+        f6.innerText = '👍 '+answer.user_good_cnt
+        var f7 = document.createElement('button')
+        f7.setAttribute('type', 'button')
+        f7.setAttribute('class', 'btn btn_bad')
+        f7.setAttribute('id', 'btn_bad'+answer.answer_id)
+        f7.setAttribute('value',answer.user_bad_cnt)
+        f7.setAttribute('onClick',`getUserBad(${content_id},${answer.user_bad_cnt}, 't'+${tag_name.toString()},'{% url "logs:evallog" %}')`)
+        f7.innerText = '👎 '+answer.user_bad_cnt
+        g1.setAttribute('id', 'info-company')
+        g1.setAttribute('style', 'display:inline; margin-bottom:2px;')
+        g1.innerText = answer.company
+        var markDiv = document.createElement('div')
+        markDiv.setAttribute('id', 'bookmark'+content_id.slice(0,7))
+        markDiv.setAttribute('style', 'position:flex')
+        var markImg = document.createElement('img')
+        var markA = document.createElement('a')
+        markA.setAttribute('id', 'markA'+content_id.slice(0,7))
+        markA.setAttribute('onClick', `fillMark(${content_id}, 't'+${tag_name.toString()}, '{% url "logs:userscrap" %}')`)
+        markA.setAttribute('style', 'display:inline; cursor: pointer;')
+        markImg.setAttribute('id', 'markImg'+content_id.slice(0,7))
+        markImg.setAttribute('class', 'mark-empty')
+        markImg.setAttribute('src', '/static/images/mark-empty.png')
+        var g2 = document.createElement('span')
+        g2.setAttribute('id', 'info-work')
+        g2.innerText = answer.job_small
+        var g3 = document.createElement('div')
+        g3.setAttribute('class','info-spec')
+        var g4 = document.createElement('h4')
+        g4.setAttribute('class', 'title')
+        g4.innerText = answer.question
+        var g5 = document.createElement('p')
+        g5.setAttribute('class', 'letter')
+        g5.innerText = answer.content
+        var h0 = document.createElement('span')
+        h0.setAttribute('id', 'info-spec--school')
+        h0.innerText = season
+        var h1 = document.createElement('span')
+        h1.setAttribute('id', 'info-spec--school')
+        h1.innerText = answer.schooltype
+        var h2 = document.createElement('span')
+        h2.setAttribute('id', 'info-spec--major')
+        h2.innerText = answer.major_small
+        var h3 = document.createElement('span')
+        h3.setAttribute('id', 'info-spec--extra_spec')
+        var spec_array = answer.spec.slice(1,-1).split(',')
+        for (let k = 1; k<spec_array.length; k++){
+            var content = document.createElement('p')
+            content.setAttribute('class', 'detail')
+            content.innerText = spec_array[k].replace(/'/g, '')
+            h3.append(content)
+        }
+        var helpDiv = document.createElement('div')
+        helpDiv.setAttribute('class', 'help-tip')
+        helpDiv.setAttribute('id', 'help-answer')
+        var helpP = document.createElement('p')
+        helpP.innerText = "<북마크 아이콘>\n 자소서 답변이 맘에 든다면, 북마크를 클릭해보세요.\n 마이페이지에서 북마크한 자소서들을 확인할 수 있습니다.\n\n <좋아요 / 별로에요>\n 이 답변이 괜찮았다면 👍🏻를, 별로였다면 👎🏻를 눌러주세요."
+        helpDiv.append(helpP)
+
+        g3.append(h0,h1, h2, h3)
+        markA.append(markImg)
+        markDiv.append(g1, markA, helpDiv)
+        f3.append(g4, g5)
+        f2.append(markDiv, g2, g3)
+        e.append(f1, f2, f3, f4, f5, f6, f7)
+        d2.append(e)
+        d1.append(d_company, d_title, d_content)
+        tagDiv.append(d1, d2)
+    }
     
+    
+    function changeTagElements(tag, tagName, tagIndex, page, key){
+        var tagDiv = document.querySelector(`#tag${tagIndex}Div`)
+        tagDiv.replaceChildren()
+        for (let j=0; j<4; j++) {
+            createTagElements(tag, tagName, tagDiv, j, key)
+        }
+    }
+
+
+    async function nextPage(tagIndex, url) {
+        // var isShown = [[true, false, false, false], [true, false, false, false], [true, false, false, false], [true, false, false, false]]
+        // var nowPages = [0, 0, 0, 0]
+        if (nowPages[tagIndex]==2) {
+            return -1
+        } else if (nowPages[tagIndex]==1) {
+            const nextBtn = document.querySelector(`#nextPage${tagIndex}`)
+            nextBtn.setAttribute('src', '/static/images/nonext.png')
+        } else if (nowPages[tagIndex]==0) {
+            const previousBtn = document.querySelector(`#previousPage${tagIndex}`)
+            previousBtn.setAttribute('src', '/static/images/previous.png')
+        }
+
+        nowPages[tagIndex]++
+        var page = nowPages[tagIndex]
+        var tagName = 7000001 + tagIndex
+
+
+        var isSeen = isShown[tagIndex][page]
+        var key = totalKeys[tagIndex]
+        var pageData = totalData[key]
+        var answers = pageData.slice(4*page, 4*(page+1))
+        var answerIds = answers.map(function(value){
+            return value.answer_id
+        })
+        
+        changeTagElements(answers, tagName, tagIndex, page, key)
+        // 만일 이미 본 페이지면 보고할 필요가 없음
+        if (isSeen) {
+            return -1
+        }
+
+        const changeData = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{csrf_token}}",
+            },
+            body: JSON.stringify({
+                tagIdx : tagIndex,
+                answerIds: answerIds,
+                logId: nowLogId, 
+            }),
+        }
+
+        const response = await fetch(url, changeData)
+        
+        isShown[tagIndex][page] = true
+    }
+    // 현재 태그와 백엔드 url을 받음  => accounts:page_change
+
+
+
+
+    // now pages[현재 태그]를 1 올려주고 isShown[현재 태그][now pages]를 true로 바꿔줌
+
+    async function previousPage(tagIndex, url) {
+        // 생각해보니 이전페이지로 갈 때는 로그를 쌓을 필요가 없음
+        if (nowPages[tagIndex]==0) {
+            return -1
+        } else if (nowPages[tagIndex]==1) {
+            const previousBtn = document.querySelector(`#previousPage${tagIndex}`)
+            previousBtn.setAttribute('src', '/static/images/noprevious.png')
+        } else if (nowPages[tagIndex]==2) {
+            const nextBtn = document.querySelector(`#nextPage${tagIndex}`)
+            nextBtn.setAttribute('src', '/static/images/next.png')
+        }
+
+
+        nowPages[tagIndex]--
+        var page = nowPages[tagIndex]
+        var tagName = 7000001 + tagIndex
+        var key = totalKeys[tagIndex]
+        var pageData = totalData[key]
+
+        var answers = pageData.slice(4*page, 4*(page+1))
+        changeTagElements(answers, tagName, tagIndex, page, key)
+    }
+
+    // 현재 태그와 백엔드 url을 받음
+    
+
+
+    // now pages[현재 태그]를 1 내려주고 isShown
+
+
+
+
+
     
     async function checkStatus(username, contentId, tagId, url) {
         const answerId = contentId.id.slice(0, 7)

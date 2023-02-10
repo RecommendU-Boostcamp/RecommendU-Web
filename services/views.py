@@ -23,13 +23,15 @@ import time
 import json
 import random
 import pickle
+import ast
+
 
 # Create your views here.
 
 @api_view(['POST', ])
-def answer_test(request):
-    s_time = time.time()
+def answer_recommend(request):
     data = request.data
+    print(data)
     company = get_object_or_404(Company, company=data["company"])
     job_small = get_object_or_404(JobSmall, job_small_id=int(data["jobType"]))
     question_type = get_object_or_404(QuestionType, question_type_id = int(data["questionType"]))
@@ -52,7 +54,7 @@ def answer_test(request):
         
     recommend = Recommendation(ServicesConfig.document, ServicesConfig.item, ServicesConfig.qcate_dict, ServicesConfig.answer_emb_matrix, ServicesConfig.embedder, 
                             question_type.question_type_id-1000000, company.company, user.favorite_company, job_small.job_large.job_large, job_small.job_small, content, 
-                            4)
+                            12)
     
     recommend.filtering()
     tag2, tag3, tag4 = recommend.recommend_with_company_without_jobtype(), recommend.recommend_with_jobtype_without_company(), recommend.recommed_based_popularity()
@@ -94,12 +96,16 @@ def answer_test(request):
     sim = content_based_filtering_cosine_with_tag1(now_answers, ServicesConfig.answer_emb_matrix, content, ServicesConfig.embedder)
     result_with_sim = result+sim
     
-    tag1 = list(input_answers.iloc[result_with_sim.argsort()[::-1][:10],:].answer)
-    rec_log_list = [*tag1, *tag2, *tag3, *tag4]
-    rec_log_list = list(map(lambda x: 'a'+str(x).zfill(6), rec_log_list))
+    tag1 = list(input_answers.iloc[result_with_sim.argsort()[::-1][:12],:].answer)
+    
+    rec_log_list = [list(map(lambda x: 'a'+str(x).zfill(6), tag1[:4])),
+                    list(map(lambda x: 'a'+str(x).zfill(6), tag2[:4])),
+                    list(map(lambda x: 'a'+str(x).zfill(6), tag3[:4])),
+                    list(map(lambda x: 'a'+str(x).zfill(6), tag4[:4]))
+    ]
     
     # 노출된 모든 아이템에 노출 카운트롤 하나 더해줌
-    Answer.objects.filter(answer_id__in=rec_log_list).update(user_impression_cnt=F('user_impression_cnt')+1)
+    Answer.objects.filter(answer_id__in=sum(rec_log_list, [])).update(user_impression_cnt=F('user_impression_cnt')+1)
     
     result = {
             " 님에게 추천했어요" : tag1,
@@ -108,16 +114,15 @@ def answer_test(request):
             "조회를 많이 했어요" : tag4,
             }
     
-    
     result_keys = result.keys()
-    to_front = {key : [] for key in result_keys}
+    rec_items = {key : [] for key in result_keys}
     
     for key in result:
-        ran_num=4
+        ran_num=12
         for i in range(ran_num):
             temp_answer = get_object_or_404(ContentList, answer_id= 'a'+str(result[key][i]).zfill(6))
             temp_answer = ContentListSerializer(temp_answer)
-            to_front[key].append(temp_answer.data)
+            rec_items[key].append(temp_answer.data)
 
 
     # 레코멘드버튼 로그에 추천된 아이템을 스트링 형태로 남겨줌
@@ -125,92 +130,35 @@ def answer_test(request):
     rec_log.impressions = str(rec_log_list)
     rec_log.save()
     
-    return Response(to_front)
-    # for k in top_result:
-    #     now_answer = get_object_or_404(Answer, answer_id='a'+str(k).zfill(6))
-    #     print(f'질문타입: {now_answer.question_types.all()}')
-    #     print(f'회사: {now_answer.document.company.company}')
-    #     print(f'직무: {now_answer.document.job_small.job_small}')
-    #     print(f'질문: {now_answer.question}')
-    #     print(f'내용: {now_answer.content}')
-    #     print()
-        
-    # print(f'{time.time() - s_time}초 걸렸습니다')
-    # breakpoint()
+    output_data = {"recommendation": rec_items, "logId": rec_log_id} 
+    return Response(output_data)
 
-    # rec_log_list = [*tag1, *tag2, *tag3, *tag4, *tag5[0], *tag5[1]]
-    # rec_log_list = list(map(lambda x: 'a'+str(x).zfill(6), rec_log_list))
-    
-    
-    # return Response(status=status.HTTP_200_OK)
 
 @api_view(['POST', ])
-def answer_recommend(request):
-    # request에 유저가 누군지 + 회사/질문/직무/답변 달려있음
-    print(request)
-    s_time = time.time()
+def page_change(request):
     data = request.data
-    company = get_object_or_404(Company, company=data["company"])
-    job_small = get_object_or_404(JobSmall, job_small_id=int(data["jobType"]))
-    question_type = get_object_or_404(QuestionType, question_type_id = int(data["questionType"]))
-    question_text = data["questionText"]
-    content = data["content"]
-    user = request.user
+    now_tag = data["tagIdx"]
+    answer_ids = data["answerIds"]
     rec_log_id = data["logId"]
-    if question_type.question_type_id == 1000023:
-        import re
-        WHITESPACE_HANDLER = lambda k: re.sub('\s+', ' ', re.sub('\n+', ' ', k.strip()))
-        question_text = WHITESPACE_HANDLER(question_text)
-        question_category, sim = ServicesConfig.embedder.match_question_top1(question_text, ServicesConfig.question_emb_matrix)
-        if len(question_text)==0 or sim < 0.5:
-            return Response(status.HTTP_412_PRECONDITION_FAILED)
-        question_category +=1000000
-        question_type = get_object_or_404(QuestionType, question_type_id = question_category)
     
-    if len(content) < 10:
-        content = ""
+    if request.user.username != 'admin':
+        Answer.objects.filter(answer_id__in=answer_ids).update(user_impression_cnt=F('user_impression_cnt')+1)
+    
+    print(data)
+    try:
+        rec_log = get_object_or_404(RecommendLog, rec_log_id=rec_log_id)
+        temp_impressions = ast.literal_eval(rec_log.impressions)
+        print(f'temp_impressions: {temp_impressions}')
+        temp_impressions[now_tag].extend(answer_ids)
+        print(f'new temp_impressions: {temp_impressions}')
+        rec_log.impressions = str(temp_impressions)
+        rec_log.save()
         
-    recommend = Recommendation(ServicesConfig.document, ServicesConfig.item, ServicesConfig.qcate_dict, ServicesConfig.answer_emb_matrix, ServicesConfig.embedder, 
-                            question_type.question_type_id-1000000, company.company, user.favorite_company, job_small.job_large.job_large, job_small.job_small, content, 
-                            4)
+    except:
+        return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
     
-    recommend.filtering()
-    tag1, tag2, tag3, tag4, tag5 = recommend.recommend_with_company_jobtype(), recommend.recommend_with_company_without_jobtype(), recommend.recommend_with_jobtype_without_company(), recommend.recommed_based_popularity(), recommend.recommend_based_expert()
-    rec_log_list = [*tag1, *tag2, *tag3, *tag4, *tag5[0], *tag5[1]]
-    rec_log_list = list(map(lambda x: 'a'+str(x).zfill(6), rec_log_list))
+    return Response(status=status.HTTP_200_OK)
 
-    # 노출된 모든 아이템에 노출 카운트롤 하나 더해줌
-    Answer.objects.filter(answer_id__in=rec_log_list).update(user_impression_cnt=F('user_impression_cnt')+1)
-    
-    result = {
-            " 님과 유사한 자소서를 골라봤어요" : tag1,
-            "지원하는 회사를 먼저 고려했어요" : tag2,
-            "비슷한 직무로 모아봤어요" : tag3,
-            "조회를 많이 했어요" : tag4,
-            "전문가 평이 좋아요" : tag5[0],
-            "전문가 평이 별로에요" : tag5[1]
-            }
-    
-    
-    result_keys = result.keys()
-    to_front = {key : [] for key in result_keys}
-    
-    for key in result:
-        ran_num=4
-        if key in ["전문가 평이 좋아요", "전문가 평이 별로에요"]:
-            ran_num = 2
-        for i in range(ran_num):
-            temp_answer = get_object_or_404(ContentList, answer_id= 'a'+str(result[key][i]).zfill(6))
-            temp_answer = ContentListSerializer(temp_answer)
-            to_front[key].append(temp_answer.data)
-
-
-    # 레코멘드버튼 로그에 추천된 아이템을 스트링 형태로 남겨줌
-    rec_log = get_object_or_404(RecommendLog, rec_log_id=rec_log_id)
-    rec_log.impressions = str(rec_log_list)
-    rec_log.save()
-    
-    return Response(to_front)
 
 
 @api_view(['POST', ])

@@ -115,7 +115,7 @@ class Recommendation:
         tag2['weight_score'] += np.where(self.item['doc_id'].isin(self.job_small), 2, 0)
         
         if self.answer != None:
-            tag2 = tag2.sort_values(by = 'weight_score', ascending = False).iloc[:10]
+            tag2 = tag2.sort_values(by = 'weight_score', ascending = False).iloc[:12]
             tag2 = content_based_filtering_cosine(np.array(tag2["answer_id"]), self.matrix[tag2["answer_id"]], self.answer,
                                    self.embedder, self.topk)
             return list(tag2)
@@ -135,7 +135,7 @@ class Recommendation:
         tag3['weight_score'] += np.where(self.item['doc_id'].isin(self.fcompany), 2, 0)
 
         if self.answer != None:
-            tag3 = tag3.sort_values(by = 'weight_score', ascending = False).iloc[:10]
+            tag3 = tag3.sort_values(by = 'weight_score', ascending = False).iloc[:12]
             tag3 = content_based_filtering_cosine(np.array(tag3["answer_id"]), self.matrix[tag3["answer_id"]], self.answer,
                                    self.embedder, self.topk)
             return list(tag3)
