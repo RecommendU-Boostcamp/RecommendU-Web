@@ -1,8 +1,11 @@
 */__pycache__
+*/*/__pycache__
 */migrations
 .git
 .env
-*/dbinit/
+*/dbinit/*.csv
+*/dbinit/*.tsv
 inference/data/
 inference/models
 
+        
