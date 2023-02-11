@@ -71,8 +71,8 @@ class Recommendation:
     def _process_without_answer(self, tag):
         result = tag.sort_values(by=["weight_score", "pro_good_cnt", "doc_view"], ascending = [False, False, False])[["answer_id", "weight_score"]]
         answer_ids, scores = result['answer_id'], result['weight_score']
-        answer_ids = list(answer_ids)[:10]
-        scores = list(scores)[:10]
+        answer_ids = list(answer_ids)[:12]
+        scores = list(scores)[:12]
     
         high_score = scores[0]
         high_score_answers = [answer_id for answer_id, score in zip(answer_ids, scores) if score == high_score]
