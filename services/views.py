@@ -31,7 +31,6 @@ import ast
 @api_view(['POST', ])
 def answer_recommend(request):
     data = request.data
-    print(data)
     company = get_object_or_404(Company, company=data["company"])
     job_small = get_object_or_404(JobSmall, job_small_id=int(data["jobType"]))
     question_type = get_object_or_404(QuestionType, question_type_id = int(data["questionType"]))
@@ -143,14 +142,10 @@ def page_change(request):
     
     if request.user.username != 'admin':
         Answer.objects.filter(answer_id__in=answer_ids).update(user_impression_cnt=F('user_impression_cnt')+1)
-    
-    print(data)
     try:
         rec_log = get_object_or_404(RecommendLog, rec_log_id=rec_log_id)
         temp_impressions = ast.literal_eval(rec_log.impressions)
-        print(f'temp_impressions: {temp_impressions}')
         temp_impressions[now_tag].extend(answer_ids)
-        print(f'new temp_impressions: {temp_impressions}')
         rec_log.impressions = str(temp_impressions)
         rec_log.save()
         
@@ -313,6 +308,22 @@ def save_model(request):
         os.remove(save_path)
     filename = fs.save(save_path, model_file)
     return Response(filename,status=status.HTTP_201_CREATED)
+
+@api_view(["POST"])
+def save_embedding(request):
+    data = request.data
+    answer_embed = data['answer_embedding']
+    answer_question_embed = json.loads(data['question_answer_mapping_json'])
+    save_path = "./inference/data/"
+    fs = FileSystemStorage()
+    if os.path.isfile(save_path+"answer_embedding_matrix.npy"):
+        os.remove(save_path+"answer_embedding_matrix.npy")
+    answer_embed_complete = fs.save(save_path+"answer_embedding_matrix.npy", answer_embed)
+    if os.path.isfile(save_path+"question_cate_map_answerid.json"):
+        os.remove(save_path+"question_cate_map_answerid.json")
+    with open(save_path+"question_cate_map_answerid.json", 'w') as f:
+        answer_question_json_complete=json.dump(answer_question_embed, f)
+    return Response([answer_embed_complete,answer_question_json_complete],status=status.HTTP_201_CREATED)
 
 def make_label(thing):
     return int(str(thing)[1:])
