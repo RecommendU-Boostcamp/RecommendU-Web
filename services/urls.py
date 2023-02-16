@@ -13,7 +13,10 @@ urlpatterns = [
     path('check_status/', views.check_status, name='check_status'),
     path('document_total/',views.document_total,name='document_total'),
     path('answer_total/',views.answer_total,name='answer_total'),
+    path('document_refresh/',views.document_refresh),
+    path('answer_refresh/',views.answer_refresh),
     path('job_total/',views.job_total,name='job_total'),
     path('save_model/',views.save_model),
     path('save_embedding/',views.save_embedding),
+    path('save_refresh/',views.save_refresh_data),
 ]

@@ -138,3 +138,34 @@ class AnswerList(models.Model):
     class Meta:
         managed = False               
         db_table = 'answer_view'
+
+class AnswerRefreshList(models.Model):
+    answer_id = models.CharField(primary_key=True,max_length=10,null=False,unique=True)
+    document_id = models.CharField(max_length=100, null=False)
+    document_url = models.CharField(max_length=500)
+    content = models.CharField(max_length=10000,null=False)
+    question = models.CharField(max_length=1000, null=False)
+    pro_rating = models.IntegerField(default=0)
+    pro_good_cnt = models.IntegerField(default=0)
+    pro_bad_cnt = models.IntegerField(default=0)
+    summary = models.CharField(max_length=1000,null=False)
+    view = models.IntegerField(default=0)
+    question_types = models.CharField(max_length=200,null=False)
+    class Meta:
+        managed = False               
+        db_table = 'answer_refresh_view'
+
+class DocumentRefreshList(models.Model):
+    document_id = models.CharField(primary_key=True,max_length=10, null=False)
+    document_url = models.CharField(max_length=500)
+    spec = models.CharField(max_length=600,null=False)
+    schooltype =models.CharField(max_length=100,null=False)
+    pro_rating = models.IntegerField(default=0)
+    company = models.CharField(max_length=100,null=False)
+    major_large = models.CharField(max_length=100,null=False)
+    major_small = models.CharField(max_length=100,null=False)
+    job_large = models.CharField(max_length=100,null=False)
+    job_small = models.CharField(max_length=100,null=False)
+    class Meta:
+        managed = False               
+        db_table = 'document_refresh_view'

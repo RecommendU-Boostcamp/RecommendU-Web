@@ -2,7 +2,8 @@ from rest_framework import serializers
 from .models import (
     QuestionType, Company, MajorLarge, MajorSmall,
     JobLarge, JobSmall, RecommendType, SchoolType, 
-    Document, Answer, Sample, ContentList,AnswerList
+    Document, Answer, Sample, ContentList,AnswerList,
+    DocumentRefreshList,AnswerRefreshList
 )
 
 class QuestionTypeSerializer(serializers.ModelSerializer):
@@ -81,4 +82,14 @@ class ContentListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ContentList
+        fields = '__all__'
+        
+class DocumentRefreshSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocumentRefreshList
+        fields = '__all__'
+        
+class AnswerRefreshSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnswerRefreshList
         fields = '__all__'

@@ -2,8 +2,11 @@ from django.shortcuts import render, get_list_or_404, get_object_or_404, redirec
 from .dbinit.initiation import dbinit, jobkoreainit, question_type_init, company_init, major_large_init, major_small_init, job_large_init, job_small_init, recommend_type_init, school_init, doc_init, answer_init, sample_init
 from django.contrib.auth import get_user_model
 
-from .models import QuestionType, Company, MajorLarge, MajorSmall, JobLarge, JobSmall, RecommendType, Document, Answer, Sample,ContentList, MajorList, SchoolType, JobList,Sample,AnswerList
-from .serializers import ContentListSerializer,DocumentSerializer,AnswerSerializer,JobSmallTypeSerializer
+from .models import (QuestionType, Company, MajorLarge, MajorSmall, JobLarge,
+                     JobSmall, RecommendType, Document, Answer, Sample,ContentList,
+                     MajorList, SchoolType, JobList,Sample,AnswerList,
+                     DocumentRefreshList,AnswerRefreshList)
+from .serializers import ContentListSerializer,DocumentSerializer,AnswerSerializer,JobSmallTypeSerializer,DocumentRefreshSerializer,AnswerRefreshSerializer
 from logs.models import EvalLog, RecommendLog
 from inference.similarity import content_based_filtering_cosine_with_tag1
 
@@ -289,7 +292,19 @@ def job_total(request):
     serializer = JobSmallTypeSerializer(queryset,many=True)
     return Response(serializer.data)
 
-from catboost import CatBoostClassifier
+# 데이터 refresh를 위한 api
+@api_view(["GET"])
+def document_refresh(request):
+    queryset = DocumentRefreshList.objects.all()
+    serializer = DocumentRefreshSerializer(queryset,many=True)
+    return Response(serializer.data)
+
+@api_view(["GET"])
+def answer_refresh(request):
+    queryset = AnswerRefreshList.objects.all()
+    serializer = AnswerRefreshSerializer(queryset,many=True)
+    return Response(serializer.data)
+
 # 서버로부터 모델 저장하는 api
 @api_view(["POST"])
 def save_model(request):
@@ -324,6 +339,28 @@ def save_embedding(request):
     with open(save_path+"question_cate_map_answerid.json", 'w') as f:
         answer_question_json_complete=json.dump(answer_question_embed, f)
     return Response([answer_embed_complete,answer_question_json_complete],status=status.HTTP_201_CREATED)
+
+@api_view(["POST"])
+def save_refresh_data(request):
+    data = request.data
+    document_file = data['document']
+    answer_file = data['answer']
+    input_file = data['input']
+    save_path = "./inference/data/"
+    document_path = save_path+"jk_documents_3_4.csv"
+    answer_path = save_path+"jk_answers_without_samples_3_4.csv"
+    input_answer_path = save_path+"input_answers_1_0.csv"
+    fs = FileSystemStorage()
+    if os.path.isfile(document_path):
+        os.remove(document_path)
+    filename = fs.save(document_path, document_file)
+    if os.path.isfile(answer_path):
+        os.remove(answer_path)
+    filename = fs.save(answer_path, answer_file)
+    if os.path.isfile(input_answer_path):
+        os.remove(input_answer_path)
+    filename = fs.save(input_answer_path, input_file)
+    return Response(filename,status=status.HTTP_201_CREATED)
 
 def make_label(thing):
     return int(str(thing)[1:])
